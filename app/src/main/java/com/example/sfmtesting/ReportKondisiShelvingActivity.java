@@ -2,6 +2,7 @@ package com.example.sfmtesting;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -15,6 +16,10 @@ public class ReportKondisiShelvingActivity extends AppCompatActivity implements 
     TextView titleNamaToko;
     RelativeLayout layoutWinningAtStore;
     RelativeLayout layoutDoubleImplementation;
+    SharedPreferences pref;
+    SharedPreferences tokoPref;
+    SharedPreferences.Editor editor;
+    SharedPreferences.Editor editorToko;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

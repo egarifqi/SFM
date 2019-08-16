@@ -1,0 +1,108 @@
+<resources>
+    <string name="app_name"></string>
+    <string name="login_button">Login</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_taking_order">TakingOrderActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="pilih_alasan">Pilih Alasan</string>
+    <string name="title_activity_tracking">Map</string>
+    <string name="title_home">Home</string>
+    <string name="title_pengajuan">Pengajuan</string>
+    <string name="title_account">Account</string>
+    <string name="toast_image_intent_null">Image picker option is missing!</string>
+    <string name="lbl_set_profile_photo">Set profile image</string>
+    <string name="lbl_take_camera_picture">Take a picture</string>
+    <string name="lbl_choose_from_gallery">Choose from gallery</string>
+    <string name="dialog_permission_title">Grant Permissions</string>
+    <string name="dialog_permission_message">This app needs permission to use this feature. You can grant them in app settings.</string>
+    <string name="go_to_settings">GOTO SETTINGS</string>
+    <string-array name="list_alasantunda">
+        <item>Tunda: Sedang Ramai</item>
+        <item>Tunda: Tuan Toko sedang Melayani</item>
+    </string-array>
+    <string-array name="list_alasannotvisit">
+        <item>Tidak Visit: Force Major</item>
+        <item>Tidak Visit: Hari Libur Nasional</item>
+        <item>Tidak Visit: Meeting / Training Sales</item>
+        <item>Tidak Visit: Tuan Toko Janji di Hari Lain</item>
+        <item>Tidak Visit: Tutup Toko</item>
+        <item>Tidak Visit: Sales Sakit / Izin</item>
+        <item>Tidak Visit: Sudah Tidak Menjadi MCP</item>
+        <item>Tidak Visit: Di Luar Frekuensi Kunjungan</item>
+    </string-array>
+    <string-array name="list_alasannotvisitall">
+        <item>Sudah Visit Semua -  Ada Masalah pada Sistem</item>
+        <item>Tidak Visit: Force Major</item>
+        <item>Tidak Visit: Hari Libur Nasional</item>
+        <item>Tidak Visit: Meeting / Training Sales</item>
+    </string-array>
+    <string-array name="list_alasannotec">
+        <item>Not EC: Ada Overdue Piutang</item>
+        <item>Not EC: BA Belum Estimasi</item>
+        <item>Not EC: BA Off/Sakit</item>
+        <item>Not EC: Force Major</item>
+        <item>Not EC: Stock Masih Ada</item>
+        <item>Not EC: Sudah Membeli ke Grosir</item>
+        <item>Not EC: Tuan Toko Tidak Ada</item>
+        <item>Not EC: Toko Tutup dan Tuan Toko Tidak Konfirmasi</item>
+        <!--<item></item>-->
+    </string-array>
+    <string-array name="list_alasannotnoo">
+        <item>Butuh Listing Fee / Sewa</item>
+        <item>Terlalu Sore</item>
+        <item>Tidak Setuju Dengan Discount</item>
+        <item>Tuan Toko Tidak Ada</item>
+        <item>Sudah Berlangganan ke Grosir</item>
+    </string-array>
+    <string-array name="tempo_pembayaran">
+        <item>1 hari</item>
+        <item>7 hari</item>
+        <item>14 hari</item>
+        <item>15 hari</item>
+        <item>30 hari</item>
+        <item>40 hari</item>
+        <item>45 hari</item>
+        <item>60 hari</item>
+    </string-array>
+    <string-array name="nama_dc">
+        <item>DC ACEH</item>
+        <item>DC BALI</item>
+        <item>DC BANDUNG</item>
+        <item>DC BANGKA</item>
+        <item>DC BANJARMASIN</item>
+        <item>DC BATAM</item>
+        <item>DC BEKASI</item>
+        <item>DC BOGOR</item>
+        <item>DC CIREBON</item>
+        <item>DC JAKARTA</item>
+        <item>DC JAMBI</item>
+        <item>DC JEMBER</item>
+        <item>DC KEDIRI</item>
+        <item>DC LAMPUNG</item>
+        <item>DC MAKASSAR</item>
+        <item>DC MALANG</item>
+        <item>DC MANADO</item>
+        <item>DC MATARAM</item>
+        <item>DC MEDAN</item>
+        <item>DC PADANG</item>
+        <item>DC PALEMBANG</item>
+        <item>DC PEKANBARU</item>
+        <item>DC PUWOKERTO</item>
+        <item>DC PONTIANAK</item>
+        <item>DC SAMARINDA</item>
+        <item>DC SEMARANG</item>
+        <item>DC SERANG</item>
+        <item>DC SOLO</item>
+        <item>DC SURABAYA</item>
+        <item>DC TASIKMALAYA</item>
+        <item>DC TEGAL</item>
+        <item>DC YOGYAKARTA</item>
+    </string-array>
+</resources>

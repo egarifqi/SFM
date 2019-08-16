@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#58CCC5</color>
+    <color name="colorPrimaryDark">#30A39C</color>
+    <color name="colorAccent">#000000</color>
+    <color name="text">#141414</color>
+    <color name="bg_splash">#616161</color>
+    <color name="colorPrimaryTriad1">#E2DE5A</color>
+    <color name="colorPrimaryTriad2">#008577</color>
+    <color name="background">#DC424C</color>
+    <!--<color kode="colorAccent">#01A99D</color>-->
+    <color name="activeTab">#FFFFFF</color>
+    <color name="notActiveTab">#8F1D24</color>
+    <!--<color kode="colorPrimary">#3F51B5</color>-->
+    <color name="colorPrimary2">#03a9f4</color>
+    <color name="tealish_two">#26a6c5</color>
+    <color name="light_cyan">#aaeeff</color>
+    <color name="light_sky_blue_three">#cbf5ff</color>
+    <color name="tangerine">#FF9800</color>
+    <color name="red_sky">#EF9A9A</color>
+    <!--<color kode="colorPrimaryDark">#303F9F</color>-->
+    <color name="white">#ffffff</color>
+    <color name="medium_text">#E0E0E0</color>
+    <color name="spinner">#8B8C8D</color>
+    <color name="start_color">#29B6F6</color>
+    <color name="end_color">#4FC3F7</color>
+    <color name="notvisit">#3A8BCF</color>
+    <color name="abu">#F0F0F0</color>
+    <color name="soft">#AAC3E2</color>
+</resources>

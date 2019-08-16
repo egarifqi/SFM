@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".HistoricalSalesWardahActivity">
+
+    <!--Judul halaman-->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarhistwardah"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layouthistoricalsales"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <!--Search bar-->
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@color/colorPrimary">-->
+
+    <!--<SearchView-->
+    <!--android:id="@+id/mySearchView"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:layout_marginBottom="8dp"-->
+    <!--android:background="#fff"/>-->
+
+    <!--<ProgressBar-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:id="@+id/myProgressBar"-->
+    <!--style="?android:attr/progressBarStyleHorizontal"-->
+    <!--android:indeterminate="true"-->
+    <!--android:indeterminateBehavior="cycle"-->
+    <!--android:visibility="gone"/>-->
+    <!---->
+    <!--</LinearLayout>-->
+
+    <!--View pager untuk judul fragment-->
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pagerhistoricalsales"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/tab_layout" />
+
+</LinearLayout>

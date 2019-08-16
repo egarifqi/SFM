@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_brand"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".TakingOrderBrandActivity">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/backdropx"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/nameToko"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="Nama Toko"
+        android:textSize="28sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/linearLayout4"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="20dp"-->
+        <!--android:layout_marginTop="50dp"-->
+        <!--android:layout_marginEnd="20dp"-->
+        <!--android:orientation="vertical"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.0"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/nameToko">-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal">-->
+            <!--&lt;!&ndash;Card Wardah&ndash;&gt;-->
+            <!--<androidx.cardview.widget.CardView-->
+                <!--android:id="@+id/logo_wardah"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:layout_rowWeight="1"-->
+                <!--android:layout_columnWeight="1"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:layout_marginBottom="10dp"-->
+                <!--app:cardCornerRadius="10dp"-->
+                <!--app:cardElevation="8dp">-->
+
+                <!--<ImageView-->
+                    <!--android:layout_width="250dp"-->
+                    <!--android:layout_height="60dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_marginStart="8dp"-->
+                    <!--android:layout_marginTop="8dp"-->
+                    <!--android:layout_marginEnd="8dp"-->
+                    <!--android:layout_marginBottom="8dp"-->
+                    <!--android:background="@drawable/logo_wardah" />-->
+
+            <!--</androidx.cardview.widget.CardView>-->
+
+            <!--&lt;!&ndash;CArd MakeOver&ndash;&gt;-->
+            <!--<androidx.cardview.widget.CardView-->
+                <!--android:id="@+id/logo_makeover"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:layout_rowWeight="1"-->
+                <!--android:layout_columnWeight="1"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:layout_marginBottom="10dp"-->
+                <!--app:cardCornerRadius="10dp"-->
+                <!--app:cardElevation="8dp">-->
+
+
+                <!--<ImageView-->
+                    <!--android:layout_width="250dp"-->
+                    <!--android:layout_height="60dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_marginStart="8dp"-->
+                    <!--android:layout_marginTop="8dp"-->
+                    <!--android:layout_marginEnd="8dp"-->
+                    <!--android:layout_marginBottom="8dp"-->
+                    <!--android:background="@drawable/logo_makeover" />-->
+
+            <!--</androidx.cardview.widget.CardView>-->
+
+
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="horizontal">-->
+
+            <!--&lt;!&ndash;Card Emina&ndash;&gt;-->
+            <!--<androidx.cardview.widget.CardView-->
+                <!--android:id="@+id/logo_emina"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:layout_rowWeight="1"-->
+                <!--android:layout_columnWeight="1"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:layout_marginBottom="10dp"-->
+                <!--app:cardCornerRadius="10dp"-->
+                <!--app:cardElevation="8dp">-->
+
+
+                <!--<ImageView-->
+                    <!--android:layout_width="250dp"-->
+                    <!--android:layout_height="60dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_marginStart="8dp"-->
+                    <!--android:layout_marginTop="8dp"-->
+                    <!--android:layout_marginEnd="8dp"-->
+                    <!--android:layout_marginBottom="8dp"-->
+                    <!--android:background="@drawable/logo_emina" />-->
+
+
+            <!--</androidx.cardview.widget.CardView>-->
+
+            <!--&lt;!&ndash;Card Putri&ndash;&gt;-->
+            <!--<androidx.cardview.widget.CardView-->
+                <!--android:id="@+id/logo_putri"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="100dp"-->
+                <!--android:layout_rowWeight="1"-->
+                <!--android:layout_columnWeight="1"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:layout_marginLeft="8dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:layout_marginBottom="10dp"-->
+                <!--app:cardCornerRadius="10dp"-->
+                <!--app:cardElevation="8dp">-->
+
+                <!--<ImageView-->
+                    <!--android:layout_width="250dp"-->
+                    <!--android:layout_height="60dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_marginStart="8dp"-->
+                    <!--android:layout_marginTop="8dp"-->
+                    <!--android:layout_marginEnd="8dp"-->
+                    <!--android:layout_marginBottom="8dp"-->
+                    <!--android:background="@drawable/logo_putri" />-->
+
+
+            <!--</androidx.cardview.widget.CardView>-->
+
+        <!--</LinearLayout>-->
+
+
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="4"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/nameToko">-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/backdrop_fff"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/nameToko">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lltob1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintTop_toBottomOf="@+id/nameToko">
+            <!--Wardah-->
+            <LinearLayout
+                android:id="@+id/wardah"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="70dp"
+                android:layout_weight="1"
+                android:background="@drawable/card_wardah"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <!--Header-->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/logo_wardah"
+                    android:gravity="center"
+                    android:textColor="#47A2AC"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!--Emina-->
+            <LinearLayout
+                android:id="@+id/emina"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginEnd="70dp"
+                android:layout_weight="1"
+                android:background="@drawable/card_emina"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!--Header -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/logo_emina"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lltob2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_20dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintTop_toBottomOf="@+id/lltob1">
+            <!--Putri-->
+            <LinearLayout
+                android:id="@+id/putri"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="70dp"
+                android:layout_weight="1"
+                android:background="@drawable/card_putri"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <!--Header -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:background="@drawable/logo_putri"
+                    android:gravity="center"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!--Make Over-->
+            <LinearLayout
+                android:id="@+id/makeover"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginEnd="70dp"
+                android:layout_weight="1"
+                android:background="@drawable/card_mo"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!--Header -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:background="@drawable/logo_makeover"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--<Button-->
+        <!--android:id="@+id/button_tunda"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="35dp"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginRight="3dp"-->
+        <!--android:background="#47525E"-->
+        <!--android:text="TUNDA"-->
+        <!--android:textColor="#fff" />-->
+
+        <Button
+            android:id="@+id/button_simpan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="3dp"
+            android:background="@drawable/buttonstyle"
+            android:text="selesai"
+            android:textColor="#000" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

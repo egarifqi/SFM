@@ -2,6 +2,8 @@ package com.example.sfmtesting;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -15,6 +17,8 @@ public class ReportKondisiShelvingActivity extends AppCompatActivity implements 
     TextView titleNamaToko;
     RelativeLayout layoutWinningAtStore;
     RelativeLayout layoutDoubleImplementation;
+
+    SharedPreferences tokoPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +40,11 @@ public class ReportKondisiShelvingActivity extends AppCompatActivity implements 
     @Override
     public void onClick(View view) {
         if (view == layoutDoubleImplementation){
-            Toast.makeText(ReportKondisiShelvingActivity.this, "Report Kondisi Shelving...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ReportKondisiShelvingActivity.this, "Double Implementation...", Toast.LENGTH_SHORT).show();
         }
 
         if (view == layoutWinningAtStore){
-//            Toast.makeText();
+            startActivity(new Intent(ReportKondisiShelvingActivity.this, ReportWinningAtStoreActivity.class));
         }
 
     }

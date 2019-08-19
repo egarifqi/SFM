@@ -44,7 +44,6 @@ public class KondisiTokoActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View view) {
         if(view == layoutKondisiShelving){
-            Toast.makeText(KondisiTokoActivity.this, "Kondisi Shelving ....", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(KondisiTokoActivity.this, ReportKondisiShelvingActivity.class));
         }
 

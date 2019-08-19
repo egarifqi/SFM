@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: pub.devrel:easypermissions:0.2.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/554592d3efdccf59b22b0adbacec9977/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/554592d3efdccf59b22b0adbacec9977/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a7f586043f74490b36ce801eb6c5a34f/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a7f586043f74490b36ce801eb6c5a34f/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

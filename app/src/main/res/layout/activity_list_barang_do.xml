@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.sfmtesting.ListBarangDOActivity">
+    tools:context="com.example.salesforcemanagement.ListBarangDOActivity">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_listDO"
         android:layout_width="match_parent"

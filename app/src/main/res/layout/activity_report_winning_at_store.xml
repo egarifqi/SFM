@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#42E3E7EB"
-    tools:context="com.example.sfmtesting.ReportWinningAtStoreActivity"
+    tools:context=".ReportWinningAtStoreActivity"
     android:orientation="vertical">
 
     <LinearLayout

@@ -1,15 +1,18 @@
 package com.example.sfmtesting;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -21,6 +24,7 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -34,6 +38,8 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +47,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -54,6 +61,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TakingOrderActivity extends AppCompatActivity {
 
@@ -84,6 +100,8 @@ public class TakingOrderActivity extends AppCompatActivity {
     boolean checkP = false;
     boolean kosong = false;
     boolean visID = false;
+    private Uri uri;
+    private static final String SERVER_PATH = "http://10.3.181.177/training/web/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,7 +206,40 @@ public class TakingOrderActivity extends AppCompatActivity {
                 ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo netInfo = cm.getActiveNetworkInfo();
                 if (netInfo != null && netInfo.isConnected()){
+//                    String filePath = getRealPathFromURIPath(uri, TakingOrderActivity.this);
+                    String ttd = prefToko.getString("storepath", "");
+                    File file = new File(ttd);
+                    Log.e("Signature"+"_2", "Filename " + file.getName());
+                    RequestBody mFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+//                RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), file);
+                    MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), mFile);
+                    RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+                    Gson gson = new GsonBuilder()
+                            .setLenient()
+                            .create();
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(SERVER_PATH)
+                            .addConverterFactory(GsonConverterFactory.create(gson))
+                            .build();
+                    UploadImageInterface uploadImage = retrofit.create(UploadImageInterface.class);
+                    Call<UploadObject> fileUpload = uploadImage.uploadFile(fileToUpload, filename);
+                    fileUpload.enqueue(new Callback<UploadObject>() {
+                        @Override
+                        public void onResponse(Call<UploadObject> call, Response<UploadObject> response) {
+                            try {
+                                Toast.makeText(TakingOrderActivity.this, "Response " + response.raw().message(), Toast.LENGTH_LONG).show();
+                                Toast.makeText(TakingOrderActivity.this, "Success " + response.body().getSuccess() +" hahahaha", Toast.LENGTH_LONG).show();
+                                Log.e("Response", "Response " + response.raw().message()+", Succes : "+ response.body().getSuccess());
+                            } catch (Exception e) {
+                                Log.e("Exception", e.getMessage());
+                            }
+                        }
 
+                        @Override
+                        public void onFailure(Call<UploadObject> call, Throwable t) {
+                            Log.e("Signature"+"_3", "Error " + t.getMessage());
+                        }
+                    });
                     boolean cek = false;
 
                     if(netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -367,6 +418,17 @@ public class TakingOrderActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
+        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            return contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(idx);
+        }
     }
 
     public String getPostDataString(JSONObject params) throws Exception {
@@ -625,6 +687,7 @@ public class TakingOrderActivity extends AppCompatActivity {
             Log.e("KIRIM DATA", "SENDING ORDER DATA");
             String json = "";
             String link = "http://10.3.181.177:3000/delivery_order";
+            String namefile = prefToko.getString("filename", "");
 
             try {
                 URL url2 = new URL("http://10.3.181.177:3000/delivery_order");
@@ -649,6 +712,7 @@ public class TakingOrderActivity extends AppCompatActivity {
                 obj.put("note", notes);
                 obj.put("visit_id", visitid);
                 obj.put("brand", brand);
+                obj.put("file_name", namefile);
                 Log.e("Bentuk JSON DO", obj.toString());
 
                 editor.putString("partner", partner_name);

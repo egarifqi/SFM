@@ -105,6 +105,9 @@ public class SignatureActivity extends AppCompatActivity {
         String DIRECTORY = Environment.getExternalStorageDirectory().getPath()+ "/"; //+ "/UserSignature/";
         String pic_name = new SimpleDateFormat("MMdd_HHmm", Locale.getDefault()).format(new Date());
         StoredPath = DIRECTORY + partnerid + "_" + pic_name + ".png";
+        editorToko.putString("filename", partnerid + "_" + pic_name + ".png");
+        editorToko.putString("storepath", StoredPath);
+        editorToko.commit();
         Log.e("NamaFile", StoredPath);
 
         // Method to create Directory, if the Directory doesn't exists
@@ -175,7 +178,7 @@ public class SignatureActivity extends AppCompatActivity {
                 v.draw(canvas);
 
                 // Convert the output file to Image such as .png
-                bitmap.compress(Bitmap.CompressFormat.PNG, 90, mFileOutStream);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, mFileOutStream);
                 Intent intent = new Intent(SignatureActivity.this, com.example.sfmtesting.TakingOrderActivity.class);
                 intent.putExtra("imagePath", StoredPath);
                 startActivity(intent);

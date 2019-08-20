@@ -31,8 +31,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".ReportKondisiShelvingActivity"></activity>
+
+        <activity android:name=".PengajuanActivity"/>
         <activity android:name=".ReportWinningAtStoreActivity" />
+        <activity android:name=".ReportKondisiShelvingActivity" />
         <activity android:name=".KondisiTokoActivity" />
         <activity android:name=".RRingkasanEminaActivity" />
         <activity android:name=".RRingkasanWardahActivity" />

@@ -48,11 +48,11 @@ public class KondisiTokoActivity extends AppCompatActivity implements View.OnCli
         }
 
         if(view == layoutReportCompetitor){
-            Toast.makeText(KondisiTokoActivity.this, "Report Competitor ....", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(KondisiTokoActivity.this, PengajuanActivity.class));
         }
 
         if(view == layoutPengajuan){
-            Toast.makeText(KondisiTokoActivity.this, "Pengajuan ....", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(KondisiTokoActivity.this, PengajuanActivity.class));
         }
     }
 }

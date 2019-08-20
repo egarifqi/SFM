@@ -150,7 +150,7 @@ public class ReturWardahActivity extends AppCompatActivity {
                         String mQty = formQty.getText().toString();
                         count[0] = 0;
                         if (mQty.isEmpty()){
-                            Toast.makeText(getBaseContext(), "Mohon jangan kosongkan quantity retur", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getBaseContext(), "Mohon jangan kosongkan quantity ic_retur", Toast.LENGTH_SHORT).show();
                         } else {
 
                             orderedID.add(coba.getId());

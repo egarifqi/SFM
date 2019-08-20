@@ -22,19 +22,18 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-
-import com.example.salesforcemanagement.R;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.Locale;
 
@@ -335,7 +334,7 @@ public class KunjunganActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(this, KunjunganActivity.class);
 //        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        Bitmap androidImage = BitmapFactory.decodeResource(getResources(), R.drawable.thanks);
+        Bitmap androidImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_thanks);
 
         NotificationCompat.Builder notifyBuilder =
                 new NotificationCompat.Builder(this, PRIMARY_CHANNEL_ID)

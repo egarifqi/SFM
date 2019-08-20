@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.sfmtesting.ReturMOActivity"
+    tools:context="com.example.salesforcemanagement.ReturMOActivity"
     android:id="@+id/relativereturwardah"
     tools:ignore="MissingDefaultResource">
 

@@ -109,6 +109,8 @@ public class TokoActivity extends AppCompatActivity {
         private String frequency;
         private String program;
         private String brand;
+        private String address;
+        private String diskon;
         /*
         GETTERS AND SETTERS
         */
@@ -169,6 +171,14 @@ public class TokoActivity extends AppCompatActivity {
         public void setBrand(String brand) {
             this.brand = brand;
         }
+
+        public String getAddress() {return address;}
+
+        public void setAddress(String address){this.address = address;}
+
+        public String getDiskon() {return diskon;}
+
+        public void setDiskon(String diskon){this.diskon = diskon;}
 
     }
 
@@ -322,9 +332,9 @@ public class TokoActivity extends AppCompatActivity {
         final TextView notelp = findViewById(R.id.noTelp);
         TextView nohp = findViewById(R.id.noHP);
         final TextView channel = findViewById(R.id.channel);
-//        final TextView storetype = findViewById(R.id.tipeoutlet);
+        final TextView alamat = findViewById(R.id.alamatToko);
         final TextView frekuensi = findViewById(R.id.frekuensi);
-//        TextView program = findViewById(R.id.program);
+        TextView diskon = findViewById(R.id.diskon);
 //        TextView brand = findViewById(R.id.brand);
 
         final ListView listprogram = findViewById(R.id.listprogram);
@@ -426,6 +436,7 @@ public class TokoActivity extends AppCompatActivity {
 
                         String storetype = jo.getString("store_type_name");
                         String frekuensi = jo.getString("frekuensi");
+                        String alamat = jo.getString("address");
                         String brand = jo.getString("brand");
                         String program = jo.getString("program_name");
                         if (program.equals("-")){
@@ -447,6 +458,7 @@ public class TokoActivity extends AppCompatActivity {
                         s.setPhone(nohp);
                         s.setOutlettype(storetype);
                         s.setFrequency(frekuensi);
+                        s.setAddress(alamat);
                         s.setBrand(brand);
                         s.setProgram(program);
                         tokos.add(s);
@@ -478,6 +490,7 @@ public class TokoActivity extends AppCompatActivity {
                     }
                     channel.setText(tokos.get(0).getOutlettype());
                     frekuensi.setText(tokos.get(0).getFrequency());
+                    alamat.setText(tokos.get(0).getAddress());
 
                     final ListViewAdapter lvadapter = new ListViewAdapter(TokoActivity.this, programs);
                     lvadapter.notifyDataSetChanged();

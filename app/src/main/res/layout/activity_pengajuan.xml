@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#42E3E7EB"
+    tools:context=".PengajuanActivity">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/bgheader"/>
+
+    <TextView
+        android:id="@+id/nama_tokop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Temp Nama Toko"
+        android:textStyle="bold"
+        android:textSize="32sp"
+        android:textAlignment="center"
+        android:layout_marginTop="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_kondisi_shelving"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nama_tokop"
+        android:layout_marginHorizontal="20dp">
+
+        <ImageView
+            android:layout_marginTop="50dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_branding"
+            android:layout_gravity="center_vertical"
+            android:elevation="5dp"
+            />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_kondisi_shelving"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginTop="75dp"
+            app:cardCornerRadius="50dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
+
+            <TextView
+                android:id="@+id/title_kondisi_shelving"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Store Branding"
+                android:layout_marginLeft="200dp"
+                android:paddingVertical="10dp"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_pengajuan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_kondisi_shelving"
+        android:layout_marginHorizontal="20dp">
+
+        <ImageView
+            android:layout_marginTop="20dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_listing_fee"
+            android:layout_gravity="center_vertical"
+            android:elevation="5dp"
+            />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_pengajuan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginTop="45dp"
+            app:cardCornerRadius="50dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
+
+            <TextView
+                android:id="@+id/title_pengajuan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Listing Fee"
+                android:layout_marginLeft="200dp"
+                android:paddingVertical="10dp"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_report_competitor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_pengajuan"
+        android:layout_marginHorizontal="20dp">
+
+        <ImageView
+            android:layout_marginTop="20dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_counter"
+            android:layout_gravity="center_vertical"
+            android:elevation="5dp"
+            />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_report_competitor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginTop="45dp"
+            app:cardCornerRadius="50dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
+
+            <TextView
+                android:id="@+id/title_report_competitor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sewa Counter"
+                android:layout_marginLeft="200dp"
+                android:paddingVertical="10dp"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_merchandising"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_report_competitor"
+        android:layout_marginHorizontal="20dp">
+
+        <ImageView
+            android:layout_marginTop="20dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_merchandising"
+            android:layout_gravity="center_vertical"
+            android:elevation="5dp"
+            />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_merchandising"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginTop="45dp"
+            app:cardCornerRadius="50dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true">
+
+            <TextView
+                android:id="@+id/title_merchandising"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Merchandising"
+                android:layout_marginLeft="200dp"
+                android:paddingVertical="10dp"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

@@ -85,7 +85,7 @@
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/alamat"
+        android:id="@+id/alamats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

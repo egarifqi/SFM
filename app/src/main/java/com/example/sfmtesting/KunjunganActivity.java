@@ -23,7 +23,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.example.sfmtesting.R;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.core.app.ActivityCompat;
@@ -335,7 +334,7 @@ public class KunjunganActivity extends AppCompatActivity {
 
         Intent notificationIntent = new Intent(this, KunjunganActivity.class);
 //        PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        Bitmap androidImage = BitmapFactory.decodeResource(getResources(), R.drawable.thanks);
+        Bitmap androidImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_thanks);
 
         NotificationCompat.Builder notifyBuilder =
                 new NotificationCompat.Builder(this, PRIMARY_CHANNEL_ID)

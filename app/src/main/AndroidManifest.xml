@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <uses-feature
         android:name="android.hardware.camera.any"
         android:required="true" />
@@ -30,7 +31,8 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".ReportWinningAtStoreActivity"></activity>
+        <activity android:name=".PengajuanActivity"></activity>
+        <activity android:name=".ReportWinningAtStoreActivity" />
         <activity android:name=".ReportKondisiShelvingActivity" />
         <activity android:name=".KondisiTokoActivity" />
         <activity android:name=".RRingkasanEminaActivity" />

@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -28,7 +30,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.MetadataChangeSet;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,8 +44,10 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
     ImageView wasDeleteButton;
     ImageView wasSaveButton;
     ImageView wasPhotoTaken;
+    ImageView wasCantSaveButton;
     GridView wasGridPhoto;
     WasImageAdapter wasImageAdapter;
+    RelativeLayout wasLoadingLayout;
 
     SharedPreferences tokoPref;
     String namaToko;
@@ -69,10 +72,12 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
 
         wasBackButton = findViewById(R.id.was_back_button);
         wasCameraButton = findViewById(R.id.was_camera_button);
-        wasDeleteButton = findViewById(R.id.was_delete_button);
+//        wasDeleteButton = findViewById(R.id.was_delete_button);
         wasSaveButton = findViewById(R.id.was_save_button);
+        wasCantSaveButton = findViewById(R.id.was_cant_save_button);
         wasPhotoTaken = findViewById(R.id.was_photo_taken);
         wasGridPhoto = findViewById(R.id.was_grid_photo);
+        wasLoadingLayout = findViewById(R.id.was_loading_layout);
 
         tokoPref = getApplicationContext().getSharedPreferences("TokoPref",0);
         namaToko = tokoPref.getString("partner_name","");
@@ -83,14 +88,19 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
 
         wasBackButton.setOnClickListener(this);
         wasCameraButton.setOnClickListener(this);
-        wasDeleteButton.setOnClickListener(this);
+//        wasDeleteButton.setOnClickListener(this);
         wasSaveButton.setOnClickListener(this);
+        wasCantSaveButton.setOnClickListener(this);
+
+        wasPhotoList.clear();
+        wasSaveButton.setVisibility(View.GONE);
+        wasCantSaveButton.setVisibility(View.VISIBLE);
     }
 
-    private void saveFileToDrive() {
-        // Start by creating a new contents, and setting a callback.
+    private void saveFileToDrive(Bitmap image) {
         Log.i(TAG, "Creating new contents.");
-        final Bitmap image = mBitmapToSave;
+        wasLoadingLayout.setVisibility(View.VISIBLE);
+        wasCameraButton.setEnabled(false);
         Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
 
@@ -118,13 +128,17 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
                         // Create the initial metadata - MIME type and title.
                         // Note that the user will be able to change the title later.
                         MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                                .setMimeType("image/jpeg").setTitle("Android Photo.png").build();
+                                .setMimeType("image/jpeg").setTitle("WinningAtStore_"+namaToko+"_"+rand.nextInt(999999)+".png").build();
                         // Create an intent for the file chooser, and start it.
                         IntentSender intentSender = Drive.DriveApi
                                 .newCreateFileActivityBuilder()
                                 .setInitialMetadata(metadataChangeSet)
                                 .setInitialDriveContents(result.getDriveContents())
                                 .build(mGoogleApiClient);
+
+                        wasLoadingLayout.setVisibility(View.INVISIBLE);
+                        wasCameraButton.setEnabled(true);
+
                         try {
                             startIntentSenderForResult(
                                     intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0);
@@ -182,7 +196,13 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
         }
 
         if (view == wasSaveButton){
-            saveFileToDrive();
+            for(int i=0; i<wasPhotoList.size();i++){
+                saveFileToDrive(wasPhotoList.get(i));
+            }
+        }
+
+        if (view == wasCantSaveButton){
+            Toast.makeText(getApplicationContext(), "Silahkan ambil foto terlebih dahulu!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -192,9 +212,12 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
             case 99:
                 if (resultCode == Activity.RESULT_OK) {
                     try {
-                        thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                        wasPhotoTaken.setImageBitmap(thumbnail);
-                        wasPhotoList.add(thumbnail);
+                        mBitmapToSave = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                        wasPhotoTaken.setVisibility(View.VISIBLE);
+                        wasPhotoTaken.setImageBitmap(mBitmapToSave);
+                        wasPhotoList.add(mBitmapToSave);
+                        wasCantSaveButton.setVisibility(View.GONE);
+                        wasSaveButton.setVisibility(View.VISIBLE);
                         wasGridPhoto.setAdapter(wasImageAdapter);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -214,10 +237,10 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
                 // Called after a file is saved to Drive.
                 if (resultCode == RESULT_OK) {
                     Log.i(TAG, "Image successfully saved.");
-                    mBitmapToSave = null;
-                    // Just start the camera again for another photo.
-                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
-                            REQUEST_CODE_CAPTURE_IMAGE);
+                    wasPhotoList.clear();
+                    wasGridPhoto.setAdapter(wasImageAdapter);
+                    wasPhotoTaken.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getApplicationContext(), "Gambar berhasil diupload!", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -227,12 +250,12 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(TAG, "API client connected.");
-        if (mBitmapToSave == null) {
-            // This activity has no UI of its own. Just start the camera.
-            startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
-                    REQUEST_CODE_CAPTURE_IMAGE);
-            return;
-        }
+//        if (mBitmapToSave == null) {
+//            // This activity has no UI of its own. Just start the camera.
+//            startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
+//                    REQUEST_CODE_CAPTURE_IMAGE);
+//            return;
+//        }
     }
 
     @Override

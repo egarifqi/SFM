@@ -41,5 +41,9 @@ public class ReportKondisiShelvingActivity extends AppCompatActivity implements 
             Log.d("DEBUG WAS","INTENT TO WAS");
             startActivity(new Intent(ReportKondisiShelvingActivity.this, ReportWinningAtStoreActivity.class));
         }
+
+        if(view == layoutDoubleImplementation){
+            startActivity(new Intent(ReportKondisiShelvingActivity.this, ReportDoubleImplementationActivity.class));
+        }
     }
 }

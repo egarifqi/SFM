@@ -31,9 +31,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory">
-
-        <activity android:name=".PengajuanActivity"/>
-        <activity android:name=".ReportDoubleImplementationActivity"/>
+        <activity android:name=".ReportCompetitorActivity"></activity>
+        <activity android:name=".PengajuanActivity" />
+        <activity android:name=".ReportDoubleImplementationActivity" />
         <activity android:name=".ReportWinningAtStoreActivity" />
         <activity android:name=".ReportKondisiShelvingActivity" />
         <activity android:name=".KondisiTokoActivity" />

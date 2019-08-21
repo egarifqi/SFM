@@ -47,12 +47,12 @@ public class KondisiTokoActivity extends AppCompatActivity implements View.OnCli
             startActivity(new Intent(KondisiTokoActivity.this, ReportKondisiShelvingActivity.class));
         }
 
-        if(view == layoutReportCompetitor){
+        if(view == layoutPengajuan){
             startActivity(new Intent(KondisiTokoActivity.this, PengajuanActivity.class));
         }
 
-        if(view == layoutPengajuan){
-            startActivity(new Intent(KondisiTokoActivity.this, PengajuanActivity.class));
+        if(view == layoutReportCompetitor){
+            startActivity(new Intent(KondisiTokoActivity.this, ReportCompetitorActivity.class));
         }
     }
 }

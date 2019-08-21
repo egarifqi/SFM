@@ -23,8 +23,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -52,9 +54,11 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
     ImageView wasSaveButton;
     ImageView wasPhotoTaken;
     ImageView wasCantSaveButton;
+    EditText wasDeskripsiGambar;
     GridView wasGridPhoto;
     WasImageAdapter wasImageAdapter;
     RelativeLayout wasLoadingLayout;
+    LinearLayout wasContentUpload;
 
     SharedPreferences tokoPref;
     String namaToko;
@@ -85,6 +89,8 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
         wasPhotoTaken = findViewById(R.id.was_photo_taken);
         wasGridPhoto = findViewById(R.id.was_grid_photo);
         wasLoadingLayout = findViewById(R.id.was_loading_layout);
+        wasDeskripsiGambar = findViewById(R.id.was_edittext_deskripsi_gambar);
+        wasContentUpload = findViewById(R.id.was_layout_content_upload);
 
         tokoPref = getApplicationContext().getSharedPreferences("TokoPref",0);
         namaToko = tokoPref.getString("partner_name","");
@@ -152,7 +158,7 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
                         // Create the initial metadata - MIME type and title.
                         // Note that the user will be able to change the title later.
                         MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                                .setMimeType("image/jpeg").setTitle("WinningAtStore_"+namaToko+"_"+rand.nextInt(999999)+".png").build();
+                                .setMimeType("image/jpeg").setTitle("WinningAtStore_"+namaToko+"_"+rand.nextInt(999999)+".png").setDescription(wasDeskripsiGambar.getText().toString()).build();
                         // Create an intent for the file chooser, and start it.
                         IntentSender intentSender = Drive.DriveApi
                                 .newCreateFileActivityBuilder()
@@ -292,6 +298,7 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
                         wasCantSaveButton.setVisibility(View.GONE);
                         wasSaveButton.setVisibility(View.VISIBLE);
                         wasGridPhoto.setAdapter(wasImageAdapter);
+                        wasContentUpload.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -313,6 +320,8 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
                     wasPhotoList.clear();
                     wasGridPhoto.setAdapter(wasImageAdapter);
                     wasPhotoTaken.setVisibility(View.INVISIBLE);
+                    wasDeskripsiGambar.setText("");
+                    wasContentUpload.setVisibility(View.INVISIBLE);
                     Toast.makeText(getApplicationContext(), "Gambar berhasil diupload!", Toast.LENGTH_SHORT).show();
                 }
                 break;

@@ -3,15 +3,20 @@ package com.example.salesforcemanagement;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -37,6 +42,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static android.Manifest.permission.CAMERA;
+
 public class ReportWinningAtStoreActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     ImageView wasBackButton;
@@ -53,7 +60,6 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
     String namaToko;
     Uri imageUri;
     Random rand;
-    Bitmap thumbnail;
     Object imageurl;
     ArrayList<Bitmap> wasPhotoList;
 
@@ -61,6 +67,7 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
     private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
     private static final int REQUEST_CODE_CREATOR = 2;
     private static final int REQUEST_CODE_RESOLUTION = 3;
+    private static final int REQUEST_CAMERA = 4;
 
     private GoogleApiClient mGoogleApiClient;
     private Bitmap mBitmapToSave;
@@ -91,6 +98,23 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
 //        wasDeleteButton.setOnClickListener(this);
         wasSaveButton.setOnClickListener(this);
         wasCantSaveButton.setOnClickListener(this);
+
+        int currentApiVersion = Build.VERSION.SDK_INT;
+        Log.d("PERMISSION CAMERA","Check build version");
+        if(currentApiVersion >=  Build.VERSION_CODES.M)
+        {
+            Log.d("PERMISSION CAMERA","Current api > build");
+            if(checkPermissionCamera())
+            {
+                Log.d("PERMISSION CAMERA","Permission already granted");
+//                Toast.makeText(getApplicationContext(), "Permission already granted!", Toast.LENGTH_LONG).show();
+            }
+            else
+            {
+                Log.d("PERMISSION CAMERA","Requesting permission camera");
+                requestPermissionCamera();
+            }
+        }
 
         wasPhotoList.clear();
         wasSaveButton.setVisibility(View.GONE);
@@ -204,6 +228,55 @@ public class ReportWinningAtStoreActivity extends AppCompatActivity implements V
         if (view == wasCantSaveButton){
             Toast.makeText(getApplicationContext(), "Silahkan ambil foto terlebih dahulu!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private boolean checkPermissionCamera()
+    {
+        Log.d("PERMISSION CAMERA","Checking permission camera");
+        return (ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void requestPermissionCamera()
+    {
+        ActivityCompat.requestPermissions(this, new String[]{CAMERA}, REQUEST_CAMERA);
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CAMERA:
+                Log.d("PERMISSION CAMERA","Granting permission result");
+                if (grantResults.length > 0) {
+
+                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    if (cameraAccepted){
+//                        Toast.makeText(getApplicationContext(), "Permission Granted, Now you can access camera", Toast.LENGTH_LONG).show();
+                    }else {
+//                        Toast.makeText(getApplicationContext(), "Permission Denied, You cannot access and camera", Toast.LENGTH_LONG).show();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (shouldShowRequestPermissionRationale(CAMERA)) {
+                                showMessageOKCancel("You need to allow access to both the permissions",
+                                        (dialog, which) -> {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermissions(new String[]{CAMERA},
+                                                        REQUEST_CAMERA);
+                                            }
+                                        });
+                                return;
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new androidx.appcompat.app.AlertDialog.Builder(ReportWinningAtStoreActivity.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
     }
 
     @Override

@@ -193,7 +193,7 @@ public class ReportCompetitorActivity extends AppCompatActivity implements View.
     private void saveFileToDrive(Bitmap bitmap) {
         if (mDriveServiceHelper != null) {
             Log.d(TAG, "Creating a file.");
-            mDriveServiceHelper.createFile(bitmap,"ReportCompetitor"+namaToko+"_"+rand.nextInt(999999)+".jpg", FOLDER_ID, rcDeskripsiGambar.getText().toString())
+            mDriveServiceHelper.createFile(bitmap,"ReportCompetitor_"+namaToko+"_"+rand.nextInt(999999)+".jpg", FOLDER_ID, rcDeskripsiGambar.getText().toString())
                     .addOnFailureListener(exception ->
                             Log.e(TAG, "Couldn't create file.", exception));
         }

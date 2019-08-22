@@ -28,7 +28,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/linearLayoutputrir"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -39,7 +38,6 @@
 
             <!--SKU-->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayoutr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -48,7 +46,6 @@
                 tools:ignore="MissingConstraints">
 
                 <TextView
-                    android:id="@+id/textView2r"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -59,7 +56,6 @@
                     tools:ignore="MissingConstraints" />
 
                 <TextView
-                    android:id="@+id/totalskur"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -72,7 +68,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
             <!--ITEM-->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout3r"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -83,7 +78,6 @@
                 tools:ignore="MissingConstraints">
 
                 <TextView
-                    android:id="@+id/textView3r"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -94,7 +88,6 @@
                     tools:ignore="MissingConstraints" />
 
                 <TextView
-                    android:id="@+id/totalitemr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -151,7 +144,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
             <!--NOTES-->
             <LinearLayout
-                android:id="@+id/llnoteswardahr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -171,7 +163,6 @@
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/noteswardahr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
@@ -185,7 +176,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
-        android:id="@+id/myProgressBarRingkasanWardahr"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -197,7 +187,6 @@
         app:layout_constraintTop_toBottomOf="@+id/headerrringkasan" />
 
     <LinearLayout
-        android:id="@+id/listviewrwardahr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -212,7 +201,6 @@
 
             <!--Header table-->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/linearLayoutRingkasanWardahr"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="30dp"
@@ -235,7 +223,6 @@
                     app:layout_constraintVertical_bias="0.846" />
 
                 <TextView
-                    android:id="@+id/header_nama"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -304,7 +291,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ListView
-                android:id="@+id/mListViewRingkasanWardahr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -312,7 +298,6 @@
                 android:layout_marginTop="5dp" />
 
             <TextView
-                android:id="@+id/load_roomRngkasanWardahr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -327,7 +312,6 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/simpanorderwardahr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="right"

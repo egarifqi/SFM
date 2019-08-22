@@ -37,7 +37,6 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/colorPrimary"
@@ -109,7 +108,6 @@
             android:layout_marginTop="5dp" />
 
         <TextView
-            android:id="@+id/load_tokoluar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"

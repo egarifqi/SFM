@@ -14,7 +14,7 @@
     <!-- corner radius-->
 
     <solid
-        android:color="#65cee1"
+        android:color="@color/colorPrimary"
         />
     <corners
 

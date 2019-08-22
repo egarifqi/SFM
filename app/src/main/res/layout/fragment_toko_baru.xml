@@ -36,7 +36,6 @@
             android:textSize="18dp" />
 
         <Spinner
-            android:id="@+id/nama_dc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -46,7 +45,6 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -85,7 +83,6 @@
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/alamats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

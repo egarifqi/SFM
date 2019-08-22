@@ -4,4 +4,7 @@
         name="cache_file"
         kode="cache"
         path="camera" />
+
+    <external-path name="my_images"
+        path="Android/data/com.example.salesforcemanagement/files/Pictures" />
 </paths>

@@ -9,6 +9,7 @@
     tools:context=".HistoricalFragment">
 
     <LinearLayout
+        android:id="@+id/toolbaraccount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -44,6 +45,7 @@
                 app:civ_border_width="2dp" />
 
             <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/img_plus"
                 android:layout_width="@dimen/ic_plus_width"
                 android:layout_height="@dimen/ic_plus_width"
                 android:layout_alignBottom="@id/img_profile"
@@ -243,6 +245,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/nilainotec"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
@@ -282,6 +285,7 @@
                     android:layout_margin="@dimen/activity_horizontal_margin">
 
                     <TextView
+                        android:id="@+id/nilaipenjualan"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"

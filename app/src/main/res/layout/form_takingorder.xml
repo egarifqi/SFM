@@ -142,10 +142,12 @@
             android:gravity="center"
             android:orientation="vertical" >
             <TextView
+                android:id="@+id/textViews"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="qty by BA" />
             <TextView
+                android:id="@+id/suggest_form"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:drawable/editbox_background_normal"
@@ -164,6 +166,7 @@
             android:gravity="center"
             android:orientation="vertical" >
             <TextView
+                android:id="@+id/textView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="STK" />
@@ -186,6 +189,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="QTY"

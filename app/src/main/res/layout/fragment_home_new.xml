@@ -92,6 +92,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView2">
 
         <TextView
+            android:id="@+id/mainmenus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -224,6 +225,7 @@
 
         <!--Grid-->
         <GridLayout
+            android:id="@+id/mainGrid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="8"
@@ -550,6 +552,7 @@
 
             <!--Row 1 -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
@@ -603,6 +606,7 @@
                             android:layout_gravity="center_vertical">
 
                             <TextView
+                                android:id="@+id/text_target"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="TARGET"
@@ -628,12 +632,14 @@
                                 android:layout_marginEnd="30dp"
                                 android:layout_centerVertical="true">
                                 <ImageView
+                                    android:id="@+id/before_target"
                                     android:layout_width="0dp"
                                     android:layout_height="30dp"
                                     android:layout_weight="1"
                                     android:background="#ff6666"
                                     android:layout_centerVertical="true"/>
                                 <ImageView
+                                    android:id="@+id/after_target"
                                     android:layout_width="0dp"
                                     android:layout_height="30dp"
                                     android:layout_weight="1"

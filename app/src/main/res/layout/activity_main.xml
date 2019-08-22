@@ -29,6 +29,7 @@
         app:layout_constraintTop_toTopOf="@+id/view" />
 
     <View
+        android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:background="#4DE2C5"
@@ -37,6 +38,7 @@
 
 
     <LinearLayout
+        android:id="@+id/linearLayout5"
         android:layout_width="match_parent"
         android:layout_height="600dp"
         android:layout_gravity="center"

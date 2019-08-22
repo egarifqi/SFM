@@ -69,6 +69,7 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/colorPrimary"
@@ -91,6 +92,7 @@
                 app:layout_constraintVertical_bias="0.846" />
 
             <TextView
+                android:id="@+id/header_nama"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -182,6 +184,7 @@
             android:id="@+id/mListHistoricalPutri"/>
 
         <TextView
+            android:id="@+id/load_roomPutri"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Try Again"

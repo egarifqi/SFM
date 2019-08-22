@@ -6,12 +6,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.salesforcemanagement.ReturPutriActivity"
+    android:id="@+id/relativereturwardah"
     tools:ignore="MissingDefaultResource">
 
     <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
+        android:id="@+id/tabreturemina"
         app:tabTextColor="@color/white"/>
 
     <LinearLayout
@@ -76,6 +78,7 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/colorPrimary"
@@ -98,6 +101,7 @@
                 app:layout_constraintVertical_bias="0.846" />
 
             <TextView
+                android:id="@+id/header_nama"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -165,6 +169,7 @@
         <!--android:background="@drawable/buttonstyle"-->
         <!--android:textColor="#000"/>-->
         <TextView
+            android:id="@+id/load_roomOthersEmina"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Try Again"

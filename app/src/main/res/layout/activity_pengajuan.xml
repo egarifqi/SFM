@@ -43,6 +43,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_kondisi_shelving"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -52,6 +53,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_kondisi_shelving"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Store Branding"
@@ -81,6 +83,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_pengajuan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -90,6 +93,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_pengajuan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Listing Fee"
@@ -119,6 +123,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_report_competitor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -128,6 +133,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_report_competitor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sewa Counter"
@@ -141,6 +147,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/layout_merchandising"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/layout_report_competitor"
@@ -156,6 +163,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_merchandising"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -165,6 +173,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_merchandising"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Merchandising"

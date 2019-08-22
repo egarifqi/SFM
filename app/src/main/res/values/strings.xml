@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name"></string>
-
+    <string name="title_home">Home</string>
+    <string name="title_account">Account</string>
     <string name="toast_image_intent_null">Image picker option is missing!</string>
     <string name="lbl_set_profile_photo">Set profile image</string>
     <string name="lbl_take_camera_picture">Take a picture</string>
@@ -19,6 +20,12 @@
         <item>Tidak Visit: Sudah Tidak Menjadi MCP</item>
         <item>Tidak Visit: Di Luar Frekuensi Kunjungan</item>
     </string-array>
+    <string-array name="list_alasannotvisitall">
+        <item>Sudah Visit Semua -  Ada Masalah pada Sistem</item>
+        <item>Tidak Visit: Force Major</item>
+        <item>Tidak Visit: Hari Libur Nasional</item>
+        <item>Tidak Visit: Meeting / Training Sales</item>
+    </string-array>
     <string-array name="list_alasannotec">
         <item>Not EC: Ada Overdue Piutang</item>
         <item>Not EC: BA Belum Estimasi</item>
@@ -29,6 +36,23 @@
         <item>Not EC: Tuan Toko Tidak Ada</item>
         <item>Not EC: Toko Tutup dan Tuan Toko Tidak Konfirmasi</item>
         <!--<item></item>-->
+    </string-array>
+    <string-array name="list_alasannotnoo">
+        <item>Butuh Listing Fee / Sewa</item>
+        <item>Terlalu Sore</item>
+        <item>Tidak Setuju Dengan Discount</item>
+        <item>Tuan Toko Tidak Ada</item>
+        <item>Sudah Berlangganan ke Grosir</item>
+    </string-array>
+    <string-array name="tempo_pembayaran">
+        <item>1 hari</item>
+        <item>7 hari</item>
+        <item>14 hari</item>
+        <item>15 hari</item>
+        <item>30 hari</item>
+        <item>40 hari</item>
+        <item>45 hari</item>
+        <item>60 hari</item>
     </string-array>
     <string-array name="nama_dc">
         <item>DC ACEH</item>

@@ -56,12 +56,6 @@ public class VisitActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     selectedFragment = new HomeFragment();
                     break;
-//                case R.id.navigation_pengajuan:
-//                    selectedFragment = new PengajuanFragment();
-//                    break;
-//                case R.id.navigation_account:
-//                    selectedFragment = new AccountFragment();
-//                    break;
 
             }
             assert selectedFragment != null;

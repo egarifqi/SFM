@@ -43,6 +43,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_kondisi_shelving"
             android:layout_width="match_parent"
             android:layout_height="105dp"
             android:layout_marginTop="75dp"
@@ -52,6 +53,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_kondisi_shelving"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="200dp"
@@ -81,6 +83,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_pengajuan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -90,6 +93,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_pengajuan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pengajuan"
@@ -119,6 +123,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_report_competitor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -128,6 +133,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_report_competitor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Report Competitor"

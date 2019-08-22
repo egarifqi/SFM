@@ -28,6 +28,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/linearLayoutmo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -38,6 +39,7 @@
 
             <!--SKU-->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -46,6 +48,7 @@
                 tools:ignore="MissingConstraints">
 
                 <TextView
+                    android:id="@+id/textView2mo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -69,6 +72,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
             <!--ITEM-->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -79,6 +83,7 @@
                 tools:ignore="MissingConstraints">
 
                 <TextView
+                    android:id="@+id/textView3mo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -146,6 +151,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
             <!--NOTES-->
             <LinearLayout
+                android:id="@+id/llnotesmo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -179,6 +185,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
+        android:id="@+id/myProgressBarRingkasanMO"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -190,6 +197,7 @@
         app:layout_constraintTop_toBottomOf="@+id/headerringkasan" />
 
     <LinearLayout
+        android:id="@+id/listviewrmo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -204,6 +212,7 @@
 
             <!--Header table-->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/linearLayoutRingkasanMO"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="30dp"
@@ -226,6 +235,7 @@
                     app:layout_constraintVertical_bias="0.846" />
 
                 <TextView
+                    android:id="@+id/header_nama"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -302,6 +312,7 @@
                 android:layout_marginTop="5dp" />
 
             <TextView
+                android:id="@+id/load_roomRingkasanMO"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"

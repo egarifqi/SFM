@@ -42,6 +42,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_winning_at_store"
             android:layout_width="match_parent"
             android:layout_height="105dp"
             android:background="@color/white"
@@ -52,6 +53,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_winning_at_store"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Winning at Store"
@@ -82,6 +84,7 @@
             />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_double_implemenatation"
             android:layout_width="match_parent"
             android:layout_height="105dp"
             android:background="@color/white"
@@ -92,6 +95,7 @@
             app:cardUseCompatPadding="true">
 
             <TextView
+                android:id="@+id/title_double_implementation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Double Implementation"

@@ -36,28 +36,22 @@ public class ScanreturwardahActivity extends AppCompatActivity implements ZXingS
         setContentView(scannerView);
         int currentApiVersion = Build.VERSION.SDK_INT;
 
-        if(currentApiVersion >=  Build.VERSION_CODES.M)
-        {
-            if(checkPermission())
-            {
+        if (currentApiVersion >= Build.VERSION_CODES.M) {
+            if (checkPermission()) {
                 Toast.makeText(getApplicationContext(), "Permission already granted!", Toast.LENGTH_LONG).show();
-            }
-            else
-            {
+            } else {
                 requestPermission();
             }
         }
     }
 
     //CEK PERMISSION
-    private boolean checkPermission()
-    {
+    private boolean checkPermission() {
         return (ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA) == PackageManager.PERMISSION_GRANTED);
     }
 
     //REQUEST PERMISSION
-    private void requestPermission()
-    {
+    private void requestPermission() {
         ActivityCompat.requestPermissions(this, new String[]{CAMERA}, REQUEST_CAMERA);
     }
 
@@ -68,7 +62,7 @@ public class ScanreturwardahActivity extends AppCompatActivity implements ZXingS
         int currentapiVersion = Build.VERSION.SDK_INT;
         if (currentapiVersion >= Build.VERSION_CODES.M) {
             if (checkPermission()) {
-                if(scannerView == null) {
+                if (scannerView == null) {
                     scannerView = new ZXingScannerView(this);
                     setContentView(scannerView);
                 }
@@ -86,15 +80,15 @@ public class ScanreturwardahActivity extends AppCompatActivity implements ZXingS
         scannerView.stopCamera();
     }
 
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CAMERA:
                 if (grantResults.length > 0) {
 
                     boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    if (cameraAccepted){
+                    if (cameraAccepted) {
                         Toast.makeText(getApplicationContext(), "Permission Granted, Now you can access camera", Toast.LENGTH_LONG).show();
-                    }else {
+                    } else {
                         Toast.makeText(getApplicationContext(), "Permission Denied, You cannot access and camera", Toast.LENGTH_LONG).show();
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (shouldShowRequestPermissionRationale(CAMERA)) {
@@ -129,7 +123,7 @@ public class ScanreturwardahActivity extends AppCompatActivity implements ZXingS
     @Override
     public void handleResult(Result result) {
 //        ListHistWardahFragment.mySearchView.setOnQueryTextListener(result.getText());
-        ReturWardahActivity.mySearchView.setQuery(result.getText().toString(),false);
+        ReturWardahActivity.mySearchView.setQuery(result.getText(), false);
         String barcode = result.getText();
 
         Log.e("Barcode", barcode);

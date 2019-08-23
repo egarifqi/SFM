@@ -25,7 +25,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="8dp"
-        android:text="Nama Tokonya dicoba kalau panjang jadi gimana"
         android:textColor="#FFF"
         android:textSize="28sp"
         android:textStyle="bold"

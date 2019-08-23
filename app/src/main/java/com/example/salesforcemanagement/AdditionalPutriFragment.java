@@ -9,9 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -30,6 +27,9 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -51,24 +51,21 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
  * A simple {@link Fragment} subclass.
  */
 public class AdditionalPutriFragment extends Fragment {
+    public static SearchView mySearchView;
     final com.example.salesforcemanagement.Spacecraft kumpulanorder = new com.example.salesforcemanagement.Spacecraft();
-    final ArrayList<com.example.salesforcemanagement.Spacecraft> order = new ArrayList<com.example.salesforcemanagement.Spacecraft>();
-    final ArrayList<Integer> orderedID = new ArrayList<Integer>();
-    final ArrayList<String> orderedkode = new ArrayList<String>(); //kodemo
-    final ArrayList<String> orderedname = new ArrayList<String>(); //namamo
-    final ArrayList<String> orderedprice = new ArrayList<String>(); //hargamo
-    final ArrayList<String> orderedstock = new ArrayList<String>(); //stockmo
-    final ArrayList<String> orderedqty = new ArrayList<String>(); //qtymo
-    final ArrayList<String> orderedcategory = new ArrayList<String>();
+    final ArrayList<com.example.salesforcemanagement.Spacecraft> order = new ArrayList<>();
+    final ArrayList<Integer> orderedID = new ArrayList<>();
+    final ArrayList<String> orderedkode = new ArrayList<>(); //kodemo
+    final ArrayList<String> orderedname = new ArrayList<>(); //namamo
+    final ArrayList<String> orderedprice = new ArrayList<>(); //hargamo
+    final ArrayList<String> orderedstock = new ArrayList<>(); //stockmo
+    final ArrayList<String> orderedqty = new ArrayList<>(); //qtymo
+    final ArrayList<String> orderedcategory = new ArrayList<>();
     SharedPreferences pref;
     SharedPreferences.Editor editor;
-    ArrayList<com.example.salesforcemanagement.Spacecraft> spacecrafts = new ArrayList<com.example.salesforcemanagement.Spacecraft>();
-    ImageView scanmhsputri;
-    public static SearchView mySearchView;
+    ArrayList<com.example.salesforcemanagement.Spacecraft> spacecrafts = new ArrayList<>();
     ListView myListView;
     ListViewAdapter adapter;
-    private ArrayList<String> stock1 = new ArrayList<String>();
-    private ArrayList<String> qty1 = new ArrayList<String>();
     int fuzzyscore = 75;
 
     @Override
@@ -77,7 +74,7 @@ public class AdditionalPutriFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_additional_putri, container, false);
         myListView = view.findViewById(R.id.mListAdditionalPutri);
         final ProgressBar myProgressBar = view.findViewById(R.id.myProgressBarAdditionalPutri);
-        scanmhsputri = view.findViewById(R.id.barcodemhsputri);
+        ImageView scanmhsputri = view.findViewById(R.id.barcodemhsputri);
         scanmhsputri.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,16 +92,14 @@ public class AdditionalPutriFragment extends Fragment {
         mySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                for(int i = 0; i < spacecrafts.size(); i++){
-                    Log.d("FUZZY RATIO "+s+" : "+spacecrafts.get(i).getNamaproduk(), ""+ FuzzySearch.partialRatio(s, spacecrafts.get(i).getNamaproduk()));
-                    if(s.length() == 0){
+                for (int i = 0; i < spacecrafts.size(); i++) {
+                    Log.d("FUZZY RATIO " + s + " : " + spacecrafts.get(i).getNamaproduk(), "" + FuzzySearch.partialRatio(s, spacecrafts.get(i).getNamaproduk()));
+                    if (s.length() == 0) {
                         spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                    }
-                    else {
-                        if(FuzzySearch.partialRatio(s.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode()) > fuzzyscore){
+                    } else {
+                        if (FuzzySearch.partialRatio(s.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase() + " " + spacecrafts.get(i).getKodeodoo() + " " + spacecrafts.get(i).getBarcode()) > fuzzyscore) {
                             spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                        }
-                        else {
+                        } else {
                             spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
                         }
                     }
@@ -115,16 +110,14 @@ public class AdditionalPutriFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String query) {
-                for(int i = 0; i < spacecrafts.size(); i++){
-                    Log.d("FUZZY RATIO "+query+" : "+spacecrafts.get(i).getNamaproduk(), ""+ FuzzySearch.partialRatio(query, spacecrafts.get(i).getNamaproduk()));
-                    if(query.length() == 0){
+                for (int i = 0; i < spacecrafts.size(); i++) {
+                    Log.d("FUZZY RATIO " + query + " : " + spacecrafts.get(i).getNamaproduk(), "" + FuzzySearch.partialRatio(query, spacecrafts.get(i).getNamaproduk()));
+                    if (query.length() == 0) {
                         spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                    }
-                    else {
-                        if(FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode()) > fuzzyscore){
+                    } else {
+                        if (FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase() + " " + spacecrafts.get(i).getKodeodoo() + " " + spacecrafts.get(i).getBarcode()) > fuzzyscore) {
                             spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                        }
-                        else {
+                        } else {
                             spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
                         }
                     }
@@ -185,7 +178,7 @@ public class AdditionalPutriFragment extends Fragment {
                 String stockformawal = formStock.getText().toString();
                 if (!stockformawal.isEmpty()) {
                     int intstockformawal = Integer.parseInt(stockformawal);
-                    int qtyformawal = konst*coba.getWeeklySales() - intstockformawal;
+                    int qtyformawal = konst * coba.getWeeklySales() - intstockformawal;
                     if (qtyformawal >= 0) {
                         formQty.setHint(String.valueOf(qtyformawal));
                     } else {
@@ -201,7 +194,7 @@ public class AdditionalPutriFragment extends Fragment {
                         String stockform = formStock.getText().toString();
                         if (!stockform.isEmpty()) {
                             int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
+                            int qtyform = konst * coba.getWeeklySales() - intstockform;
                             if (qtyform >= 0) {
                                 formQty.setHint(String.valueOf(qtyform));
                             } else {
@@ -217,7 +210,7 @@ public class AdditionalPutriFragment extends Fragment {
                         String stockform = formStock.getText().toString();
                         if (!stockform.isEmpty()) {
                             int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
+                            int qtyform = konst * coba.getWeeklySales() - intstockform;
                             if (qtyform >= 0) {
                                 formQty.setHint(String.valueOf(qtyform));
                             } else {
@@ -243,7 +236,7 @@ public class AdditionalPutriFragment extends Fragment {
                         String mStock = formStock.getText().toString();
                         String mQty = formQty.getText().toString();
                         count[0] = 0;
-                        if (mStock.isEmpty() && mQty.isEmpty()){
+                        if (mStock.isEmpty() && mQty.isEmpty()) {
                             Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
                         } else if (mStock.isEmpty() && !mQty.isEmpty()) {
                             orderedID.add(coba.getId());
@@ -324,8 +317,10 @@ public class AdditionalPutriFragment extends Fragment {
                             orderedstock.add(formStock.getText().toString());
                             String stockform = formStock.getText().toString();
                             int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform<0){qtyform = 0;}
+                            int qtyform = konst * coba.getWeeklySales() - intstockform;
+                            if (qtyform < 0) {
+                                qtyform = 0;
+                            }
                             orderedqty.add(String.valueOf(qtyform));
                             orderedcategory.add(coba.getCategory());
 
@@ -544,7 +539,7 @@ public class AdditionalPutriFragment extends Fragment {
 //                    if (spacecraft.getKodeodoo().toUpperCase().contains(constraint) ||
 //                            spacecraft.getNamaproduk().toUpperCase().contains(constraint) ||
 //                            spacecraft.getBarcode().toUpperCase().contains(constraint)) {
-                    if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)){
+                    if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)) {
 //ADD IF FOUND
                         foundFilters.add(spacecraft);
                     }
@@ -581,9 +576,9 @@ public class AdditionalPutriFragment extends Fragment {
     Our custom adapter class
     */
     public class ListViewAdapter extends BaseAdapter implements Filterable, Serializable {
+        public ArrayList<com.example.salesforcemanagement.Spacecraft> currentList;
         Context c;
         ArrayList<com.example.salesforcemanagement.Spacecraft> spacecrafts;
-        public ArrayList<com.example.salesforcemanagement.Spacecraft> currentList;
         FilterHelper filterHelper;
         Dialog dialog;
 
@@ -614,13 +609,13 @@ public class AdditionalPutriFragment extends Fragment {
             holder = new ViewHolder();
             if (view == null) {
                 view = LayoutInflater.from(c).inflate(R.layout.model_row_hist, viewGroup, false);
-                holder.cardView = (CardView) view.findViewById(R.id.cardview);
-                holder.product_odoo = (TextView) view.findViewById(R.id.odoo_hist);
-                holder.product_name = (TextView) view.findViewById(R.id.nama_hist);
-                holder.product_price = (TextView) view.findViewById(R.id.harga_hist);
-                holder.product_ws = (TextView) view.findViewById(R.id.order_BA_hist);
-                holder.product_stock = (TextView) view.findViewById(R.id.stock_hist);
-                holder.product_qty = (TextView) view.findViewById(R.id.qtyhist);
+                holder.cardView = view.findViewById(R.id.cardview);
+                holder.product_odoo = view.findViewById(R.id.odoo_hist);
+                holder.product_name = view.findViewById(R.id.nama_hist);
+                holder.product_price = view.findViewById(R.id.harga_hist);
+                holder.product_ws = view.findViewById(R.id.order_BA_hist);
+                holder.product_stock = view.findViewById(R.id.stock_hist);
+                holder.product_qty = view.findViewById(R.id.qtyhist);
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
@@ -631,7 +626,7 @@ public class AdditionalPutriFragment extends Fragment {
                 holder.product_stock.setText("");
                 holder.product_qty.setText("");
             }
-            if ((i+1) % 6 == 4 || (i+1) % 6 == 5 ||(i+1) % 6 == 0)
+            if ((i + 1) % 6 == 4 || (i + 1) % 6 == 5 || (i + 1) % 6 == 0)
 //            if (i % 2 == 0)
             {
                 holder.cardView.setBackgroundColor(Color.rgb(240, 240, 240));
@@ -642,7 +637,7 @@ public class AdditionalPutriFragment extends Fragment {
             holder.product_odoo.setText(s.getKodeodoo());
             holder.product_name.setText(s.getNamaproduk());
             holder.product_price.setText(s.getPrice());
-            holder.product_ws.setText(""+s.getWeeklySales());
+            holder.product_ws.setText("" + s.getWeeklySales());
             holder.product_stock.setText(s.getStock());
             holder.product_qty.setText(s.getQty());
 
@@ -688,7 +683,7 @@ public class AdditionalPutriFragment extends Fragment {
             final String customer = pref.getString("ref", "");
             final String partnerid = pref.getString("partner_id", "0");
             final ArrayList<com.example.salesforcemanagement.Spacecraft> listEBP = dbEBP.getAllProdukToko(partnerid, "brand:Putri");
-            for (int i=0; i<listEBP.size(); i++){
+            for (int i = 0; i < listEBP.size(); i++) {
 //                sc = dbEBP.getProduk(i);
 //                if (sc != null && sc.getBrand().contains("Wardah") && sc.getPartner_id().equals(partnerid)){
 //                    listEBP.add(sc);
@@ -696,9 +691,9 @@ public class AdditionalPutriFragment extends Fragment {
 //
 //                }
 ////                listEBP.add(dbEBP.getProdukToko(i, partnerid, "brand:Wardah"));
-                Log.e("LIST MHS", listEBP.get(i).getKodeodoo() + " - " +listEBP.get(i).getNamaproduk() + " - " +listEBP.get(i).getBrand()+ " - " +listEBP.get(i).getPartner_id());
+                Log.e("LIST MHS", listEBP.get(i).getKodeodoo() + " - " + listEBP.get(i).getNamaproduk() + " - " + listEBP.get(i).getBrand() + " - " + listEBP.get(i).getPartner_id());
             }
-            Log.e("SIZE LIST MHS", ""+listEBP.size());
+            Log.e("SIZE LIST MHS", "" + listEBP.size());
             String url = "https://sfa-api.pti-cosmetics.com/v_product_mhs?brand=ilike.*putri&partner_ref=ilike.*" + customer;
             Log.e("url", url);
             AndroidNetworking.get(url)
@@ -742,8 +737,8 @@ public class AdditionalPutriFragment extends Fragment {
 //                                Toast.makeText(c, "GOOD RESPONSE BUT JAVA CAN'T PARSE JSON IT RECEIEVED. " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 Log.e("CANT PARSE JSON", e.getMessage());
                                 com.example.salesforcemanagement.Spacecraft EBP;
-                                for (com.example.salesforcemanagement.Spacecraft produk : listEBP){
-                                    Log.e("ID", ""+produk.getId()+", Kode: "+produk.getKodeodoo()+", ");
+                                for (com.example.salesforcemanagement.Spacecraft produk : listEBP) {
+                                    Log.e("ID", "" + produk.getId() + ", Kode: " + produk.getKodeodoo() + ", ");
 //                                    if ((produk.getBrand().equals("brand:Make Over")) && (produk.getPartner_id().equals(partnerid))){
 
                                     Log.e("MHS OFFLINE", "MAKE OVER");
@@ -780,8 +775,8 @@ public class AdditionalPutriFragment extends Fragment {
 //                            Toast.makeText(c, "UNSUCCESSFUL :  ERROR IS : " + anError.getMessage(), Toast.LENGTH_LONG).show();
                             Log.e("Error", anError.getMessage());
                             com.example.salesforcemanagement.Spacecraft EBP;
-                            for (com.example.salesforcemanagement.Spacecraft produk : listEBP){
-                                Log.e("ID", ""+produk.getId()+", Kode: "+produk.getKodeodoo()+", ");
+                            for (com.example.salesforcemanagement.Spacecraft produk : listEBP) {
+                                Log.e("ID", "" + produk.getId() + ", Kode: " + produk.getKodeodoo() + ", ");
 //                                if ((produk.getBrand().equals("brand:Make Over")) && (produk.getPartner_id().equals(partnerid))){
 
                                 Log.e("MHS OFFLINE", "MAKE OVER");

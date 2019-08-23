@@ -71,17 +71,27 @@ public class OthersWardahFragment extends Fragment {
     private ArrayList<String> qty1 = new ArrayList<String>();
     int fuzzyscore = 75;
 
-    @Override
+    Boolean barcodeInit = false;
+    private static final int STATE_BARCODE = 1;
+    private static final int STATE_KODE_ODOO = 2;
+    private static final int STATE_TEXT = 3;
+    int stateSearching = 3;
+    public String searchQuery;
+    public int lengthStringBarcode;
 
+
+    @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_others_wardah, container, false);
         myListView = view.findViewById(R.id.mListOthersWardah);
+        myListView.setAdapter(adapter);
         final ProgressBar myProgressBar = view.findViewById(R.id.myProgressBarOthersWardah);
         scanmhswardah = view.findViewById(R.id.barcodeOtherswardah);
         scanmhswardah.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), ScanotherswardahActivity.class);
+                barcodeInit = true;
                 startActivity(intent);
             }
         });
@@ -96,7 +106,6 @@ public class OthersWardahFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 for(int i = 0; i < spacecrafts.size(); i++){
-                    Log.d("FUZZY RATIO "+s+" LENGTH("+s.length()+") : "+spacecrafts.get(i).getNamaproduk()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode(), ""+ FuzzySearch.partialRatio(s, spacecrafts.get(i).getNamaproduk()));
                     if(s.length() == 0){
                         spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
                     }
@@ -109,19 +118,56 @@ public class OthersWardahFragment extends Fragment {
                         }
                     }
                 }
-                adapter.getFilter().filter("fuzzymatched");
+
+                if(s.length() == 0){
+                    barcodeInit = false;
+                    adapter.setFilterHelperState(3);
+                    stateSearching = 3;
+                }
+
+                if(s.length() == lengthStringBarcode){
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query barcode");
+                    adapter.setFilterHelperState(1);
+                    stateSearching = 1;
+                    lengthStringBarcode = 0;
+                }
+                else if(isInteger(s)){
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query integer");
+                    adapter.setFilterHelperState(2);
+                    stateSearching = 2;
+                }
+                else {
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query text");
+                    adapter.setFilterHelperState(3);
+                    stateSearching = 3;
+                }
+
+                switch (stateSearching){
+                    case 1:
+                        adapter.getFilter().filter(s);
+                        barcodeInit = false;
+                        break;
+
+
+                    case 2:
+                        adapter.getFilter().filter(s);
+                        break;
+
+                    case 3:
+                        adapter.getFilter().filter("fuzzymatched");
+                        break;
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String query) {
                 for(int i = 0; i < spacecrafts.size(); i++){
-                    Log.d("FUZZY RATIO "+query+" LENGTH("+query.length()+") : "+spacecrafts.get(i).getNamaproduk()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode(), "RATIO : "+ FuzzySearch.partialRatio(query, spacecrafts.get(i).getNamaproduk()));
                     if(query.length() == 0){
                         spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
                     }
                     else {
-                        if(FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode()) > fuzzyscore){
+                        if(FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()) > fuzzyscore){
                             spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
                         }
                         else {
@@ -129,7 +175,49 @@ public class OthersWardahFragment extends Fragment {
                         }
                     }
                 }
-                adapter.getFilter().filter("fuzzymatched");
+
+
+
+                if(query.length() == 0){
+                    barcodeInit = false;
+                    adapter.setFilterHelperState(3);
+                    stateSearching = 3;
+                }
+
+                if(barcodeInit){
+                    if(query.length() > 0){
+                        lengthStringBarcode = query.length();
+                        Log.d("DEBUG SEARCHING", "query barcode");
+                         adapter.setFilterHelperState(1);
+                         stateSearching = 1;
+                    }
+                }
+                else if(isInteger(query)){
+                    Log.d("DEBUG SEARCHING", "query integer");
+                    adapter.setFilterHelperState(2);
+                    stateSearching = 2;
+                }
+                else {
+                    Log.d("DEBUG SEARCHING", "query text");
+                    adapter.setFilterHelperState(3);
+                    stateSearching = 3;
+                }
+
+                switch (stateSearching){
+                    case 1:
+                        adapter.getFilter().filter(query);
+                        barcodeInit = false;
+                        break;
+
+
+                    case 2:
+                        adapter.getFilter().filter(query);
+                        break;
+
+                    case 3:
+                        adapter.getFilter().filter("fuzzymatched");
+                        break;
+                }
                 return false;
             }
         });
@@ -509,6 +597,19 @@ public class OthersWardahFragment extends Fragment {
         return view;
     }
 
+    public Boolean isInteger(String string){
+        Log.d("DEBUG SEARCHING", "query string : "+string);
+        try{
+            int testInt = Integer.parseInt(string);
+            Log.d("DEBUG SEARCHING", "query int : "+testInt);
+        } catch(NumberFormatException nfe) {
+            Log.d("DEBUG SEARCHING", "not integer");
+            return false;
+        }
+        Log.d("DEBUG SEARCHING", "integer");
+        return true;
+    }
+
     /*
      Our data object
      */
@@ -516,6 +617,8 @@ public class OthersWardahFragment extends Fragment {
         ArrayList<Spacecraft> currentList;
         ListViewAdapter adapter;
         Context c;
+        int stateSearch;
+
 
         public FilterHelper(ArrayList<Spacecraft> currentList, ListViewAdapter adapter, Context c) {
             this.currentList = currentList;
@@ -523,9 +626,14 @@ public class OthersWardahFragment extends Fragment {
             this.c = c;
         }
 
+        public void setStateSearch(int state){
+            Log.d("DEBUG SEARCHING", "state FilterHelper : "+state);
+            stateSearch = state;
+        }
         /*-
         - Perform actual filtering.
         */
+
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
@@ -542,9 +650,28 @@ public class OthersWardahFragment extends Fragment {
 //                    if (spacecraft.getKodeodoo().toUpperCase().contains(constraint) ||
 //                            spacecraft.getNamaproduk().toUpperCase().contains(constraint) ||
 //                            spacecraft.getBarcode().toUpperCase().contains(constraint))  {
-                    if(spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)){
-                        //ADD IF FOUND
-                        foundFilters.add(spacecraft);
+                    switch (stateSearch){
+                        case 1:
+                            Log.d("DEBUG SEARCHING", "query state barcode : "+constraint);
+                            if(spacecraft.getBarcode().toUpperCase().contains(constraint)){
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 2:
+                            Log.d("DEBUG SEARCHING", "query state kode odoo : "+constraint);
+                            if(spacecraft.getKodeodoo().toUpperCase().contains(constraint)){
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 3:
+                            if(spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)){
+                                //ADD IF FOUND
+                                Log.d("DEBUG SEARCHING", "query state text : "+constraint);
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
                     }
                 }
 //SET RESULTS TO FILTER LIST
@@ -589,6 +716,13 @@ public class OthersWardahFragment extends Fragment {
             this.c = c;
             this.spacecrafts = spacecrafts;
             this.currentList = spacecrafts;
+
+        }
+
+        public void setFilterHelperState(int state){
+            this.getFilter();
+            Log.d("DEBUG SEARCHING", "state ListViewAdapter: "+state);
+            filterHelper.setStateSearch(state);
         }
 
         @Override

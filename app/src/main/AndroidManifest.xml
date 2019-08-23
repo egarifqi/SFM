@@ -85,6 +85,10 @@
         <activity android:name=".scan.ScannpdmoActivity" />
         <activity android:name=".scan.ScannpdputriActivity" />
         <activity android:name=".scan.ScannpdwardahActivity" />
+        <activity android:name=".scan.ScanotherswardahActivity"/>
+        <activity android:name=".scan.ScanotherseminaActivity"/>
+        <activity android:name=".scan.ScanothersmoActivity"/>
+        <activity android:name=".scan.ScanothersputriActivity"/>
         <activity
             android:name=".RingkasanWardahActivity"
             android:windowSoftInputMode="adjustPan" />

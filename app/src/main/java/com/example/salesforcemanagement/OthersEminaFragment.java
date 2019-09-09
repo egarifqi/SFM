@@ -71,6 +71,10 @@ public class OthersEminaFragment extends Fragment {
     private ArrayList<String> qty1 = new ArrayList<String>();
     int fuzzyscore = 75;
 
+    Boolean barcodeInit = false;
+    int stateSearching = 3;
+    public int lengthStringBarcode;
+
     @Override
 
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,6 +86,7 @@ public class OthersEminaFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), ScanotherseminaActivity.class);
+                barcodeInit = true;
                 startActivity(intent);
             }
         });
@@ -109,7 +114,45 @@ public class OthersEminaFragment extends Fragment {
                         }
                     }
                 }
-                adapter.getFilter().filter("fuzzymatched");
+
+                if(s.length() == 0){
+                    barcodeInit = false;
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                if(s.length() == lengthStringBarcode){
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query barcode");
+                    stateSearching = 1;
+                    adapter.setFilterHelperState(stateSearching);
+                    lengthStringBarcode = 0;
+                }
+                else if(isInteger(s)){
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query integer");
+                    stateSearching = 2;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+                else {
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query text");
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                switch (stateSearching){
+                    case 1:
+                        adapter.getFilter().filter(s);
+                        barcodeInit = false;
+                        break;
+
+
+                    case 2:
+                        adapter.getFilter().filter(s);
+                        break;
+
+                    case 3:
+                        adapter.getFilter().filter("fuzzymatched");
+                        break;
+                }
                 return false;
             }
 
@@ -129,7 +172,47 @@ public class OthersEminaFragment extends Fragment {
                         }
                     }
                 }
-                adapter.getFilter().filter("fuzzymatched");
+
+                if(query.length() == 0){
+                    barcodeInit = false;
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                if(barcodeInit){
+                    if(query.length() > 0){
+                        lengthStringBarcode = query.length();
+                        Log.d("DEBUG SEARCHING", "query barcode");
+                        stateSearching = 1;
+                        adapter.setFilterHelperState(stateSearching);
+                    }
+                }
+                else if(isInteger(query)){
+                    Log.d("DEBUG SEARCHING", "query integer");
+                    stateSearching = 2;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+                else {
+                    Log.d("DEBUG SEARCHING", "query text");
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                switch (stateSearching){
+                    case 1:
+                        adapter.getFilter().filter(query);
+                        barcodeInit = false;
+                        break;
+
+
+                    case 2:
+                        adapter.getFilter().filter(query);
+                        break;
+
+                    case 3:
+                        adapter.getFilter().filter("fuzzymatched");
+                        break;
+                }
                 return false;
             }
         });
@@ -493,20 +576,20 @@ public class OthersEminaFragment extends Fragment {
                 startActivity(intent);
             }
         });
-//
-//        Button checkbutton = (Button) view.findViewById(R.id.check_buttonAdditionalWardah);
-//        checkbutton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String all = "";
-//                String txt = "";
-//                for (int j = 0; j < orderedID.size(); j++){
-//                    txt = "\n" + orderedname.get(j) + ",\n stk: " + orderedstock.get(j) + ",\t qtymo: " + orderedqty.get(j) + "price: " +orderedprice.get(j)+ "\n";
-//                    all = all + txt;
-//                }
-//                Toast.makeText(getActivity(), "Order: \n" + all, Toast.LENGTH_LONG).show();
-//            }
         return view;
+    }
+
+    private boolean isInteger(String s) {
+        Log.d("DEBUG SEARCHING", "query string : "+s);
+        try{
+            int testInt = Integer.parseInt(s);
+            Log.d("DEBUG SEARCHING", "query int : "+testInt);
+        } catch(NumberFormatException nfe) {
+            Log.d("DEBUG SEARCHING", "not integer");
+            return false;
+        }
+        Log.d("DEBUG SEARCHING", "integer");
+        return true;
     }
 
     /*
@@ -516,6 +599,7 @@ public class OthersEminaFragment extends Fragment {
         ArrayList<Spacecraft> currentList;
         ListViewAdapter adapter;
         Context c;
+        int stateSearch;
 
         public FilterHelper(ArrayList<Spacecraft> currentList, ListViewAdapter adapter, Context c) {
             this.currentList = currentList;
@@ -542,9 +626,28 @@ public class OthersEminaFragment extends Fragment {
 //                    if (spacecraft.getKodeodoo().toUpperCase().contains(constraint) ||
 //                            spacecraft.getNamaproduk().toUpperCase().contains(constraint) ||
 //                            spacecraft.getBarcode().toUpperCase().contains(constraint))  {
-                    if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)){
-                        //ADD IF FOUND
-                        foundFilters.add(spacecraft);
+                    switch (stateSearch) {
+                        case 1:
+                            Log.d("DEBUG SEARCHING", "query state barcode : " + constraint);
+                            if (spacecraft.getBarcode().toUpperCase().contains(constraint)) {
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 2:
+                            Log.d("DEBUG SEARCHING", "query state kode odoo : " + constraint);
+                            if (spacecraft.getKodeodoo().toUpperCase().contains(constraint)) {
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 3:
+                            if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)) {
+                                //ADD IF FOUND
+                                Log.d("DEBUG SEARCHING", "query state text : " + constraint);
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
                     }
                 }
 //SET RESULTS TO FILTER LIST
@@ -564,16 +667,13 @@ public class OthersEminaFragment extends Fragment {
             adapter.setSpacecrafts((ArrayList<Spacecraft>) filterResults.values);
             adapter.refresh();
         }
+
+        public void setStateSearch(int state) {
+            Log.d("DEBUG SEARCHING", "state FilterHelper : "+state);
+            stateSearch = state;
+        }
     }
 
-//    static class ViewHolder implements Serializable {
-//        TextView product_odoo;
-//        TextView product_name;
-//        TextView product_price;
-//        TextView product_ws;
-//        TextView product_stock;
-//        TextView product_qty;
-//    }
 
     /*
     Our custom adapter class
@@ -661,6 +761,12 @@ public class OthersEminaFragment extends Fragment {
 
         public void refresh() {
             notifyDataSetChanged();
+        }
+
+        public void setFilterHelperState(int state) {
+            this.getFilter();
+            Log.d("DEBUG SEARCHING", "state ListViewAdapter: "+state);
+            filterHelper.setStateSearch(state);
         }
     }
 

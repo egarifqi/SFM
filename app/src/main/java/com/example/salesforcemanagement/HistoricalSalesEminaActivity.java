@@ -20,6 +20,7 @@ public class HistoricalSalesEminaActivity extends AppCompatActivity {
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbarhistemina);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         pref = this.getSharedPreferences("MyPref", 0);
         editor = pref.edit();
         prefToko = this.getSharedPreferences("TokoPref", 0);
@@ -28,6 +29,7 @@ public class HistoricalSalesEminaActivity extends AppCompatActivity {
         final String nama = prefToko.getString("partner_name", "");
 //        toolbar.setTitle();
         toolbar.setSubtitle(nama);
+
         TabLayout tabLayout = findViewById(R.id.tab_layouthistoricalsalesemina);
 
         tabLayout.addTab(tabLayout.newTab().setText("MHS"));
@@ -42,6 +44,7 @@ public class HistoricalSalesEminaActivity extends AppCompatActivity {
         final com.example.salesforcemanagement.HistoricalSalesEminaPagerAdapter adapter = new com.example.salesforcemanagement.HistoricalSalesEminaPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(5);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

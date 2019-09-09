@@ -42,6 +42,7 @@ public class HistoricalSalesMOActivity extends AppCompatActivity {
         final com.example.salesforcemanagement.HistoricalSalesMOPagerAdapter adapter = new com.example.salesforcemanagement.HistoricalSalesMOPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(5);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,12 +28,14 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.example.salesforcemanagement.scan.ScanmhseminaActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,19 +52,525 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
  * A simple {@link Fragment} subclass.
  */
 public class AdditionalEminaFragment extends Fragment {
+    final com.example.salesforcemanagement.Spacecraft kumpulanorder = new com.example.salesforcemanagement.Spacecraft();
+    final ArrayList<com.example.salesforcemanagement.Spacecraft> order = new ArrayList<com.example.salesforcemanagement.Spacecraft>();
+    final ArrayList<Integer> orderedID = new ArrayList<Integer>();
+    final ArrayList<String> orderedkode = new ArrayList<String>(); //kodemo
+    final ArrayList<String> orderedname = new ArrayList<String>(); //namamo
+    final ArrayList<String> orderedprice = new ArrayList<String>(); //hargamo
+    final ArrayList<String> orderedstock = new ArrayList<String>(); //stockmo
+    final ArrayList<String> orderedqty = new ArrayList<String>(); //qtymo
+    final ArrayList<String> orderedcategory = new ArrayList<String>();
     SharedPreferences pref;
     SharedPreferences.Editor editor;
-    final com.example.salesforcemanagement.Spacecraft kumpulanorder = new com.example.salesforcemanagement.Spacecraft();
-    final ArrayList<com.example.salesforcemanagement.Spacecraft> order = new ArrayList<>();
+    ArrayList<com.example.salesforcemanagement.Spacecraft> spacecrafts = new ArrayList<>();
+    ListView myListView;
+    ImageView scanmhswardah;
     public static SearchView mySearchView;
+    ListViewAdapter adapter;
+    private ArrayList<String> stock1 = new ArrayList<String>();
+    private ArrayList<String> qty1 = new ArrayList<String>();
     int fuzzyscore = 75;
 
-    final ArrayList<Integer> orderedID = new ArrayList<>();
-    final ArrayList<String> orderedkode = new ArrayList<>(); //kodemo
-    final ArrayList<String> orderedname = new ArrayList<>(); //namamo
-    final ArrayList<String> orderedprice = new ArrayList<>(); //hargamo
-    final ArrayList<String> orderedstock = new ArrayList<>(); //stockmo
-    final ArrayList<String> orderedqty = new ArrayList<>(); //qtymo
+    Boolean barcodeInit = false;
+    int stateSearching = 3;
+    public int lengthStringBarcode;
+
+    @Override
+
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_additional_emina, container, false);
+        myListView = view.findViewById(R.id.mListAdditionalEmina);
+        final ProgressBar myProgressBar = view.findViewById(R.id.myProgressBarAdditionalEmina);
+        ImageView scanmhsemina = view.findViewById(R.id.barcodemhsemina);
+        scanmhsemina.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getActivity(), ScanmhseminaActivity.class);
+            startActivity(intent);
+        });
+        mySearchView = view.findViewById(R.id.mySearchViewAdditionalEmina);
+        mySearchView.setIconified(true);
+        mySearchView.setOnSearchClickListener(view12 -> {
+        });
+        mySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                for (int i = 0; i < spacecrafts.size(); i++) {
+                    Log.d("FUZZY RATIO " + s + " : " + spacecrafts.get(i).getNamaproduk(), "" + FuzzySearch.partialRatio(s, spacecrafts.get(i).getNamaproduk()));
+                    if (s.length() == 0) {
+                        spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
+                    } else {
+                        if (FuzzySearch.partialRatio(s.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase() + " " + spacecrafts.get(i).getKodeodoo() + " " + spacecrafts.get(i).getBarcode()) > fuzzyscore) {
+                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
+                        } else {
+                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
+                        }
+                    }
+                }
+
+                if(s.length() == 0){
+                    barcodeInit = false;
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                if(s.length() == lengthStringBarcode){
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query barcode");
+                    stateSearching = 1;
+                    adapter.setFilterHelperState(stateSearching);
+                    lengthStringBarcode = 0;
+                }
+                else if(isInteger(s)){
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query integer");
+                    stateSearching = 2;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+                else {
+                    Log.d("DEBUG SEARCHING ON SUBMIT", "query text");
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                switch (stateSearching){
+                    case 1:
+                        adapter.getFilter().filter(s);
+                        barcodeInit = false;
+                        break;
+
+
+                    case 2:
+                        adapter.getFilter().filter(s);
+                        break;
+
+                    case 3:
+                        adapter.getFilter().filter("fuzzymatched");
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                for (int i = 0; i < spacecrafts.size(); i++) {
+                    Log.d("FUZZY RATIO " + query + " : " + spacecrafts.get(i).getNamaproduk(), "" + FuzzySearch.partialRatio(query, spacecrafts.get(i).getNamaproduk()));
+                    if (query.length() == 0) {
+                        spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
+                    } else {
+                        if (FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase() + " " + spacecrafts.get(i).getKodeodoo() + " " + spacecrafts.get(i).getBarcode()) > fuzzyscore) {
+                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
+                        } else {
+                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
+                        }
+                    }
+                }
+
+                if(query.length() == 0){
+                    barcodeInit = false;
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                if(barcodeInit){
+                    if(query.length() > 0){
+                        lengthStringBarcode = query.length();
+                        Log.d("DEBUG SEARCHING", "query barcode");
+                        stateSearching = 1;
+                        adapter.setFilterHelperState(stateSearching);
+                    }
+                }
+                else if(isInteger(query)){
+                    Log.d("DEBUG SEARCHING", "query integer");
+                    stateSearching = 2;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+                else {
+                    Log.d("DEBUG SEARCHING", "query text");
+                    stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
+                }
+
+                switch (stateSearching){
+                    case 1:
+                        adapter.getFilter().filter(query);
+                        barcodeInit = false;
+                        break;
+
+
+                    case 2:
+                        adapter.getFilter().filter(query);
+                        break;
+
+                    case 3:
+                        adapter.getFilter().filter("fuzzymatched");
+                        break;
+                }
+                return false;
+            }
+        });
+
+        spacecrafts = new JSONDownloader(getActivity()).retrieve(myListView, myProgressBar);
+        adapter = new ListViewAdapter(getActivity(), spacecrafts);
+        String txt = "";
+        String all = "";
+        for (int j = 0; j < spacecrafts.size(); j++) {
+            txt = spacecrafts.get(j).namaproduk + "\n";
+            all = all + txt;
+
+        }
+        myListView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        myListView.setOnItemClickListener((parent, view13, position, id) -> {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+            LayoutInflater layoutInflater = getLayoutInflater();
+            View dialogView = layoutInflater.inflate(R.layout.form_takingorder, null);
+            dialog.setView(dialogView);
+            dialog.setCancelable(true);
+            dialog.setTitle("Input Order");
+
+            TextView formKode = null;
+            final TextView formNama;
+            final TextView formHarga;
+            final TextView formPcs, formws;
+            final EditText formStock, formQty;
+
+            formKode = dialogView.findViewById(R.id.kode_odoo_form);
+            formNama = dialogView.findViewById(R.id.nama_produk_form);
+            formws = dialogView.findViewById(R.id.ws_form);
+            formHarga = dialogView.findViewById(R.id.harga_form);
+            formStock = dialogView.findViewById(R.id.stock_form);
+            formQty = dialogView.findViewById(R.id.qty_form);
+            formPcs = dialogView.findViewById(R.id.pcs_produk_form);
+
+            final Spacecraft coba = (Spacecraft) adapter.getItem(position);
+
+            String konsta = pref.getString("const", "2");
+            final int konst = Integer.parseInt(konsta);
+
+            formKode.setText(coba.getKodeodoo());
+            formNama.setText(coba.getNamaproduk());
+            formws.setText("" + coba.getWeeklySales());
+            formHarga.setText(coba.getPrice());
+            formPcs.setText(coba.getKoli());
+            formStock.setHint(coba.getStock());
+            String stockformawal = formStock.getText().toString();
+            if (!stockformawal.isEmpty()) {
+                int intstockformawal = Integer.parseInt(stockformawal);
+                int qtyformawal = konst * coba.getWeeklySales() - intstockformawal;
+                if (qtyformawal >= 0) {
+                    formQty.setHint(String.valueOf(qtyformawal));
+                } else {
+                    formQty.setHint("0");
+                }
+            } else {
+                formQty.setHint("0");
+            }
+
+            formStock.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    String stockform = formStock.getText().toString();
+                    if (!stockform.isEmpty()) {
+                        int intstockform = Integer.parseInt(stockform);
+                        int qtyform = konst * coba.getWeeklySales() - intstockform;
+                        if (qtyform >= 0) {
+                            formQty.setHint(String.valueOf(qtyform));
+                        } else {
+                            formQty.setHint("0");
+                        }
+                    } else {
+                        formQty.setHint("0");
+                    }
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    String stockform = formStock.getText().toString();
+                    if (!stockform.isEmpty()) {
+                        int intstockform = Integer.parseInt(stockform);
+                        int qtyform = konst * coba.getWeeklySales() - intstockform;
+                        if (qtyform >= 0) {
+                            formQty.setHint(String.valueOf(qtyform));
+                        } else {
+                            formQty.setHint("0");
+                        }
+                    } else {
+                        formQty.setHint("0");
+                    }
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
+            final TextView finalFormKode = formKode;
+            final int[] count = new int[1];
+            dialog.setPositiveButton("Order", (dialog1, which) -> {
+                String mStock = formStock.getText().toString();
+                String mQty = formQty.getText().toString();
+                count[0] = 0;
+                if (mStock.isEmpty() && mQty.isEmpty()) {
+                    Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
+                } else if (mStock.isEmpty() && !mQty.isEmpty()) {
+                    orderedID.add(coba.getId());
+                    orderedkode.add(finalFormKode.getText().toString());
+                    orderedname.add(formNama.getText().toString());
+                    orderedprice.add(formHarga.getText().toString());
+//                            int stockform = 0;
+                    orderedstock.add("0");
+                    orderedqty.add(formQty.getText().toString());
+
+                    kumpulanorder.setId(orderedID.get(count[0]));
+                    kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                    kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                    kumpulanorder.setPrice(orderedprice.get(count[0]));
+                    kumpulanorder.setStock(orderedstock.get(count[0]));
+                    kumpulanorder.setQty(orderedqty.get(count[0]));
+                    kumpulanorder.setCategory(orderedcategory.get(count[0]));
+
+                    order.add(count[0], kumpulanorder);
+
+                    count[0]++;
+
+                    coba.setStock("0");
+                    coba.setQty(formQty.getText().toString());
+
+                    TextView stock = view13.findViewById(R.id.stock_hist);
+                    TextView qty = view13.findViewById(R.id.qtyhist);
+
+                    stock.setText(spacecrafts.get(position).getStock());
+                    qty.setText(spacecrafts.get(position).getQty());
+
+
+
+                    boolean check = false;
+                    boolean add = true;
+
+                    for (int x = 0; x < Globalemina.kode.size(); x++) {
+                        if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
+                            check = true;
+                        }
+                        if (check) {
+                            Globalemina.id_produk.set(x, coba.getId());
+                            Globalemina.kode.set(x, finalFormKode.getText().toString());
+                            Globalemina.nama.set(x, formNama.getText().toString());
+                            Globalemina.harga.set(x, formHarga.getText().toString());
+                            Globalemina.stock.set(x, "0");
+                            Globalemina.sgtorder.set(x, "0");
+                            Globalemina.qty.set(x, formQty.getText().toString());
+                            Globalemina.kategori.set(x, coba.getCategory());
+                            check = false;
+                            add = false;
+                        }
+
+                    }
+                    if (add) {
+                        Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
+                        Globalemina.id_produk.add(coba.getId());
+                        Globalemina.kode.add(finalFormKode.getText().toString());
+                        Globalemina.nama.add(formNama.getText().toString());
+                        Globalemina.harga.add(formHarga.getText().toString());
+                        Globalemina.stock.add("0");
+                        Globalemina.sgtorder.add("0");
+                        Globalemina.qty.add(formQty.getText().toString());
+                        Globalemina.kategori.add(coba.getCategory());
+                        Globalemina.produkCount++;
+                    }
+
+                    adapter.notifyDataSetChanged();
+                    dialog1.dismiss();
+                } else if (!mStock.isEmpty() && mQty.isEmpty()) {
+
+                    orderedID.add(coba.getId());
+                    orderedkode.add(finalFormKode.getText().toString());
+                    orderedname.add(formNama.getText().toString());
+                    orderedprice.add(formHarga.getText().toString());
+                    orderedstock.add(formStock.getText().toString());
+                    String stockform = formStock.getText().toString();
+                    int intstockform = Integer.parseInt(stockform);
+                    int qtyform = konst * coba.getWeeklySales() - intstockform;
+                    if (qtyform < 0) {
+                        qtyform = 0;
+                    }
+                    orderedqty.add(String.valueOf(qtyform));
+                    orderedcategory.add(coba.getCategory());
+
+                    kumpulanorder.setId(orderedID.get(count[0]));
+                    kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                    kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                    kumpulanorder.setPrice(orderedprice.get(count[0]));
+                    kumpulanorder.setStock(orderedstock.get(count[0]));
+                    kumpulanorder.setQty(orderedqty.get(count[0]));
+                    kumpulanorder.setCategory(orderedcategory.get(count[0]));
+
+                    order.add(count[0], kumpulanorder);
+
+                    count[0]++;
+
+
+                    coba.setStock(formStock.getText().toString());
+                    coba.setQty(String.valueOf(qtyform));
+
+                    TextView stock = view13.findViewById(R.id.stock_hist);
+                    TextView qty = view13.findViewById(R.id.qtyhist);
+
+                    stock.setText(spacecrafts.get(position).getStock());
+                    qty.setText(spacecrafts.get(position).getQty());
+
+//                            Toast.makeText(getActivity(), "stock " + coba.getStock() + " qty " + coba.getQty(), Toast.LENGTH_LONG).show();
+
+                    boolean check = false;
+                    boolean add = true;
+
+                    for (int x = 0; x < Globalemina.kode.size(); x++) {
+                        if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
+                            check = true;
+                        }
+                        if (check) {
+                            Globalemina.id_produk.set(x, coba.getId());
+                            Globalemina.kode.set(x, finalFormKode.getText().toString());
+                            Globalemina.nama.set(x, formNama.getText().toString());
+                            Globalemina.harga.set(x, formHarga.getText().toString());
+                            Globalemina.stock.set(x, formStock.getText().toString());
+                            Globalemina.qty.set(x, String.valueOf(qtyform));
+                            Globalemina.sgtorder.set(x, "0");
+                            Globalemina.kategori.set(x, coba.getCategory());
+                            check = false;
+                            add = false;
+                        }
+
+                    }
+                    if (add) {
+                        Globalemina.id_produk.add(coba.getId());
+                        Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
+                        Globalemina.kode.add(finalFormKode.getText().toString());
+                        Globalemina.nama.add(formNama.getText().toString());
+                        Globalemina.harga.add(formHarga.getText().toString());
+                        Globalemina.stock.add(formStock.getText().toString());
+                        Globalemina.qty.add(String.valueOf(qtyform));
+                        Globalemina.kategori.add(coba.getCategory());
+                        Globalemina.sgtorder.add("0");
+                        Globalemina.produkCount++;
+                    }
+
+
+                    adapter.notifyDataSetChanged();
+                    dialog1.dismiss();
+
+                } else {
+
+                    orderedID.add(coba.getId());
+                    orderedkode.add(finalFormKode.getText().toString());
+                    orderedname.add(formNama.getText().toString());
+                    orderedprice.add(formHarga.getText().toString());
+                    orderedstock.add(formStock.getText().toString());
+                    orderedqty.add(formQty.getText().toString());
+                    orderedcategory.add(coba.getCategory());
+
+                    kumpulanorder.setId(orderedID.get(count[0]));
+                    kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                    kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                    kumpulanorder.setPrice(orderedprice.get(count[0]));
+                    kumpulanorder.setStock(orderedstock.get(count[0]));
+                    kumpulanorder.setQty(orderedqty.get(count[0]));
+                    kumpulanorder.setCategory(orderedcategory.get(count[0]));
+
+                    order.add(count[0], kumpulanorder);
+
+                    count[0]++;
+
+                    coba.setStock(formStock.getText().toString());
+                    coba.setQty(formQty.getText().toString());
+
+                    TextView stock = view13.findViewById(R.id.stock_hist);
+                    TextView qty = view13.findViewById(R.id.qtyhist);
+
+                    stock.setText(spacecrafts.get(position).getStock());
+                    qty.setText(spacecrafts.get(position).getQty());
+
+//                            Toast.makeText(getActivity(), "order:" + formNama.getText().toString() + "stockmo " + coba.getStock() + " qtymo " + coba.getQty(), Toast.LENGTH_LONG).show();
+
+
+                    boolean check = false;
+                    boolean add = true;
+
+                    for (int x = 0; x < Globalemina.kode.size(); x++) {
+                        if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
+                            check = true;
+                        }
+                        if (check) {
+                            Globalemina.id_produk.set(x, coba.getId());
+                            Globalemina.kode.set(x, finalFormKode.getText().toString());
+                            Globalemina.nama.set(x, formNama.getText().toString());
+                            Globalemina.harga.set(x, formHarga.getText().toString());
+                            Globalemina.stock.set(x, formStock.getText().toString());
+                            Globalemina.qty.set(x, formQty.getText().toString());
+                            Globalemina.kategori.set(x, coba.getCategory());
+                            Globalemina.sgtorder.set(x, "0");
+                            check = false;
+                            add = false;
+                        }
+
+                    }
+                    if (add) {
+                        Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
+                        Globalemina.id_produk.add(coba.getId());
+                        Globalemina.kode.add(finalFormKode.getText().toString());
+                        Globalemina.nama.add(formNama.getText().toString());
+                        Globalemina.harga.add(formHarga.getText().toString());
+                        Globalemina.stock.add(formStock.getText().toString());
+                        Globalemina.qty.add(formQty.getText().toString());
+                        Globalemina.kategori.add(coba.getCategory());
+                        Globalemina.sgtorder.add("0");
+                        Globalemina.produkCount++;
+                    }
+
+                    adapter.notifyDataSetChanged();
+                    dialog1.dismiss();
+
+                }
+
+            });
+            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialog.show();
+        });
+
+        Button orderbutton = view.findViewById(R.id.order_buttonAdditionalEmina);
+        orderbutton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putIntegerArrayList("ID", orderedID);
+            bundle.putStringArrayList("kodemo", orderedkode);
+            bundle.putStringArrayList("namamo", orderedname);
+            bundle.putStringArrayList("hargamo", orderedprice);
+            bundle.putStringArrayList("stok", orderedstock);
+            bundle.putStringArrayList("kuantitas", orderedqty);
+            Intent intent = new Intent(getActivity().getBaseContext(), RingkasanEminaActivity.class);
+            intent.putExtra("listorder", bundle);
+            startActivity(intent);
+        });
+
+        return view;
+    }
+
+    public Boolean isInteger(String string){
+        Log.d("DEBUG SEARCHING", "query string : "+string);
+        try{
+            int testInt = Integer.parseInt(string);
+            Log.d("DEBUG SEARCHING", "query int : "+testInt);
+        } catch(NumberFormatException nfe) {
+            Log.d("DEBUG SEARCHING", "not integer");
+            return false;
+        }
+        Log.d("DEBUG SEARCHING", "integer");
+        return true;
+    }
 
     /*
      Our data object
@@ -70,6 +579,7 @@ public class AdditionalEminaFragment extends Fragment {
         ArrayList<com.example.salesforcemanagement.Spacecraft> currentList;
         ListViewAdapter adapter;
         Context c;
+        int stateSearch;
 
         public FilterHelper(ArrayList<com.example.salesforcemanagement.Spacecraft> currentList, ListViewAdapter adapter, Context c) {
             this.currentList = currentList;
@@ -93,9 +603,28 @@ public class AdditionalEminaFragment extends Fragment {
                 for (int i = 0; i < currentList.size(); i++) {
                     spacecraft = currentList.get(i);
 //SEARCH
-                    if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)) {
-                        //ADD IF FOUND
-                        foundFilters.add(spacecraft);
+                    switch (stateSearch) {
+                        case 1:
+                            Log.d("DEBUG SEARCHING", "query state barcode : " + constraint);
+                            if (spacecraft.getBarcode().toUpperCase().contains(constraint)) {
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 2:
+                            Log.d("DEBUG SEARCHING", "query state kode odoo : " + constraint);
+                            if (spacecraft.getKodeodoo().toUpperCase().contains(constraint)) {
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 3:
+                            if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)) {
+                                //ADD IF FOUND
+                                Log.d("DEBUG SEARCHING", "query state text : " + constraint);
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
                     }
                 }
 //SET RESULTS TO FILTER LIST
@@ -114,6 +643,11 @@ public class AdditionalEminaFragment extends Fragment {
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             adapter.setSpacecrafts((ArrayList<com.example.salesforcemanagement.Spacecraft>) filterResults.values);
             adapter.refresh();
+        }
+
+        public void setStateSearch(int state) {
+            Log.d("DEBUG SEARCHING", "state FilterHelper : "+state);
+            stateSearch = state;
         }
     }
 
@@ -203,6 +737,12 @@ public class AdditionalEminaFragment extends Fragment {
         public void refresh() {
             notifyDataSetChanged();
         }
+
+        public void setFilterHelperState(int state) {
+            this.getFilter();
+            Log.d("DEBUG SEARCHING", "state ListViewAdapter: "+state);
+            filterHelper.setStateSearch(state);
+        }
     }
 
 
@@ -219,11 +759,11 @@ public class AdditionalEminaFragment extends Fragment {
         */
         public ArrayList<com.example.salesforcemanagement.Spacecraft> retrieve(final ListView mLpositiveistView, final ProgressBar myProgressBar) {
             final ArrayList<com.example.salesforcemanagement.Spacecraft> downloadedData = new ArrayList<>();
-            myProgressBar.setIndeterminate(true);
-            myProgressBar.setVisibility(View.VISIBLE);
             final com.example.salesforcemanagement.DatabaseMHSHandler dbEBP = new com.example.salesforcemanagement.DatabaseMHSHandler(getContext());
 
-            pref = Objects.requireNonNull(getActivity()).getSharedPreferences("TokoPref", 0);
+            myProgressBar.setIndeterminate(true);
+            myProgressBar.setVisibility(View.VISIBLE);
+            pref = getActivity().getSharedPreferences("TokoPref", 0);
             editor = pref.edit();
             final String customer = pref.getString("ref", "");
             final String partnerid = pref.getString("partner_id", "0");
@@ -318,410 +858,4 @@ public class AdditionalEminaFragment extends Fragment {
             return downloadedData;
         }
     }
-
-    ArrayList<com.example.salesforcemanagement.Spacecraft> spacecrafts = new ArrayList<>();
-    ListView myListView;
-    ListViewAdapter adapter;
-
-    //    @NonNull
-    @Override
-
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_additional_emina, container, false);
-        myListView = view.findViewById(R.id.mListAdditionalEmina);
-        final ProgressBar myProgressBar = view.findViewById(R.id.myProgressBarAdditionalEmina);
-        ImageView scanmhsemina = view.findViewById(R.id.barcodemhsemina);
-        scanmhsemina.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getActivity(), com.example.salesforcemanagement.scan.ScanmhseminaActivity.class);
-            startActivity(intent);
-        });
-        mySearchView = view.findViewById(R.id.mySearchViewAdditionalEmina);
-        mySearchView.setIconified(true);
-        mySearchView.setOnSearchClickListener(view12 -> {
-        });
-        mySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                for (int i = 0; i < spacecrafts.size(); i++) {
-                    Log.d("FUZZY RATIO " + s + " : " + spacecrafts.get(i).getNamaproduk(), "" + FuzzySearch.partialRatio(s, spacecrafts.get(i).getNamaproduk()));
-                    if (s.length() == 0) {
-                        spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                    } else {
-                        if (FuzzySearch.partialRatio(s.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase() + " " + spacecrafts.get(i).getKodeodoo() + " " + spacecrafts.get(i).getBarcode()) > fuzzyscore) {
-                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                        } else {
-                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
-                        }
-                    }
-                }
-                adapter.getFilter().filter("fuzzymatched");
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                for (int i = 0; i < spacecrafts.size(); i++) {
-                    Log.d("FUZZY RATIO " + query + " : " + spacecrafts.get(i).getNamaproduk(), "" + FuzzySearch.partialRatio(query, spacecrafts.get(i).getNamaproduk()));
-                    if (query.length() == 0) {
-                        spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                    } else {
-                        if (FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase() + " " + spacecrafts.get(i).getKodeodoo() + " " + spacecrafts.get(i).getBarcode()) > fuzzyscore) {
-                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                        } else {
-                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
-                        }
-                    }
-                }
-                adapter.getFilter().filter("fuzzymatched");
-                return false;
-            }
-        });
-
-        spacecrafts = new JSONDownloader(getActivity()).retrieve(myListView, myProgressBar);
-        adapter = new ListViewAdapter(getActivity(), spacecrafts);
-        String txt = "";
-        String all = "";
-        for (int j = 0; j < spacecrafts.size(); j++) {
-            txt = spacecrafts.get(j).namaproduk + "\n";
-            all = all + txt;
-
-        }
-        myListView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        myListView.setOnItemClickListener((parent, view13, position, id) -> {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-            LayoutInflater layoutInflater = getLayoutInflater();
-            View dialogView = layoutInflater.inflate(R.layout.form_takingorder, null);
-            dialog.setView(dialogView);
-            dialog.setCancelable(true);
-            dialog.setTitle("Input Order");
-
-            TextView formKode;
-            final TextView formNama;
-            final TextView formHarga;
-            final TextView formPcs, formws;
-            final EditText formStock, formQty;
-
-            formKode = dialogView.findViewById(R.id.kode_odoo_form);
-            formNama = dialogView.findViewById(R.id.nama_produk_form);
-            formws = dialogView.findViewById(R.id.ws_form);
-            formHarga = dialogView.findViewById(R.id.harga_form);
-            formStock = dialogView.findViewById(R.id.stock_form);
-            formQty = dialogView.findViewById(R.id.qty_form);
-            formPcs = dialogView.findViewById(R.id.pcs_produk_form);
-
-            final Spacecraft coba = (Spacecraft) adapter.getItem(position);
-
-            String konsta = pref.getString("const", "2");
-            final int konst = Integer.parseInt(Objects.requireNonNull(konsta));
-
-            formKode.setText(coba.getKodeodoo());
-            formNama.setText(coba.getNamaproduk());
-            formws.setText("" + coba.getWeeklySales());
-            formHarga.setText(coba.getPrice());
-            formPcs.setText(coba.getKoli());
-            formStock.setHint(coba.getStock());
-            String stockformawal = formStock.getText().toString();
-            if (!stockformawal.isEmpty()) {
-                int intstockformawal = Integer.parseInt(stockformawal);
-                int qtyformawal = konst * coba.getWeeklySales() - intstockformawal;
-                if (qtyformawal >= 0) {
-                    formQty.setHint(String.valueOf(qtyformawal));
-                } else {
-                    formQty.setHint("0");
-                }
-            } else {
-                formQty.setHint("0");
-            }
-
-            formStock.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    String stockform = formStock.getText().toString();
-                    if (!stockform.isEmpty()) {
-                        int intstockform = Integer.parseInt(stockform);
-                        int qtyform = konst * coba.getWeeklySales() - intstockform;
-                        if (qtyform >= 0) {
-                            formQty.setHint(String.valueOf(qtyform));
-                        } else {
-                            formQty.setHint("0");
-                        }
-                    } else {
-                        formQty.setHint("0");
-                    }
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    String stockform = formStock.getText().toString();
-                    if (!stockform.isEmpty()) {
-                        int intstockform = Integer.parseInt(stockform);
-                        int qtyform = konst * coba.getWeeklySales() - intstockform;
-                        if (qtyform >= 0) {
-                            formQty.setHint(String.valueOf(qtyform));
-                        } else {
-                            formQty.setHint("0");
-                        }
-                    } else {
-                        formQty.setHint("0");
-                    }
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
-
-            final TextView finalFormKode = formKode;
-            final int[] count = new int[1];
-            dialog.setPositiveButton("Order", (dialog1, which) -> {
-                String mStock = formStock.getText().toString();
-                String mQty = formQty.getText().toString();
-                count[0] = 0;
-                if (mStock.isEmpty() && mQty.isEmpty()) {
-                    Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
-                } else if (mStock.isEmpty() && !mQty.isEmpty()) {
-                    orderedID.add(coba.getId());
-                    orderedkode.add(finalFormKode.getText().toString());
-                    orderedname.add(formNama.getText().toString());
-                    orderedprice.add(formHarga.getText().toString());
-//                            int stockform = 0;
-                    orderedstock.add("0");
-                    orderedqty.add(formQty.getText().toString());
-
-                    kumpulanorder.setId(orderedID.get(count[0]));
-                    kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                    kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                    kumpulanorder.setPrice(orderedprice.get(count[0]));
-                    kumpulanorder.setStock(orderedstock.get(count[0]));
-                    kumpulanorder.setQty(orderedqty.get(count[0]));
-
-                    order.add(count[0], kumpulanorder);
-
-                    count[0]++;
-
-                    coba.setStock("0");
-                    coba.setQty(formQty.getText().toString());
-
-                    TextView stock = view13.findViewById(R.id.stock_hist);
-                    TextView qty = view13.findViewById(R.id.qtyhist);
-
-                    stock.setText(spacecrafts.get(position).getStock());
-                    qty.setText(spacecrafts.get(position).getQty());
-
-
-
-                    boolean check = false;
-                    boolean add = true;
-
-                    for (int x = 0; x < Globalemina.kode.size(); x++) {
-                        if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
-                            check = true;
-                        }
-                        if (check) {
-                            Globalemina.id_produk.set(x, coba.getId());
-                            Globalemina.kode.set(x, finalFormKode.getText().toString());
-                            Globalemina.nama.set(x, formNama.getText().toString());
-                            Globalemina.harga.set(x, formHarga.getText().toString());
-                            Globalemina.stock.set(x, "0");
-                            Globalemina.sgtorder.set(x, "0");
-                            Globalemina.qty.set(x, formQty.getText().toString());
-                            Globalemina.kategori.set(x, coba.getCategory());
-                            check = false;
-                            add = false;
-                        }
-
-                    }
-                    if (add) {
-                        Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
-                        Globalemina.id_produk.add(coba.getId());
-                        Globalemina.kode.add(finalFormKode.getText().toString());
-                        Globalemina.nama.add(formNama.getText().toString());
-                        Globalemina.harga.add(formHarga.getText().toString());
-                        Globalemina.stock.add("0");
-                        Globalemina.sgtorder.add("0");
-                        Globalemina.qty.add(formQty.getText().toString());
-                        Globalemina.kategori.add(coba.getCategory());
-                        Globalemina.produkCount++;
-                    }
-
-                    adapter.notifyDataSetChanged();
-                    dialog1.dismiss();
-                } else if (!mStock.isEmpty() && mQty.isEmpty()) {
-
-                    orderedID.add(coba.getId());
-                    orderedkode.add(finalFormKode.getText().toString());
-                    orderedname.add(formNama.getText().toString());
-                    orderedprice.add(formHarga.getText().toString());
-                    orderedstock.add(formStock.getText().toString());
-                    String stockform = formStock.getText().toString();
-                    int intstockform = Integer.parseInt(stockform);
-                    int qtyform = konst * coba.getWeeklySales() - intstockform;
-                    if (qtyform < 0) {
-                        qtyform = 0;
-                    }
-                    orderedqty.add(String.valueOf(qtyform));
-
-                    kumpulanorder.setId(orderedID.get(count[0]));
-                    kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                    kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                    kumpulanorder.setPrice(orderedprice.get(count[0]));
-                    kumpulanorder.setStock(orderedstock.get(count[0]));
-                    kumpulanorder.setQty(orderedqty.get(count[0]));
-
-                    order.add(count[0], kumpulanorder);
-
-                    count[0]++;
-
-
-                    coba.setStock(formStock.getText().toString());
-                    coba.setQty(String.valueOf(qtyform));
-
-                    TextView stock = view13.findViewById(R.id.stock_hist);
-                    TextView qty = view13.findViewById(R.id.qtyhist);
-
-                    stock.setText(spacecrafts.get(position).getStock());
-                    qty.setText(spacecrafts.get(position).getQty());
-
-//                            Toast.makeText(getActivity(), "stock " + coba.getStock() + " qty " + coba.getQty(), Toast.LENGTH_LONG).show();
-
-                    boolean check = false;
-                    boolean add = true;
-
-                    for (int x = 0; x < Globalemina.kode.size(); x++) {
-                        if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
-                            check = true;
-                        }
-                        if (check) {
-                            Globalemina.id_produk.set(x, coba.getId());
-                            Globalemina.kode.set(x, finalFormKode.getText().toString());
-                            Globalemina.nama.set(x, formNama.getText().toString());
-                            Globalemina.harga.set(x, formHarga.getText().toString());
-                            Globalemina.stock.set(x, formStock.getText().toString());
-                            Globalemina.qty.set(x, String.valueOf(qtyform));
-                            Globalemina.sgtorder.set(x, "0");
-                            Globalemina.kategori.set(x, coba.getCategory());
-                            check = false;
-                            add = false;
-                        }
-
-                    }
-                    if (add) {
-                        Globalemina.id_produk.add(coba.getId());
-                        Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
-                        Globalemina.kode.add(finalFormKode.getText().toString());
-                        Globalemina.nama.add(formNama.getText().toString());
-                        Globalemina.harga.add(formHarga.getText().toString());
-                        Globalemina.stock.add(formStock.getText().toString());
-                        Globalemina.qty.add(String.valueOf(qtyform));
-                        Globalemina.kategori.add(coba.getCategory());
-                        Globalemina.sgtorder.add("0");
-                        Globalemina.produkCount++;
-                    }
-
-
-                    adapter.notifyDataSetChanged();
-                    dialog1.dismiss();
-
-                } else {
-
-                    orderedID.add(coba.getId());
-                    orderedkode.add(finalFormKode.getText().toString());
-                    orderedname.add(formNama.getText().toString());
-                    orderedprice.add(formHarga.getText().toString());
-                    orderedstock.add(formStock.getText().toString());
-                    orderedqty.add(formQty.getText().toString());
-
-                    kumpulanorder.setId(orderedID.get(count[0]));
-                    kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                    kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                    kumpulanorder.setPrice(orderedprice.get(count[0]));
-                    kumpulanorder.setStock(orderedstock.get(count[0]));
-                    kumpulanorder.setQty(orderedqty.get(count[0]));
-
-                    order.add(count[0], kumpulanorder);
-
-                    count[0]++;
-
-                    coba.setStock(formStock.getText().toString());
-                    coba.setQty(formQty.getText().toString());
-
-                    TextView stock = view13.findViewById(R.id.stock_hist);
-                    TextView qty = view13.findViewById(R.id.qtyhist);
-
-                    stock.setText(spacecrafts.get(position).getStock());
-                    qty.setText(spacecrafts.get(position).getQty());
-
-//                            Toast.makeText(getActivity(), "order:" + formNama.getText().toString() + "stockmo " + coba.getStock() + " qtymo " + coba.getQty(), Toast.LENGTH_LONG).show();
-
-
-                    boolean check = false;
-                    boolean add = true;
-
-                    for (int x = 0; x < Globalemina.kode.size(); x++) {
-                        if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
-                            check = true;
-                        }
-                        if (check) {
-                            Globalemina.id_produk.set(x, coba.getId());
-                            Globalemina.kode.set(x, finalFormKode.getText().toString());
-                            Globalemina.nama.set(x, formNama.getText().toString());
-                            Globalemina.harga.set(x, formHarga.getText().toString());
-                            Globalemina.stock.set(x, formStock.getText().toString());
-                            Globalemina.qty.set(x, formQty.getText().toString());
-                            Globalemina.kategori.set(x, coba.getCategory());
-                            Globalemina.sgtorder.set(x, "0");
-                            check = false;
-                            add = false;
-                        }
-
-                    }
-                    if (add) {
-                        Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
-                        Globalemina.id_produk.add(coba.getId());
-                        Globalemina.kode.add(finalFormKode.getText().toString());
-                        Globalemina.nama.add(formNama.getText().toString());
-                        Globalemina.harga.add(formHarga.getText().toString());
-                        Globalemina.stock.add(formStock.getText().toString());
-                        Globalemina.qty.add(formQty.getText().toString());
-                        Globalemina.kategori.add(coba.getCategory());
-                        Globalemina.sgtorder.add("0");
-                        Globalemina.produkCount++;
-                    }
-
-                    adapter.notifyDataSetChanged();
-                    dialog1.dismiss();
-
-                }
-
-            });
-            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-
-            dialog.show();
-        });
-
-        Button orderbutton = view.findViewById(R.id.order_buttonAdditionalEmina);
-        orderbutton.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putIntegerArrayList("ID", orderedID);
-            bundle.putStringArrayList("kodemo", orderedkode);
-            bundle.putStringArrayList("namamo", orderedname);
-            bundle.putStringArrayList("hargamo", orderedprice);
-            bundle.putStringArrayList("stok", orderedstock);
-            bundle.putStringArrayList("kuantitas", orderedqty);
-            Intent intent = new Intent(getActivity().getBaseContext(), RingkasanEminaActivity.class);
-            intent.putExtra("listorder", bundle);
-            startActivity(intent);
-        });
-
-        return view;
-    }
-
 }

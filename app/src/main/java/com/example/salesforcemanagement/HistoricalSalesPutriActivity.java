@@ -43,6 +43,7 @@ public class HistoricalSalesPutriActivity extends AppCompatActivity {
         final com.example.salesforcemanagement.HistoricalSalesPutriPagerAdapter adapter = new com.example.salesforcemanagement.HistoricalSalesPutriPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(5);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

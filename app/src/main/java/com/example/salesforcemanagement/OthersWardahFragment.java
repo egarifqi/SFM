@@ -72,11 +72,7 @@ public class OthersWardahFragment extends Fragment {
     int fuzzyscore = 75;
 
     Boolean barcodeInit = false;
-    private static final int STATE_BARCODE = 1;
-    private static final int STATE_KODE_ODOO = 2;
-    private static final int STATE_TEXT = 3;
     int stateSearching = 3;
-    public String searchQuery;
     public int lengthStringBarcode;
 
 
@@ -121,25 +117,25 @@ public class OthersWardahFragment extends Fragment {
 
                 if(s.length() == 0){
                     barcodeInit = false;
-                    adapter.setFilterHelperState(3);
                     stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
                 }
 
                 if(s.length() == lengthStringBarcode){
                     Log.d("DEBUG SEARCHING ON SUBMIT", "query barcode");
-                    adapter.setFilterHelperState(1);
                     stateSearching = 1;
+                    adapter.setFilterHelperState(stateSearching);
                     lengthStringBarcode = 0;
                 }
                 else if(isInteger(s)){
                     Log.d("DEBUG SEARCHING ON SUBMIT", "query integer");
-                    adapter.setFilterHelperState(2);
                     stateSearching = 2;
+                    adapter.setFilterHelperState(stateSearching);
                 }
                 else {
                     Log.d("DEBUG SEARCHING ON SUBMIT", "query text");
-                    adapter.setFilterHelperState(3);
                     stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
                 }
 
                 switch (stateSearching){
@@ -180,27 +176,27 @@ public class OthersWardahFragment extends Fragment {
 
                 if(query.length() == 0){
                     barcodeInit = false;
-                    adapter.setFilterHelperState(3);
                     stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
                 }
 
                 if(barcodeInit){
                     if(query.length() > 0){
                         lengthStringBarcode = query.length();
                         Log.d("DEBUG SEARCHING", "query barcode");
-                         adapter.setFilterHelperState(1);
-                         stateSearching = 1;
+                        stateSearching = 1;
+                        adapter.setFilterHelperState(stateSearching);
                     }
                 }
                 else if(isInteger(query)){
                     Log.d("DEBUG SEARCHING", "query integer");
-                    adapter.setFilterHelperState(2);
                     stateSearching = 2;
+                    adapter.setFilterHelperState(stateSearching);
                 }
                 else {
                     Log.d("DEBUG SEARCHING", "query text");
-                    adapter.setFilterHelperState(3);
                     stateSearching = 3;
+                    adapter.setFilterHelperState(stateSearching);
                 }
 
                 switch (stateSearching){
@@ -581,19 +577,6 @@ public class OthersWardahFragment extends Fragment {
                 startActivity(intent);
             }
         });
-//
-//        Button checkbutton = (Button) view.findViewById(R.id.check_buttonAdditionalWardah);
-//        checkbutton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String all = "";
-//                String txt = "";
-//                for (int j = 0; j < orderedID.size(); j++){
-//                    txt = "\n" + orderedname.get(j) + ",\n stk: " + orderedstock.get(j) + ",\t qtymo: " + orderedqty.get(j) + "price: " +orderedprice.get(j)+ "\n";
-//                    all = all + txt;
-//                }
-//                Toast.makeText(getActivity(), "Order: \n" + all, Toast.LENGTH_LONG).show();
-//            }
         return view;
     }
 
@@ -624,11 +607,6 @@ public class OthersWardahFragment extends Fragment {
             this.currentList = currentList;
             this.adapter = adapter;
             this.c = c;
-        }
-
-        public void setStateSearch(int state){
-            Log.d("DEBUG SEARCHING", "state FilterHelper : "+state);
-            stateSearch = state;
         }
         /*-
         - Perform actual filtering.
@@ -691,16 +669,13 @@ public class OthersWardahFragment extends Fragment {
             adapter.setSpacecrafts((ArrayList<Spacecraft>) filterResults.values);
             adapter.refresh();
         }
+
+        public void setStateSearch(int state){
+            Log.d("DEBUG SEARCHING", "state FilterHelper : "+state);
+            stateSearch = state;
+        }
     }
 
-//    static class ViewHolder implements Serializable {
-//        TextView product_odoo;
-//        TextView product_name;
-//        TextView product_price;
-//        TextView product_ws;
-//        TextView product_stock;
-//        TextView product_qty;
-//    }
 
     /*
     Our custom adapter class
@@ -719,11 +694,6 @@ public class OthersWardahFragment extends Fragment {
 
         }
 
-        public void setFilterHelperState(int state){
-            this.getFilter();
-            Log.d("DEBUG SEARCHING", "state ListViewAdapter: "+state);
-            filterHelper.setStateSearch(state);
-        }
 
         @Override
         public int getCount() {
@@ -795,6 +765,13 @@ public class OthersWardahFragment extends Fragment {
 
         public void refresh() {
             notifyDataSetChanged();
+        }
+
+
+        public void setFilterHelperState(int state){
+            this.getFilter();
+            Log.d("DEBUG SEARCHING", "state ListViewAdapter: "+state);
+            filterHelper.setStateSearch(state);
         }
     }
 

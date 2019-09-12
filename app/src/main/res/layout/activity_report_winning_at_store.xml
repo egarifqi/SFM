@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#42E3E7EB"
-    tools:context=".ReportWinningAtStoreActivity"
-    android:orientation="vertical">
+    tools:context=".ReportWinningAtStoreActivity">
 
     <RelativeLayout
         android:id="@+id/was_loading_layout"
@@ -27,7 +26,7 @@
         android:id="@+id/was_layout_header"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#44c2db"
+        android:background="@color/colorPrimary"
         android:orientation="horizontal">
 
         <ImageView
@@ -39,10 +38,15 @@
             android:scaleType="fitCenter"
             android:tint="@color/white"/>
 
-        <View
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="Winning at Store"
+            android:textSize="20dp"
+            android:paddingLeft="20dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"/>
 
         <ImageView
             android:id="@+id/was_camera_button"
@@ -86,28 +90,57 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/was_photo_taken"
-        android:layout_width="600dp"
-        android:layout_height="375dp"
-        android:layout_marginHorizontal="4dp"
-        android:layout_marginVertical="10dp"
-        android:scaleType="centerCrop"
-        android:layout_below="@+id/was_layout_header"/>
-    
-    <GridView
-        android:id="@+id/was_grid_photo"
+    <LinearLayout
+        android:id="@+id/was_layout_content_upload"
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginHorizontal="2dp"
         android:layout_height="match_parent"
-        android:numColumns="4"
-        android:columnWidth="290dp"
-        android:verticalSpacing="4dp"
-        android:gravity="center"
-        android:layout_below="@+id/was_photo_taken">
+        android:orientation="vertical"
+        android:layout_below="@+id/was_layout_header"
+        android:visibility="invisible">
 
-    </GridView>
+        <ImageView
+            android:id="@+id/was_photo_taken"
+            android:layout_width="600dp"
+            android:layout_height="375dp"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginVertical="10dp"
+            android:scaleType="centerCrop"
+            android:layout_below="@+id/was_layout_header"/>
+
+        <TextView
+            android:id="@+id/was_title_deskripsi_gambar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Deskripsi Gambar"
+            android:layout_below="@id/was_photo_taken"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <EditText
+            android:id="@+id/was_edittext_deskripsi_gambar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint=" Masukkan deskripsi gambar di sini"
+            android:layout_marginHorizontal="3dp"
+            android:paddingLeft="5dp"
+            android:layout_below="@+id/was_title_deskripsi_gambar"/>
+
+        <GridView
+            android:id="@+id/was_grid_photo"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="2dp"
+            android:layout_height="match_parent"
+            android:numColumns="4"
+            android:columnWidth="290dp"
+            android:verticalSpacing="4dp"
+            android:gravity="center"
+            android:layout_below="@+id/was_edittext_deskripsi_gambar">
+
+        </GridView>
+
+    </LinearLayout>
 
 
 </RelativeLayout>

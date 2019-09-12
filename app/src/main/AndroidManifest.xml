@@ -37,7 +37,9 @@
         <activity android:name=".RentCounterActivity" />
         <activity android:name=".ListingFeeActivity" />
         <activity android:name=".BrandingActivity" />
+        <activity android:name=".ReportCompetitorActivity"></activity>
         <activity android:name=".PengajuanActivity" />
+        <activity android:name=".ReportDoubleImplementationActivity" />
         <activity android:name=".ReportWinningAtStoreActivity" />
         <activity android:name=".ReportKondisiShelvingActivity" />
         <activity android:name=".KondisiTokoActivity" />
@@ -89,6 +91,10 @@
         <activity android:name=".scan.ScannpdmoActivity" />
         <activity android:name=".scan.ScannpdputriActivity" />
         <activity android:name=".scan.ScannpdwardahActivity" />
+        <activity android:name=".scan.ScanotherswardahActivity"/>
+        <activity android:name=".scan.ScanotherseminaActivity"/>
+        <activity android:name=".scan.ScanothersmoActivity"/>
+        <activity android:name=".scan.ScanothersputriActivity"/>
         <activity
             android:name=".RingkasanWardahActivity"
             android:windowSoftInputMode="adjustPan" />
@@ -101,6 +107,16 @@
         <activity
             android:name=".RingkasanPutriActivity"
             android:windowSoftInputMode="adjustPan" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+            </meta-data>
+        </provider>
     </application>
 
 </manifest>

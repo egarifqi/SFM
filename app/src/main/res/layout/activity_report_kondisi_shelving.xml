@@ -37,16 +37,17 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:src="@drawable/ic_wining_at_store"
-            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:elevation="5dp"
             />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardview_winning_at_store"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="105dp"
             android:background="@color/white"
             android:layout_marginTop="75dp"
+            android:layout_centerVertical="true"
             app:cardCornerRadius="50dp"
             app:cardElevation="4dp"
             app:cardUseCompatPadding="true">
@@ -57,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:text="Winning at Store"
                 android:layout_marginLeft="200dp"
-                android:paddingVertical="30dp"
+                android:paddingVertical="10dp"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -78,16 +79,17 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:src="@drawable/ic_double_implementation"
-            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:elevation="5dp"
             />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardview_double_implemenatation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="105dp"
             android:background="@color/white"
             android:layout_marginTop="75dp"
+            android:layout_centerVertical="true"
             app:cardCornerRadius="50dp"
             app:cardElevation="4dp"
             app:cardUseCompatPadding="true">
@@ -98,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:text="Double Implementation"
                 android:layout_marginLeft="200dp"
-                android:paddingVertical="30dp"
+                android:paddingVertical="10dp"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 

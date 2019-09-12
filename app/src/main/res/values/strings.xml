@@ -1,20 +1,6 @@
 <resources>
     <string name="app_name"></string>
-    <string name="login_button">Login</string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_taking_order">TakingOrderActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="pilih_alasan">Pilih Alasan</string>
-    <string name="title_activity_tracking">Map</string>
     <string name="title_home">Home</string>
-    <string name="title_pengajuan">Pengajuan</string>
     <string name="title_account">Account</string>
     <string name="toast_image_intent_null">Image picker option is missing!</string>
     <string name="lbl_set_profile_photo">Set profile image</string>

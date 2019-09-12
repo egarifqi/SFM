@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
@@ -72,8 +73,12 @@ public class NPDEminaFragment extends Fragment {
     private ArrayList<String> qty1 = new ArrayList<String>();
     int fuzzyscore = 75;
 
+    Boolean barcodeInit = false;
+    int stateSearching = 3;
+    public int lengthStringBarcode;
+
     //    @NonNull
-    @Override
+        @Override
 
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_npd_emina, container, false);
@@ -94,47 +99,124 @@ public class NPDEminaFragment extends Fragment {
             public void onClick(View view) {
             }
         });
-        mySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                for(int i = 0; i < spacecrafts.size(); i++){
-                    Log.d("FUZZY RATIO "+s+" : "+spacecrafts.get(i).getNamaproduk(), ""+ FuzzySearch.partialRatio(s, spacecrafts.get(i).getNamaproduk()));
-                    if(s.length() == 0){
-                        spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
-                    }
-                    else {
-                        if(FuzzySearch.partialRatio(s.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode()) > fuzzyscore){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mySearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    for(int i = 0; i < spacecrafts.size(); i++){
+                        Log.d("FUZZY RATIO "+s+" : "+spacecrafts.get(i).getNamaproduk(), ""+ FuzzySearch.partialRatio(s, spacecrafts.get(i).getNamaproduk()));
+                        if(s.length() == 0){
                             spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
                         }
                         else {
-                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
+                            if(FuzzySearch.partialRatio(s.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode()) > fuzzyscore){
+                                spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
+                            }
+                            else {
+                                spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
+                            }
                         }
                     }
-                }
-                adapter.getFilter().filter("fuzzymatched");
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String query) {
-                for(int i = 0; i < spacecrafts.size(); i++){
-                    Log.d("FUZZY RATIO "+query+" : "+spacecrafts.get(i).getNamaproduk(), ""+ FuzzySearch.partialRatio(query, spacecrafts.get(i).getNamaproduk()));
-                    if(query.length() == 0){
-                        spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
+                    if(s.length() == 0){
+                        barcodeInit = false;
+                        stateSearching = 3;
+                        adapter.setFilterHelperState(stateSearching);
+                    }
+
+                    if(s.length() == lengthStringBarcode){
+                        stateSearching = 1;
+                        adapter.setFilterHelperState(stateSearching);
+                        lengthStringBarcode = 0;
+                    }
+                    else if(isInteger(s)){
+                        stateSearching = 2;
+                        adapter.setFilterHelperState(stateSearching);
                     }
                     else {
-                        if(FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode()) > fuzzyscore){
+                        stateSearching = 3;
+                        adapter.setFilterHelperState(stateSearching);
+                    }
+
+                    switch (stateSearching){
+                        case 1:
+                            adapter.getFilter().filter(s);
+                            barcodeInit = false;
+                            break;
+
+
+                        case 2:
+                            adapter.getFilter().filter(s);
+                            break;
+
+                        case 3:
+                            adapter.getFilter().filter("fuzzymatched");
+                            break;
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String query) {
+                    for(int i = 0; i < spacecrafts.size(); i++){
+                        Log.d("FUZZY RATIO "+query+" : "+spacecrafts.get(i).getNamaproduk(), ""+ FuzzySearch.partialRatio(query, spacecrafts.get(i).getNamaproduk()));
+                        if(query.length() == 0){
                             spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
                         }
                         else {
-                            spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
+                            if(FuzzySearch.partialRatio(query.toLowerCase(), spacecrafts.get(i).getNamaproduk().toLowerCase()+" "+spacecrafts.get(i).getKodeodoo()+" "+spacecrafts.get(i).getBarcode()) > fuzzyscore){
+                                spacecrafts.get(i).setFuzzyMatchStatus("fuzzymatched");
+                            }
+                            else {
+                                spacecrafts.get(i).setFuzzyMatchStatus("fuzzynotmatched");
+                            }
                         }
                     }
+
+                    if(query.length() == 0){
+                        barcodeInit = false;
+                        stateSearching = 3;
+                        adapter.setFilterHelperState(stateSearching);
+                    }
+
+                    if(barcodeInit){
+                        if(query.length() > 0){
+                            lengthStringBarcode = query.length();
+                            Log.d("DEBUG SEARCHING", "query barcode");
+                            stateSearching = 1;
+                            adapter.setFilterHelperState(stateSearching);
+                        }
+                    }
+                    else if(isInteger(query)){
+                        Log.d("DEBUG SEARCHING", "query integer");
+                        stateSearching = 2;
+                        adapter.setFilterHelperState(stateSearching);
+                    }
+                    else {
+                        Log.d("DEBUG SEARCHING", "query text");
+                        stateSearching = 3;
+                        adapter.setFilterHelperState(stateSearching);
+                    }
+
+                    switch (stateSearching){
+                        case 1:
+                            adapter.getFilter().filter(query);
+                            barcodeInit = false;
+                            break;
+
+
+                        case 2:
+                            adapter.getFilter().filter(query);
+                            break;
+
+                        case 3:
+                            adapter.getFilter().filter("fuzzymatched");
+                            break;
+                    }
+                    return false;
                 }
-                adapter.getFilter().filter("fuzzymatched");
-                return false;
-            }
-        });
+            });
+        }
 
         spacecrafts = new JSONDownloader(getActivity()).retrieve(myListView, myProgressBar);
         adapter = new ListViewAdapter(getActivity(), spacecrafts);
@@ -305,25 +387,24 @@ public class NPDEminaFragment extends Fragment {
                         }
                     });
 
-                    final TextView finalFormKode = formKode;
-                    final int[] count = new int[1];
-                    dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String mStock = formStock.getText().toString();
-                            String mQty = formQty.getText().toString();
-                            count[0] = 0;
-                            if (mStock.isEmpty() && mQty.isEmpty()) {
-                                Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
-                            } else if (mStock.isEmpty() && !mQty.isEmpty()) {
-                                orderedID.add(coba.getId());
-                                orderedkode.add(finalFormKode.getText().toString());
-                                orderedname.add(formNama.getText().toString());
-                                orderedprice.add(formHarga.getText().toString());
-//                            int stockform = 0;
-                                orderedstock.add("0");
-                                orderedqty.add(formQty.getText().toString());
-                                orderedcategory.add(coba.getCategory());
+                final TextView finalFormKode = formKode;
+                final int[] count = new int[1];
+                dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String mStock = formStock.getText().toString();
+                        String mQty = formQty.getText().toString();
+                        count[0] = 0;
+                        if (mStock.isEmpty() && mQty.isEmpty()){
+                            Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
+                        } else if (mStock.isEmpty() && !mQty.isEmpty()) {
+                            orderedID.add(coba.getId());
+                            orderedkode.add(finalFormKode.getText().toString());
+                            orderedname.add(formNama.getText().toString());
+                            orderedprice.add(formHarga.getText().toString());
+                            orderedstock.add("0");
+                            orderedqty.add(formQty.getText().toString());
+                            orderedcategory.add(coba.getCategory());
 
                                 kumpulanorder.setId(orderedID.get(count[0]));
                                 kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
@@ -561,27 +642,27 @@ public class NPDEminaFragment extends Fragment {
                 bundle.putStringArrayList("hargamo", orderedprice);
                 bundle.putStringArrayList("stok", orderedstock);
                 bundle.putStringArrayList("kuantitas", orderedqty);
-                Intent intent = new Intent(getActivity().getBaseContext(), com.example.salesforcemanagement.RingkasanEminaActivity.class);
+                Intent intent = new Intent(getActivity().getBaseContext(), RingkasanEminaActivity.class);
                 intent.putExtra("listorder", bundle);
                 startActivity(intent);
             }
         });
 
-//        Button checkbutton = (Button) view.findViewById(R.id.check_buttonNPDWardah);
-//        checkbutton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String all = "";
-//                String txt = "";
-//                for (int j = 0; j < orderedID.size(); j++){
-//                    txt = "\n" + orderedname.get(j) + ",\n stk: " + orderedstock.get(j) + ",\t qtymo: " + orderedqty.get(j) + "price: " +orderedprice.get(j)+ "\n";
-//                    all = all + txt;
-//                }
-//                Toast.makeText(getActivity(), "Order: \n" + all, Toast.LENGTH_LONG).show();
-//            }
-//        });
 
         return view;
+    }
+
+    private boolean isInteger(String s) {
+        Log.d("DEBUG SEARCHING", "query string : "+s);
+        try{
+            int testInt = Integer.parseInt(s);
+            Log.d("DEBUG SEARCHING", "query int : "+testInt);
+        } catch(NumberFormatException nfe) {
+            Log.d("DEBUG SEARCHING", "not integer");
+            return false;
+        }
+        Log.d("DEBUG SEARCHING", "integer");
+        return true;
     }
 
     /*
@@ -591,6 +672,7 @@ public class NPDEminaFragment extends Fragment {
         ArrayList<com.example.salesforcemanagement.Spacecraft> currentList;
         ListViewAdapter adapter;
         Context c;
+        int stateSearch;
 
         public FilterHelper(ArrayList<com.example.salesforcemanagement.Spacecraft> currentList, ListViewAdapter adapter, Context c) {
             this.currentList = currentList;
@@ -617,9 +699,28 @@ public class NPDEminaFragment extends Fragment {
 //                    if (spacecraft.getKodeodoo().toUpperCase().contains(constraint) ||
 //                            spacecraft.getNamaproduk().toUpperCase().contains(constraint) ||
 //                            spacecraft.getBarcode().toUpperCase().contains(constraint)) {
-                    if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)){
-//ADD IF FOUND
-                        foundFilters.add(spacecraft);
+                    switch (stateSearch) {
+                        case 1:
+                            Log.d("DEBUG SEARCHING", "query state barcode : " + constraint);
+                            if (spacecraft.getBarcode().toUpperCase().contains(constraint)) {
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 2:
+                            Log.d("DEBUG SEARCHING", "query state kode odoo : " + constraint);
+                            if (spacecraft.getKodeodoo().toUpperCase().contains(constraint)) {
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
+
+                        case 3:
+                            if (spacecraft.getFuzzyMatchStatus().toUpperCase().contains(constraint)) {
+                                //ADD IF FOUND
+                                Log.d("DEBUG SEARCHING", "query state text : " + constraint);
+                                foundFilters.add(spacecraft);
+                            }
+                            break;
                     }
                 }
 //SET RESULTS TO FILTER LIST
@@ -638,6 +739,11 @@ public class NPDEminaFragment extends Fragment {
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             adapter.setSpacecrafts((ArrayList<com.example.salesforcemanagement.Spacecraft>) filterResults.values);
             adapter.refresh();
+        }
+
+        public void setStateSearch(int state) {
+            Log.d("DEBUG SEARCHING", "state FilterHelper : "+state);
+            stateSearch = state;
         }
     }
 
@@ -754,6 +860,12 @@ public class NPDEminaFragment extends Fragment {
         public void refresh() {
             notifyDataSetChanged();
         }
+
+        public void setFilterHelperState(int state) {
+            this.getFilter();
+            Log.d("DEBUG SEARCHING", "state ListViewAdapter: "+state);
+            filterHelper.setStateSearch(state);
+        }
     }
 
     public class JSONDownloader implements Serializable {
@@ -769,10 +881,10 @@ public class NPDEminaFragment extends Fragment {
         */
         public ArrayList<com.example.salesforcemanagement.Spacecraft> retrieve(final ListView mLpositiveistView, final ProgressBar myProgressBar) {
             final ArrayList<com.example.salesforcemanagement.Spacecraft> downloadedData = new ArrayList<>();
-            myProgressBar.setIndeterminate(true);
-            myProgressBar.setVisibility(View.VISIBLE);
             final DatabaseNPDPromoHandler dbNPD = new DatabaseNPDPromoHandler(getContext());
 
+            myProgressBar.setIndeterminate(true);
+            myProgressBar.setVisibility(View.VISIBLE);
             pref = getActivity().getSharedPreferences("TokoPref", 0);
             editor = pref.edit();
             final String customer = pref.getString("ref", "");

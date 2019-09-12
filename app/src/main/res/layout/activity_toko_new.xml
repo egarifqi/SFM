@@ -25,8 +25,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="8dp"
-        android:text="Nama Tokonya dicoba kalau panjang jadi gimana"
-        android:textColor="#00FFFFFF"
+        android:textColor="#FFF"
         android:textSize="28sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -182,7 +181,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_weight="1"
-        android:background="@drawable/buttonsee"
+        android:background="@drawable/gradient1"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
         tools:ignore="MissingConstraints">
@@ -192,6 +191,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
             android:ems="8"
             android:text="Alamat"
@@ -199,18 +199,6 @@
             android:textSize="14sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
-
-        <TextView
-            android:id="@+id/tanda1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:ems="8"
-            android:text=":"
-            android:textColor="@color/text"
-            android:textSize="14sp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/alamatTitle"/>
 
         <TextView
             android:id="@+id/alamatToko"
@@ -230,33 +218,46 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:ems="8"
-            android:text="Kontak"
+            android:text="Nomor Telp / HP"
             android:textColor="@color/text"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/alamatToko" />
 
-        <TextView
-            android:id="@+id/tanda2"
+        <LinearLayout
+            android:id="@+id/LLnoTelp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="8"
-            android:text=":"
-            android:textColor="@color/text"
-            android:textSize="14sp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp"
             app:layout_constraintTop_toBottomOf="@id/alamatToko"
-            app:layout_constraintStart_toEndOf="@id/noTelpTitle"/>
-
-        <TextView
-            android:id="@+id/noHP"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:ems="7"
-            android:textColor="@color/text"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/alamatToko"
-            app:layout_constraintStart_toEndOf="@id/noTelpTitle" />
+            app:layout_constraintStart_toEndOf="@id/noTelpTitle">
+            <TextView
+                android:id="@+id/noTelp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ems="7"
+                android:text=""
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/slash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/text"
+                android:text="/"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/noHP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ems="7"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/channelTitle"
@@ -268,18 +269,7 @@
             android:textColor="@color/text"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/noHP" />
-
-        <TextView
-            android:id="@+id/tanda3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="8"
-            android:text=":"
-            android:textColor="@color/text"
-            android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/channelTitle"
-            app:layout_constraintTop_toBottomOf="@+id/noHP" />
+            app:layout_constraintTop_toBottomOf="@+id/LLnoTelp" />
 
         <TextView
             android:id="@+id/channel"
@@ -290,7 +280,7 @@
             android:textColor="@color/text"
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@+id/channelTitle"
-            app:layout_constraintTop_toBottomOf="@+id/noHP" />
+            app:layout_constraintTop_toBottomOf="@+id/LLnoTelp" />
 
         <TextView
             android:id="@+id/frekuensiTitle"
@@ -298,23 +288,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            app:layout_goneMarginBottom="8dp"
             android:ems="8"
             android:text="Frekuensi Kunjungan"
             android:textColor="@color/text"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/channel"/>
-
-        <TextView
-            android:id="@+id/tanda4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="8"
-            android:text=":"
-            android:textColor="@color/text"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/channelTitle"
-            app:layout_constraintStart_toEndOf="@id/frekuensiTitle"/>
 
         <TextView
             android:id="@+id/frekuensi"
@@ -329,124 +309,33 @@
             app:layout_constraintStart_toEndOf="@id/frekuensiTitle"/>
 
         <TextView
-            android:id="@+id/piutangTitle"
+            android:id="@+id/diskonTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            app:layout_goneMarginBottom="8dp"
             android:layout_marginBottom="8dp"
+            app:layout_goneMarginBottom="8dp"
             android:ems="8"
-            android:text="Status Piutang"
+            android:text="Diskon Toko"
             android:textColor="@color/text"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/frekuensi"/>
-
-        <TextView
-            android:id="@+id/tanda5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="8"
-            android:layout_marginBottom="8dp"
-            android:text=":"
-            android:textColor="@color/text"
-            android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/frekuensi"
-            app:layout_constraintStart_toEndOf="@id/piutangTitle"/>
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
-            android:id="@+id/piutang"
+            android:id="@+id/diskon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
+            app:layout_goneMarginBottom="8dp"
             android:ems="24"
             android:textColor="@color/text"
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/frekuensi"
-            app:layout_constraintStart_toEndOf="@id/piutangTitle"/>
-
-        <TextView
-            android:id="@+id/targettokoTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_goneMarginBottom="8dp"
-            android:layout_marginBottom="8dp"
-            android:ems="8"
-            android:text="Target Toko"
-            android:textColor="@color/text"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/piutang"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <TextView
-            android:id="@+id/tanda6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="8"
-            android:layout_marginBottom="8dp"
-            android:text=":"
-            android:textColor="@color/text"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/piutang"
-            app:layout_constraintStart_toEndOf="@id/targettokoTitle"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <TextView
-            android:id="@+id/targettoko"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:ems="24"
-            android:textColor="@color/text"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/piutang"
-            app:layout_constraintStart_toEndOf="@id/targettokoTitle"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-        <!--        <TextView-->
-<!--            android:id="@+id/diskonTitle"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:layout_marginEnd="8dp"-->
-<!--            android:layout_marginBottom="8dp"-->
-<!--            app:layout_goneMarginBottom="8dp"-->
-<!--            android:ems="8"-->
-<!--            android:text="Diskon Toko"-->
-<!--            android:textColor="@color/text"-->
-<!--            android:textSize="14sp"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/frekuensi"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/tanda5"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:ems="8"-->
-<!--            android:text=":"-->
-<!--            android:textColor="@color/text"-->
-<!--            android:textSize="14sp"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/frekuensi"-->
-<!--            app:layout_constraintStart_toEndOf="@id/diskonTitle" />-->
-<!--        -->
-<!--        <TextView-->
-<!--            android:id="@+id/diskon"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:layout_marginBottom="8dp"-->
-<!--            app:layout_goneMarginBottom="8dp"-->
-<!--            android:ems="24"-->
-<!--            android:textColor="@color/text"-->
-<!--            android:textSize="14sp"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/frekuensi"-->
-<!--            app:layout_constraintStart_toEndOf="@id/diskonTitle"/>-->
+            app:layout_constraintStart_toEndOf="@id/diskonTitle"/>
         <!--TARGET-->
         <LinearLayout
             android:layout_width="match_parent"
@@ -541,37 +430,38 @@
 
         </GridLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_tundatoko"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="3dp"
+                android:background="#818181"
+                android:text="TUNDA"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/button_simpantoko"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="3dp"
+                android:background="#818181"
+                android:text="selesai"
+                android:textColor="#fff" />
+
+        </LinearLayout>
+
+
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:layout_marginBottom="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="@+id/scrollView2">
-
-        <Button
-            android:id="@+id/button_tundatoko"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_gravity="center"
-            android:layout_marginRight="3dp"
-            android:background="#818181"
-            android:text="TUNDA"
-            android:textColor="#fff" />
-
-        <Button
-            android:id="@+id/button_simpantoko"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="3dp"
-            android:background="#818181"
-            android:text="selesai"
-            android:textColor="#fff" />
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +52,7 @@ public class ReturWardahActivity extends AppCompatActivity {
     final ArrayList<String> orderedprice = new ArrayList<String>(); //hargamo
     final ArrayList<String> orderedstock = new ArrayList<String>(); //stockmo
     final ArrayList<String> orderedqty = new ArrayList<String>(); //qtymo
+    final ArrayList<String> returalasan = new ArrayList<String>();
     final ArrayList<String> orderedcategory = new ArrayList<String>();
     SharedPreferences pref;
     SharedPreferences.Editor editor;
@@ -60,7 +63,10 @@ public class ReturWardahActivity extends AppCompatActivity {
     ListViewAdapter adapter;
     private ArrayList<String> stock1 = new ArrayList<String>();
     private ArrayList<String> qty1 = new ArrayList<String>();
-
+    String[] s = {"Arahan pusat", "Belum listing", "Kadaluarsa", "Item baru ditolak", "Kelebihan kirim",
+            "Kemasan lama", "Orderan tercampur dengan toko lain", "Overstock", "Penutupan order brand Make Over",
+            "Rusak isi", "Rusak kemasan", "Salah kode barang dari pabrik", "Salah pengantaran", "Salah PO",
+            "Sendback faktur migrasi", "SLow moving", "Tutup toko"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +122,7 @@ public class ReturWardahActivity extends AppCompatActivity {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(ReturWardahActivity.this);
                 LayoutInflater layoutInflater = getLayoutInflater();
                 View dialogView = layoutInflater.inflate(R.layout.form_retur, null);
+//                String qtyBrg = ;
                 dialog.setView(dialogView);
                 dialog.setCancelable(true);
                 dialog.setTitle("Input Retur");
@@ -123,14 +130,19 @@ public class ReturWardahActivity extends AppCompatActivity {
                 TextView formKode = null;
                 final TextView formNama;
                 final TextView formHarga;
-                final TextView formPcs, formws;
-                final EditText formStock, formQty;
+                final TextView formQty;
+//                final Spinner formAlasan;
+                Spinner formAlasan = (Spinner) dialogView.findViewById(R.id.reason_form1);
+                ArrayAdapter<String> adapterretur = new ArrayAdapter<String>(ReturWardahActivity.this, android.R.layout.simple_spinner_item,
+                        getResources().getStringArray(R.array.list_alasanretur));
+                adapterretur.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                formAlasan.setAdapter(adapterretur);
 
                 formKode = dialogView.findViewById(R.id.kode_odoo_form);
                 formNama = dialogView.findViewById(R.id.nama_produk_form);
                 formHarga = dialogView.findViewById(R.id.harga_form);
                 formQty = dialogView.findViewById(R.id.qty_form1);
-                formPcs = dialogView.findViewById(R.id.pcs_produk_form);
+//                formAlasan = dialogView.findViewById(R.id.alasan_form);
 
                 final Spacecraft coba = (Spacecraft) adapter.getItem(position);
 
@@ -140,14 +152,17 @@ public class ReturWardahActivity extends AppCompatActivity {
                 formKode.setText(coba.getKodeodoo());
                 formNama.setText(coba.getNamaproduk());
                 formHarga.setText(coba.getPrice());
-                formPcs.setText(coba.getKoli());
-
+                formQty.setHint("0");
                 final TextView finalFormKode = formKode;
+                final TextView finalFormNama = formNama;
+                final Spinner finalFormAlasan = formAlasan;
                 final int[] count = new int[1];
-                dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
+                dialog.setPositiveButton("Retur", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String mQty = formQty.getText().toString();
+//                        int qtyBrg = 0;
+                        int qtybrg = Integer.parseInt(coba.getQty());
                         count[0] = 0;
                         if (mQty.isEmpty()){
                             Toast.makeText(getBaseContext(), "Mohon jangan kosongkan quantity ic_retur", Toast.LENGTH_SHORT).show();
@@ -158,6 +173,7 @@ public class ReturWardahActivity extends AppCompatActivity {
                             orderedname.add(formNama.getText().toString());
                             orderedprice.add(formHarga.getText().toString());
                             orderedqty.add(formQty.getText().toString());
+                            returalasan.add(formAlasan.getSelectedItem().toString());
                             orderedcategory.add(coba.getCategory());
 
                             kumpulanorder.setId(orderedID.get(count[0]));
@@ -165,6 +181,7 @@ public class ReturWardahActivity extends AppCompatActivity {
                             kumpulanorder.setNamaproduk(orderedname.get(count[0]));
                             kumpulanorder.setPrice(orderedprice.get(count[0]));
                             kumpulanorder.setQty(orderedqty.get(count[0]));
+                            kumpulanorder.setAlasan(returalasan.get(count[0]));
                             kumpulanorder.setCategory(orderedcategory.get(count[0]));
 
                             order.add(count[0], kumpulanorder);
@@ -174,17 +191,20 @@ public class ReturWardahActivity extends AppCompatActivity {
                             coba.setQty(formQty.getText().toString());
 
                             TextView qty = view.findViewById(R.id.qtyhist);
+                            qtybrg = qtybrg + Integer.parseInt(coba.getQty());
 
-                            qty.setText(spacecrafts.get(position).getQty());
+//                            Toast.makeText(getApplicationContext(), "Retur:" + formNama.getText().toString() +
+//                                    ", qty " + coba.getQty() + " dengan alasan " + formAlasan.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
 
-//                            Toast.makeText(getActivity(), "order:" + formNama.getText().toString() + "stockmo " + coba.getStock() + " qtymo " + coba.getQty(), Toast.LENGTH_LONG).show();
-
-
+                            Toast.makeText(getApplicationContext(), "Retur:" + formNama.getText().toString() +
+                                    ", qty " + qtybrg + " dengan alasan " + formAlasan.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                            qty.setText(qtybrg + "");
                             boolean check = false;
                             boolean add = true;
 
                             for (int x = 0; x < Global.kode.size(); x++) {
-                                if (finalFormKode.getText().toString().equals(Global.kode.get(x))) {
+                                if (finalFormNama.getText().toString().equals(Global.nama.get(x)) &&
+                                        finalFormAlasan.getSelectedItem().toString().equals(Global.alasan.get(x))) {
                                     check = true;
                                 }
                                 if (check) {
@@ -193,6 +213,7 @@ public class ReturWardahActivity extends AppCompatActivity {
                                     Global.nama.set(x, formNama.getText().toString());
                                     Global.harga.set(x, formHarga.getText().toString());
                                     Global.qty.set(x, formQty.getText().toString());
+                                    Global.alasan.set(x, formAlasan.getSelectedItem().toString());
                                     Global.kategori.set(x, coba.getCategory());
                                     Global.sgtorder.set(x,"0");
                                     check = false;
@@ -207,6 +228,7 @@ public class ReturWardahActivity extends AppCompatActivity {
                                 Global.nama.add(formNama.getText().toString());
                                 Global.harga.add(formHarga.getText().toString());
                                 Global.qty.add(formQty.getText().toString());
+                                Global.alasan.add(formAlasan.getSelectedItem().toString());
                                 Global.kategori.add(coba.getCategory());
                                 Global.sgtorder.add("0");
                                 Global.produkCount++;
@@ -230,8 +252,8 @@ public class ReturWardahActivity extends AppCompatActivity {
             }
         });
 
-        Button orderbutton = findViewById(R.id.buttonReturWardah);
-        orderbutton.setOnClickListener(new View.OnClickListener() {
+        Button returbutton = findViewById(R.id.buttonReturWardah);
+        returbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
@@ -240,7 +262,8 @@ public class ReturWardahActivity extends AppCompatActivity {
                 bundle.putStringArrayList("namamo", orderedname);
                 bundle.putStringArrayList("hargamo", orderedprice);
                 bundle.putStringArrayList("kuantitas", orderedqty);
-                Intent intent = new Intent(ReturWardahActivity.this.getBaseContext(), RingkasanWardahActivity.class);
+                bundle.putStringArrayList("alasan", returalasan);
+                Intent intent = new Intent(ReturWardahActivity.this.getBaseContext(), RRingkasanWardahActivity.class);
                 intent.putExtra("listorder", bundle);
                 startActivity(intent);
             }
@@ -417,7 +440,7 @@ public class ReturWardahActivity extends AppCompatActivity {
             Log.e("SIZE LIST MHS", ""+listEBP.size());
             final String customer = pref.getString("ref", "");
 //            String barcode = pref.getString("barcode", "");
-            String url = "https://sfa-api.pti-cosmetics.com/v_product_all?brand=ilike.*wardah&partner_ref=eq." + customer;
+            String url = "https://sfa-api.pti-cosmetics.com/v_product_all?brand=ilike.*wardah&barcode=neq.0&partner_ref=eq." + customer;
             Log.e("url", url);
             AndroidNetworking.get(url)
                     .setPriority(Priority.HIGH)

@@ -8,6 +8,7 @@
     android:layout_gravity="center"
     android:gravity="center"
     android:orientation="vertical"
+    android:background="#fff"
     tools:context=".TakingOrderBrandActivity">
 
     <View

@@ -67,7 +67,7 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
     }
 
     // code to add the new contact
-    void addProduk(com.example.salesforcemanagement.Spacecraft s) {
+    void addProduk(Spacecraft s) {
         SQLiteDatabase db = this.getWritableDatabase();
 
 //        ContentValues values = new ContentValues();
@@ -92,7 +92,7 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
 
     void addAllProduk(JSONArray ja, int length) throws JSONException {
         SQLiteDatabase db = this.getWritableDatabase();
-        com.example.salesforcemanagement.Spacecraft s = new com.example.salesforcemanagement.Spacecraft();
+        Spacecraft s = new Spacecraft();
         db.beginTransaction();
         JSONObject jo;
 //        Log.e("JSON", ja.toString());
@@ -132,33 +132,32 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
 
 
     // code to get the single contact
-    com.example.salesforcemanagement.Spacecraft getProduk(int id) {
+    Spacecraft getProduk(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        com.example.salesforcemanagement.Spacecraft s = new com.example.salesforcemanagement.Spacecraft();
+        Spacecraft s = new Spacecraft();
 
-        Cursor cursor = db.query(TABLE_PRODUK_EBP, new String[] { KEY_ID, KEY_CODE, KEY_NAME, KEY_PRICE,
-                        KEY_CATEGORY, KEY_BARCODE, KEY_WEEKLY_SALES,
-                        KEY_PARTNER_ID, KEY_BRAND, KEY_STOCK, KEY_QTY}, KEY_ID + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
+        Cursor cursor = db.query(TABLE_PRODUK_EBP, new String[]{KEY_ID, KEY_CODE, KEY_NAME, KEY_PRICE,
+                        KEY_CATEGORY, KEY_BARCODE, KEY_WEEKLY_SALES, KEY_PARTNER_ID, KEY_BRAND, KEY_STOCK, KEY_QTY}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
         if (cursor != null && cursor.moveToFirst()) {
-            s = new com.example.salesforcemanagement.Spacecraft(Integer.parseInt(cursor.getString(0)),
+            s = new Spacecraft(Integer.parseInt(cursor.getString(0)),
                     cursor.getString(1), cursor.getString(2),
                     cursor.getString(3), cursor.getString(4),
                     "", cursor.getString(5),
                     cursor.getInt(6), cursor.getString(7),
                     cursor.getString(8), cursor.getString(9),
-                    cursor.getString(10), cursor.getString(11));
+                    cursor.getString(10), cursor.getString(11), cursor.getString(12));
             cursor.close();
         }
         // return contact
         return s;
     }
 
-    com.example.salesforcemanagement.Spacecraft getProdukToko(int id, String partnerid, String brand) {
+    Spacecraft getProdukToko(int id, String partnerid, String brand) {
         SQLiteDatabase db = this.getReadableDatabase();
-        com.example.salesforcemanagement.Spacecraft s = new com.example.salesforcemanagement.Spacecraft();
+        Spacecraft s = new Spacecraft();
 
         Cursor cursor = db.query(TABLE_PRODUK_EBP, new String[] { KEY_ID, KEY_CODE, KEY_NAME, KEY_PRICE,
                 KEY_CATEGORY, KEY_BARCODE, KEY_WEEKLY_SALES, KEY_PARTNER_ID, KEY_BRAND, KEY_STOCK,
@@ -167,13 +166,13 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
         if (cursor != null)
             cursor.moveToFirst();
         if (cursor != null && cursor.moveToFirst()) {
-            s = new com.example.salesforcemanagement.Spacecraft(Integer.parseInt(cursor.getString(0)),
+            s = new Spacecraft(Integer.parseInt(cursor.getString(0)),
                     cursor.getString(1), cursor.getString(2),
                     cursor.getString(3), cursor.getString(4),
                     "", cursor.getString(5),
                     cursor.getInt(6), cursor.getString(7),
                     cursor.getString(8), cursor.getString(9),
-                    cursor.getString(10), cursor.getString(11));
+                    cursor.getString(10), cursor.getString(11), cursor.getString(12));
             cursor.close();
         }
         // return contact
@@ -182,9 +181,9 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
 
 
     // code to get all contacts in a list view
-    public ArrayList<com.example.salesforcemanagement.Spacecraft> getAllProduk() {
-        ArrayList<com.example.salesforcemanagement.Spacecraft> listProduk = new ArrayList<com.example.salesforcemanagement.Spacecraft>();
-        com.example.salesforcemanagement.Spacecraft contact = new com.example.salesforcemanagement.Spacecraft();
+    public ArrayList<Spacecraft> getAllProduk() {
+        ArrayList<Spacecraft> listProduk = new ArrayList<Spacecraft>();
+        Spacecraft contact = new Spacecraft();
         // Select All Query
         String selectQuery = "SELECT * FROM " + TABLE_PRODUK_EBP;
 
@@ -233,8 +232,8 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
         return listProduk;
     }
 
-    public ArrayList<com.example.salesforcemanagement.Spacecraft> getAllProdukToko(String partnerid, String brand) {
-        ArrayList<com.example.salesforcemanagement.Spacecraft> listProduk = new ArrayList<com.example.salesforcemanagement.Spacecraft>();
+    public ArrayList<Spacecraft> getAllProdukToko(String partnerid, String brand) {
+        ArrayList< Spacecraft> listProduk = new ArrayList< Spacecraft>();
 //        Spacecraft contact = new Spacecraft();
         // Select All Query
         String selectQuery = "SELECT * FROM " + TABLE_PRODUK_EBP + " WHERE " + KEY_PARTNER_ID + " IS " + partnerid + " AND " + KEY_BRAND + " IS '" + brand + "'";
@@ -245,7 +244,7 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                com.example.salesforcemanagement.Spacecraft contact = new com.example.salesforcemanagement.Spacecraft();
+                Spacecraft contact = new Spacecraft();
                 contact.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_ID))));
                 contact.setKodeodoo(cursor.getString(cursor.getColumnIndex(KEY_CODE)));
                 contact.setNamaproduk(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
@@ -270,7 +269,7 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
     }
 
     // code to update the single contact
-    public int updateProduk(com.example.salesforcemanagement.Spacecraft s) {
+    public int updateProduk( Spacecraft s) {
         SQLiteDatabase db = this.getWritableDatabase();
 
 //        ContentValues values = new ContentValues();
@@ -292,7 +291,7 @@ public class DatabaseProdukEBPHandler extends SQLiteOpenHelper {
     }
 
     // Deleting single contact
-    public void deleteProduk(com.example.salesforcemanagement.Spacecraft contact) {
+    public void deleteProduk( Spacecraft contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_PRODUK_EBP, KEY_ID + " = ?",
                 new String[] { String.valueOf(contact.getId()) });

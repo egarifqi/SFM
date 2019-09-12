@@ -21,11 +21,11 @@ public class HistoricalSalesPutriPagerAdapter extends FragmentStatePagerAdapter 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0:
-                return new AdditionalPutriFragment();
             case 1:
-                return new com.example.salesforcemanagement.NPDPutriFragment();
+                return new AdditionalPutriFragment();
             case 2:
+                return new com.example.salesforcemanagement.NPDPutriFragment();
+            case 0:
                 return new com.example.salesforcemanagement.ListHistPutriFragment();
             case 3:
                 return new OthersPutriFragment();

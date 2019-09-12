@@ -27,7 +27,7 @@
         android:layout_centerHorizontal="true"/>
 
     <RelativeLayout
-        android:id="@+id/layout_kondisi_shelving"
+        android:id="@+id/layout_branding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/nama_tokop"
@@ -67,10 +67,10 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/layout_pengajuan"
+        android:id="@+id/layout_listing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_kondisi_shelving"
+        android:layout_below="@+id/layout_branding"
         android:layout_marginHorizontal="20dp">
 
         <ImageView
@@ -107,10 +107,10 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/layout_report_competitor"
+        android:id="@+id/layout_sewacounter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_pengajuan"
+        android:layout_below="@+id/layout_listing"
         android:layout_marginHorizontal="20dp">
 
         <ImageView
@@ -150,7 +150,7 @@
         android:id="@+id/layout_merchandising"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_report_competitor"
+        android:layout_below="@+id/layout_sewacounter"
         android:layout_marginHorizontal="20dp">
 
         <ImageView

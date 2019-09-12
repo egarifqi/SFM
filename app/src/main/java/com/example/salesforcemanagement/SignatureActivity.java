@@ -40,8 +40,8 @@ public class SignatureActivity extends AppCompatActivity {
     View view;
     signature mSignature;
     Bitmap bitmap;
-    SharedPreferences prefToko;
-    SharedPreferences.Editor editorToko;
+    SharedPreferences prefToko, pref;
+    SharedPreferences.Editor editorToko, editor;
 
     // Creating Separate Directory for saving Generated Images
 //    String DIRECTORY = Environment.getExternalStorageDirectory().getPath()+ "/"; //+ "/UserSignature/";
@@ -82,6 +82,9 @@ public class SignatureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signature);
 
+        pref = getSharedPreferences("MyPref", 0);
+        editor = pref.edit();
+
         prefToko = getSharedPreferences("TokoPref", 0);
         editorToko = prefToko.edit();
 
@@ -101,13 +104,17 @@ public class SignatureActivity extends AppCompatActivity {
         isStoragePermissionGranted();
 
         String partnerid = prefToko.getString("partner_id", "000000");
+        int intvisit = pref.getInt("intvisit", 0);
+        int intv = intvisit + 1;
         Log.e("Partner ID", partnerid);
         String DIRECTORY = Environment.getExternalStorageDirectory().getPath()+ "/"; //+ "/UserSignature/";
-        String pic_name = new SimpleDateFormat("MMdd_HHmm", Locale.getDefault()).format(new Date());
-        StoredPath = DIRECTORY + partnerid + "_" + pic_name + ".png";
-        editorToko.putString("filename", partnerid + "_" + pic_name + ".png");
+        String pic_name = new SimpleDateFormat("yyMMdd", Locale.getDefault()).format(new Date());
+        StoredPath = DIRECTORY + partnerid + "_" + pic_name + "_" +intv+".png";
+        editorToko.putString("filename", partnerid + "_" + pic_name + "_" +intv+".png");
         editorToko.putString("storepath", StoredPath);
         editorToko.commit();
+        editor.putInt("intvisit", intvisit);
+        editor.commit();
         Log.e("NamaFile", StoredPath);
 
         // Method to create Directory, if the Directory doesn't exists

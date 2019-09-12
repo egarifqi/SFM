@@ -137,6 +137,7 @@
 
 
         <LinearLayout
+            android:id="@+id/layoutorderba"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -161,6 +162,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layoutstocknonba"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -182,6 +184,32 @@
                 android:textSize="18sp"/>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutstockba"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="STK" />
+
+            <TextView
+                android:id="@+id/stock_form_ba"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/editbox_background_normal"
+                android:ems="4"
+                android:gravity="center"
+                android:text="stock"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

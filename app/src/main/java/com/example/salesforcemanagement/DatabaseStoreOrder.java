@@ -17,9 +17,17 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
     private static final String KEY_ID = "id";
     private static final String KEY_BRAND = "brand";
     private static final String KEY_PARTNER_ID = "partner_id";
+    private static final String KEY_PARTNER_REF = "partner_ref";
+    private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_SALES_ID = "sales_id";
     private static final String KEY_REF = "reference";
     private static final String KEY_STORE = "nama_toko";
     private static final String KEY_DO_ID = "do_id";
+    private static final String KEY_TOTAL_AMOUNT = "nominal";
+    private static final String KEY_TOTAL_SKU = "sku";
+    private static final String KEY_TOTAL_ITEM = "item";
+    private static final String KEY_NOTES = "notes";
+    private static final String KEY_VISIT_REF = "visit_ref";
     ContentValues values = new ContentValues();
 
     public DatabaseStoreOrder(Context context) {
@@ -33,10 +41,18 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_PRODUK_ORDER + "("
                 + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + KEY_PARTNER_ID + " TEXT,"
+                + KEY_PARTNER_REF + " TEXT,"
+                + KEY_USER_ID + " TEXT,"
+                + KEY_SALES_ID + " TEXT,"
                 + KEY_BRAND + " TEXT,"
                 + KEY_REF + " TEXT,"
                 + KEY_DO_ID + " INTEGER,"
-                + KEY_STORE + " TEXT"
+                + KEY_STORE + " TEXT,"
+                + KEY_TOTAL_AMOUNT + " INTEGER,"
+                + KEY_TOTAL_SKU + " INTEGER,"
+                + KEY_TOTAL_ITEM + " INTEGER,"
+                + KEY_NOTES + " TEXT,"
+                + KEY_VISIT_REF + " TEXT"
                 + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
@@ -61,6 +77,14 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
         values.put(KEY_REF, op.getReference());
         values.put(KEY_DO_ID, op.getDo_id());
         values.put(KEY_STORE, op.getNama_toko());
+        values.put(KEY_VISIT_REF, op.getVisit_ref());
+        values.put(KEY_PARTNER_REF, op.getPartner_ref());
+        values.put(KEY_SALES_ID, op.getSales_id());
+        values.put(KEY_USER_ID, op.getUser_id());
+        values.put(KEY_TOTAL_AMOUNT, op.getTotal_amount());
+        values.put(KEY_TOTAL_ITEM, op.getTotal_item());
+        values.put(KEY_TOTAL_SKU, op.getTotal_sku());
+        values.put(KEY_NOTES, op.getNote());
 
         // Inserting Row
         db.insert(TABLE_PRODUK_ORDER, null, values);
@@ -97,21 +121,29 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
     }
 
     // code to get the single contact
-    StoreOrderList getProduk(int id) {
+    StoreOrderList getProduk(String ref) {
         SQLiteDatabase db = this.getReadableDatabase();
         StoreOrderList op = new StoreOrderList();
 
         Cursor cursor = db.query(TABLE_PRODUK_ORDER, new String[] { KEY_ID, KEY_PARTNER_ID, KEY_BRAND, KEY_REF,
-                        KEY_DO_ID, KEY_STORE},KEY_ID + "=?", new String[] { String.valueOf(id) },
+                        KEY_DO_ID, KEY_STORE, KEY_PARTNER_REF, KEY_SALES_ID, KEY_USER_ID, KEY_TOTAL_AMOUNT,
+                        KEY_TOTAL_ITEM, KEY_TOTAL_SKU, KEY_NOTES, KEY_VISIT_REF},KEY_REF + "=?", new String[] { ref},
                 null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
         if (cursor != null && cursor.moveToFirst()) {
-            op = new StoreOrderList(cursor.getInt(cursor.getColumnIndex(KEY_DO_ID)),
-                    cursor.getString(cursor.getColumnIndex(KEY_BRAND)),
-                    cursor.getString(cursor.getColumnIndex(KEY_PARTNER_ID)),
+            op = new StoreOrderList(cursor.getString(cursor.getColumnIndex(KEY_PARTNER_ID)),
+                    cursor.getString(cursor.getColumnIndex(KEY_PARTNER_REF)),
+                    cursor.getString(cursor.getColumnIndex(KEY_STORE)),
                     cursor.getString(cursor.getColumnIndex(KEY_REF)),
-                    cursor.getString(cursor.getColumnIndex(KEY_STORE)));
+                    cursor.getString(cursor.getColumnIndex(KEY_BRAND)),
+                    cursor.getString(cursor.getColumnIndex(KEY_VISIT_REF)),
+                    cursor.getString(cursor.getColumnIndex(KEY_SALES_ID)),
+                    cursor.getString(cursor.getColumnIndex(KEY_USER_ID)),
+                    cursor.getInt(cursor.getColumnIndex(KEY_TOTAL_AMOUNT)),
+                    cursor.getInt(cursor.getColumnIndex(KEY_TOTAL_ITEM)),
+                    cursor.getInt(cursor.getColumnIndex(KEY_TOTAL_SKU)),
+                    cursor.getString(cursor.getColumnIndex(KEY_NOTES)));
             cursor.close();
         }
         // return contact
@@ -137,13 +169,13 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
                 contact.setReference(cursor.getString(cursor.getColumnIndex(KEY_REF)));
                 contact.setDo_id(cursor.getInt(cursor.getColumnIndex(KEY_DO_ID)));
                 contact.setNama_toko(cursor.getString(cursor.getColumnIndex(KEY_STORE)));
+                contact.setVisit_ref(cursor.getString(cursor.getColumnIndex(KEY_VISIT_REF)));
 
                 // Adding contact to list
                 listProduk.add(contact);
             } while (cursor.moveToNext());
         }
         cursor.close();
-
         // return contact list
         return listProduk;
     }
@@ -171,13 +203,12 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
-
         // return contact list
         return listProduk;
     }
 
     // code to update the single contact
-    public int updateProduk(com.example.salesforcemanagement.Spacecraft s) {
+    public int updateProduk( Spacecraft s) {
         SQLiteDatabase db = this.getWritableDatabase();
 
 //        ContentValues values = new ContentValues();
@@ -191,18 +222,16 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
     }
 
     // Deleting single contact
-    public void deleteProduk(com.example.salesforcemanagement.Spacecraft contact) {
+    public void deleteProduk( Spacecraft contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_PRODUK_ORDER, KEY_ID + " = ?",
                 new String[]{String.valueOf(contact.getId())});
-        db.close();
     }
 
     public void deleteAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TABLE_PRODUK_ORDER;
         db.execSQL(query);
-        db.close();
     }
 
     // Getting contacts Count
@@ -211,7 +240,6 @@ public class DatabaseStoreOrder extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 //        cursor.close();
-
         // return count
         return cursor.getCount();
     }

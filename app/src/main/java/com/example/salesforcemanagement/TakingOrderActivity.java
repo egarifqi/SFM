@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -105,12 +106,14 @@ public class TakingOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_taking_order);
-
+//        isStoragePermissionGranted();
+        TextView storename = findViewById(R.id.nameToko);
         pref = getApplicationContext().getSharedPreferences("MyPref", 0);
         editor = pref.edit();
         prefToko = getApplicationContext().getSharedPreferences("TokoPref", 0);
         editorToko = prefToko.edit();
 
+        storename.setText(prefToko.getString("partner_name", "0"));
         boolean dalrut = prefToko.getBoolean("dalamrute", StatusToko.rute);
 
         Log.e("SIZE", "Wardah : "+Global.kode.size()+", MakeOver : "+Globalmo.kode.size()+", Emina : "+Globalemina.kode.size()+", Putri : "+Globalputri.kode.size());
@@ -204,7 +207,6 @@ public class TakingOrderActivity extends AppCompatActivity {
                 ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo netInfo = cm.getActiveNetworkInfo();
                 if (netInfo != null && netInfo.isConnected()){
-//                    String filePath = getRealPathFromURIPath(uri, TakingOrderActivity.this);
                     String ttd = prefToko.getString("storepath", "");
                     File file = new File(ttd);
                     Log.e("Signature"+"_2", "Filename " + file.getName());
@@ -225,6 +227,7 @@ public class TakingOrderActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<UploadObject> call, Response<UploadObject> response) {
                             try {
+                                Log.e("Respon", SERVER_PATH + " - " + ttd);
                                 Toast.makeText(TakingOrderActivity.this, "Response " + response.raw().message(), Toast.LENGTH_LONG).show();
                                 Toast.makeText(TakingOrderActivity.this, "Success " + response.body().getSuccess() +" hahahaha", Toast.LENGTH_LONG).show();
                                 Log.e("Response", "Response " + response.raw().message()+", Succes : "+ response.body().getSuccess());
@@ -388,13 +391,189 @@ public class TakingOrderActivity extends AppCompatActivity {
                             String date = pref.getString("write_date", "null");
                             String waktu_datang = prefToko.getString("waktu_mulai", "null");
                             String waktu_keluar = prefToko.getString("waktu_selesai", "null");
-                            String latitude = prefToko.getString("latitude", "null");
-                            String longitude = prefToko.getString("longitude", "null");
+                            String latitude = pref.getString("latitude", "null");
+                            String longitude = pref.getString("longitude", "null");
 
+                            String visit_ref = prefToko.getString("visit_ref", "null");
+                            Log.e("VISIT_NAME", visit_ref);
+                            String visit_state;
+                            if (ec){
+                                visit_state = "3";
+                            } else {
+                                visit_state ="2";
+                            }
+                            Calendar calander = Calendar.getInstance();
+                            SimpleDateFormat simpledateformat1 = new SimpleDateFormat("dd-MM-yyyy");
+                            SimpleDateFormat simpledateformat2 = new SimpleDateFormat("ddMMyy");
+                            SimpleDateFormat simpledateformat3 = new SimpleDateFormat("HHmmss");
+                            String Date1 = simpledateformat1.format(calander.getTime());
+                            String Date2 = simpledateformat2.format(calander.getTime());
+                            String Date3 = simpledateformat3.format(calander.getTime());
+                            Log.e("TANGGAL1", Date1);
+                            Log.e("TANGGAL2", Date2);
+                            Log.e("TANGGAL3", Date3);
 
-                            mAuthTask = new SendRequest(partner_ref, user_id, sales_id, partner_id, date, waktu_datang,
-                                    waktu_keluar, latitude, longitude, visitid, status, partner_name);
-                            mAuthTask.execute();
+                            final String referencewardah = "SFM/" + partner_id + "-W/" + Date2 + "/" + Date3;
+                            final String referencemo = "SFM/" + partner_id + "-MO/" + Date2 + "/" + Date3;
+                            final String referenceemina = "SFM/" + partner_id + "-E/" + Date2 + "/" + Date3;
+                            final String referenceputri = "SFM/" + partner_id + "-P/" + Date2 + "/" + Date3;
+                            Log.e("date", referencewardah);
+
+                            editorToko.putString("referencew", referencewardah);
+                            editorToko.putString("referencem", referencemo);
+                            editorToko.putString("referencee", referenceemina);
+                            editorToko.putString("referencep", referenceputri);
+                            editorToko.commit();
+
+                            DatabaseVisitHandler dbVisit = new DatabaseVisitHandler(TakingOrderActivity.this);
+                            StoreVisitList storeVisitList = new StoreVisitList(sales_id, user_id, partner_ref,
+                                    partner_id, dalamRute, latitude, longitude, partner_name,
+                                    visit_ref, waktu_datang, waktu_keluar, status, visit_state);
+
+                            Log.e("ISI VISIT TO 1", storeVisitList.getPartner_ref()+" - "+ storeVisitList.getUser_id()+" - "+ storeVisitList.getSales_id()
+                                    +" - "+storeVisitList.getPartner_id()+" - "+ storeVisitList.getStart_time()+" - "+ storeVisitList.getFinish_time()
+                                    +" - "+storeVisitList.getLatitude()+" - "+ storeVisitList.getLongitude()+" - "+ storeVisitList.getReason()
+                                    +" - "+storeVisitList.getReference()+" - "+ storeVisitList.getState());
+
+                            try {
+                                dbVisit.addProduk(storeVisitList);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                                Log.e("SQL_ERROR_VISIT", e.getMessage());
+                            }
+
+                            StoreVisitList visitList = dbVisit.getProduk(visit_ref);
+
+                            Log.e("ISI VISIT TO 2", visitList.getPartner_ref()+" - "+ visitList.getUser_id()+" - "+ visitList.getSales_id()
+                                    +" - "+visitList.getPartner_id()+" - "+ visitList.getStart_time()+" - "+ visitList.getFinish_time()
+                                    +" - "+visitList.getLatitude()+" - "+ visitList.getLongitude()+" - "+ visitList.getReason()
+                                    +" - "+visitList.getReference()+" - "+ visitList.getState());
+
+                            DatabaseOrderHandler dbOrderWardah = new DatabaseOrderHandler(TakingOrderActivity.this);
+                            ArrayList<OrderedProduct> opWardah = new ArrayList<OrderedProduct>();
+                            DatabaseStoreOrder dbStoreOrderWardah = new DatabaseStoreOrder(TakingOrderActivity.this);
+
+                            if (Global.nama.size()>0){
+
+                                for (int i = 0; i < Global.nama.size(); i++ ){
+                                    opWardah.add(new OrderedProduct(Global.id_produk.get(i), Global.kode.get(i),
+                                            Global.nama.get(i), Global.harga.get(i), Integer.parseInt(Global.stock.get(i)),
+                                            Integer.parseInt(Global.sgtorder.get(i)), Integer.parseInt(Global.qty.get(i)),
+                                            Global.kategori.get(i), Global.brand, partner_id, referencewardah, partner_name));
+                                }
+                                try {
+                                    dbOrderWardah.addAllProduk(opWardah, opWardah.size());
+                                    dbStoreOrderWardah.addProduk(new StoreOrderList(partner_id, partner_ref, partner_name,
+                                            referencewardah, Global.brand, visit_ref, sales_id, user_id,Global.totalorder,
+                                            Global.totalitem, Global.totalsku, Global.notes));
+                                } catch (Exception e){
+                                    e.printStackTrace();
+                                    Log.e("SQLite_Error_W", e.getMessage());
+                                }
+                                StoreOrderList DOlist = dbStoreOrderWardah.getProduk(referencewardah);
+                                Log.e("DO_status", DOlist.getPartner_id()+" - "+DOlist.getPartner_ref()
+                                        +" - "+DOlist.getNama_toko()+" - "+DOlist.getReference()+" - "+
+                                        DOlist.getBrand_produk()+" - "+DOlist.getVisit_ref()+" - "+
+                                        DOlist.getSales_id()+" - "+DOlist.getUser_id()+" - "+DOlist.getTotal_amount()
+                                        +" - "+DOlist.getTotal_item()+" - "+DOlist.getTotal_sku()+" - "+DOlist.getNote());
+                            }
+
+                            DatabaseOrderHandler dbOrderMO = new DatabaseOrderHandler(TakingOrderActivity.this);
+                            ArrayList<OrderedProduct> opMO = new ArrayList<OrderedProduct>();
+                            DatabaseStoreOrder dbStoreOrderMO = new DatabaseStoreOrder(TakingOrderActivity.this);
+
+                            if (Globalmo.nama.size() > 0) {
+
+                                for (int i = 0; i < Globalmo.nama.size(); i++) {
+                                    opMO.add(new OrderedProduct(Globalmo.id_produk.get(i), Globalmo.kode.get(i),
+                                            Globalmo.nama.get(i), Globalmo.harga.get(i), Integer.parseInt(Globalmo.stock.get(i)),
+                                            Integer.parseInt(Globalmo.sgtorder.get(i)), Integer.parseInt(Globalmo.qty.get(i)),
+                                            Globalmo.kategori.get(i), Globalmo.brand, partner_id, referencemo, partner_name));
+                                }
+                                try {
+                                    dbOrderMO.addAllProduk(opMO, opMO.size());
+                                    dbStoreOrderMO.addProduk(new StoreOrderList(partner_id, partner_ref, partner_name,
+                                            referencemo, Globalmo.brand, visit_ref, sales_id, user_id, Globalmo.totalorder,
+                                            Globalmo.totalitem, Globalmo.totalsku, Globalmo.notes));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    Log.e("SQLite_Error_M", e.getMessage());
+                                }
+
+                                StoreOrderList DOlist = dbStoreOrderWardah.getProduk(referencemo);
+                                Log.e("DO_status", DOlist.getPartner_id()+" - "+DOlist.getPartner_ref()
+                                        +" - "+DOlist.getNama_toko()+" - "+DOlist.getReference()+" - "+
+                                        DOlist.getBrand_produk()+" - "+DOlist.getVisit_ref()+" - "+
+                                        DOlist.getSales_id()+" - "+DOlist.getUser_id()+" - "+DOlist.getTotal_amount()
+                                        +" - "+DOlist.getTotal_item()+" - "+DOlist.getTotal_sku()+" - "+DOlist.getNote());
+                            }
+
+                            DatabaseOrderHandler dbOrderEmina = new DatabaseOrderHandler(TakingOrderActivity.this);
+                            ArrayList<OrderedProduct> opEmina = new ArrayList<OrderedProduct>();
+                            DatabaseStoreOrder dbStoreOrderEmina = new DatabaseStoreOrder(TakingOrderActivity.this);
+
+                            if (Globalemina.nama.size()>0){
+
+                                for (int i = 0; i < Globalemina.nama.size(); i++ ){
+                                    opEmina.add(new OrderedProduct(Globalemina.id_produk.get(i), Globalemina.kode.get(i),
+                                            Globalemina.nama.get(i), Globalemina.harga.get(i), Integer.parseInt(Globalemina.stock.get(i)),
+                                            Integer.parseInt(Globalemina.sgtorder.get(i)), Integer.parseInt(Globalemina.qty.get(i)),
+                                            Globalemina.kategori.get(i), Globalemina.brand, partner_id, referenceemina, partner_name));
+                                }
+                                try {
+                                    dbOrderEmina.addAllProduk(opEmina, opEmina.size());
+                                    dbStoreOrderEmina.addProduk(new StoreOrderList(partner_id, partner_ref, partner_name,
+                                            referenceemina, Globalemina.brand, visit_ref, sales_id, user_id, Globalemina.totalorder,
+                                            Globalemina.totalitem, Globalemina.totalsku, Globalemina.notes));
+//                            }
+//                        }
+                                } catch (Exception e){
+                                    e.printStackTrace();
+                                    Log.e("SQLite_Error_E", e.getMessage());
+                                }
+                                StoreOrderList DOlist = dbStoreOrderWardah.getProduk(referenceemina);
+                                Log.e("DO_status", DOlist.getPartner_id()+" - "+DOlist.getPartner_ref()
+                                        +" - "+DOlist.getNama_toko()+" - "+DOlist.getReference()+" - "+
+                                        DOlist.getBrand_produk()+" - "+DOlist.getVisit_ref()+" - "+
+                                        DOlist.getSales_id()+" - "+DOlist.getUser_id()+" - "+DOlist.getTotal_amount()
+                                        +" - "+DOlist.getTotal_item()+" - "+DOlist.getTotal_sku()+" - "+DOlist.getNote());
+                            }
+
+                            DatabaseOrderHandler dbOrderPutri = new DatabaseOrderHandler(TakingOrderActivity.this);
+                            ArrayList<OrderedProduct> opPutri = new ArrayList<OrderedProduct>();
+                            DatabaseStoreOrder dbStoreOrderPutri = new DatabaseStoreOrder(TakingOrderActivity.this);
+
+                            if (Globalputri.nama.size()>0){
+
+                                for (int i = 0; i < Globalputri.nama.size(); i++ ){
+                                    opPutri.add(new OrderedProduct(Globalputri.id_produk.get(i), Globalputri.kode.get(i),
+                                            Globalputri.nama.get(i), Globalputri.harga.get(i), Integer.parseInt(Globalputri.stock.get(i)),
+                                            Integer.parseInt(Globalputri.sgtorder.get(i)), Integer.parseInt(Globalputri.qty.get(i)),
+                                            Globalputri.kategori.get(i), Globalputri.brand, partner_id, referenceputri, partner_name));
+                                }
+                                try {
+                                    dbOrderPutri.addAllProduk(opPutri, opPutri.size());
+                                    dbStoreOrderPutri.addProduk(new StoreOrderList(partner_id, partner_ref, partner_name,
+                                            referenceputri, Globalputri.brand, visit_ref, sales_id, user_id, Globalputri.totalorder,
+                                            Globalputri.totalitem, Globalputri.totalsku, Globalputri.notes));
+                                } catch (Exception e){
+                                    e.printStackTrace();
+                                    Log.e("SQLite_Error", e.getMessage());
+                                }
+                            }
+
+                            try {
+                                mAuthTask = new SendRequest(partner_ref, user_id, sales_id, partner_id, date, waktu_datang,
+                                        waktu_keluar, latitude, longitude, visitid, status, partner_name, visit_ref);
+                                mAuthTask.execute();
+                            } catch (Exception e){
+                                AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                                dialog.setTitle("PENGIRIMAN GAGAL!");
+                                dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                                dialog.setCancelable(true);
+                                dialog.show();
+                            }
+
                         }
                     } else {
                         AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
@@ -464,13 +643,14 @@ public class TakingOrderActivity extends AppCompatActivity {
         private final int visitid;
         private final String alasan;
         private final String partnername;
+        private final String ref;
         StringBuffer sb = new StringBuffer();
 
 
 
         SendRequest(String partnerref, String userid, String salesid, String partnerid,
                     String todaydate, String visittime, String outtime, String loclat,
-                    String loclong, int visitid, String alasan, String partnername) {
+                    String loclong, int visitid, String alasan, String partnername, String ref) {
             this.partnerref = partnerref;
             this.userid = userid;
             this.salesid = salesid;
@@ -483,6 +663,7 @@ public class TakingOrderActivity extends AppCompatActivity {
             this.outtime = outtime;
             this.alasan = alasan;
             this.partnername = partnername;
+            this.ref = ref;
         }
 
         @Override
@@ -589,6 +770,7 @@ public class TakingOrderActivity extends AppCompatActivity {
                         obj.put("reason", alasannotec);
                         obj.put("state", "2");
                     }
+                    obj.put("name", ref);
                     Log.e("Bentuk JSON1", obj.toString());
                     HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
                     conn.setReadTimeout(15000);
@@ -636,8 +818,16 @@ public class TakingOrderActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             Log.e("KIRIM DATA", "FINISHING VISIT DATA");
+//            try {
             new CekVisitID("http://10.3.181.177:3000/visit?user_id=eq." + userid,
-                    partnerref, userid, salesid, partnerid, partnername, visitid, visittime, outtime, loclong, loclat).execute();
+                    partnerref, userid, salesid, partnerid, partnername, visitid, visittime, outtime, loclong, loclat, ref).execute();
+//            } catch (Exception e){
+//                AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+//                dialog.setTitle("PENGIRIMAN GAGAL!");
+//                dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+//                dialog.setCancelable(true);
+//                dialog.show();
+//            }
 
             super.onPostExecute(result);
         }
@@ -796,6 +986,7 @@ public class TakingOrderActivity extends AppCompatActivity {
         protected String doInBackground(String... strings) {
             Log.e("KIRIM DATA", "SENDING WARDAH PRODUCTS DATA");
             String json = "";
+            String referencew = prefToko.getString("referencew", "");
 
             try {
                 URL url = new URL("http://10.3.181.177:3000/delivery_order_line");
@@ -821,6 +1012,8 @@ public class TakingOrderActivity extends AppCompatActivity {
                     obj.put("category_id", Global.kategori.get(i));
                     obj.put("qty_order", Global.sgtorder.get(i));
                     obj.put("direct", true);
+                    obj.put("do_name", referencew);
+                    obj.put("qty_do_nbm", 0);
                     jo.add(obj);
                     loop.append(obj.toString());
                     if (i<Global.nama.size()-1){
@@ -922,6 +1115,7 @@ public class TakingOrderActivity extends AppCompatActivity {
                     obj.put("category_id", Globalmo.kategori.get(i));
                     obj.put("qty_order", Globalmo.sgtorder.get(i));
                     obj.put("direct", true);
+                    obj.put("qty_do_nbm", 0);
                     jo.add(obj);
                     loop.append(obj.toString());
                     if (i<Globalmo.nama.size()-1){
@@ -1021,6 +1215,7 @@ public class TakingOrderActivity extends AppCompatActivity {
                     obj.put("category_id", Globalemina.kategori.get(i));
                     obj.put("qty_order", Globalemina.sgtorder.get(i));
                     obj.put("direct", true);
+                    obj.put("qty_do_nbm", 0);
                     jo.add(obj);
                     loop.append(obj.toString());
                     if (i<Globalemina.nama.size()-1){
@@ -1120,6 +1315,7 @@ public class TakingOrderActivity extends AppCompatActivity {
                     obj.put("category_id", Globalputri.kategori.get(i));
                     obj.put("qty_order", Globalputri.sgtorder.get(i));
                     obj.put("direct", true);
+                    obj.put("qty_do_nbm", 0);
                     jo.add(obj);
                     loop.append(obj.toString());
                     if (i<Globalputri.nama.size()-1){
@@ -1190,11 +1386,11 @@ public class TakingOrderActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             boolean ec = prefToko.getBoolean("ec", true);
-            StatusToko.clearTotalToko();
-            Global.clearProduct();
-            Globalputri.clearProduct();
-            Globalmo.clearProduct();
-            Globalemina.clearProduct();
+//            StatusToko.clearTotalToko();
+//            Global.clearProduct();
+//            Globalputri.clearProduct();
+//            Globalmo.clearProduct();
+//            Globalemina.clearProduct();
 
             AndroidNetworking.get("http://10.3.181.177:3000/delivery_order?do_id=eq."+do_id)
                     .setPriority(Priority.HIGH)
@@ -1251,10 +1447,10 @@ public class TakingOrderActivity extends AppCompatActivity {
 
             kali = 0;
 
-            editorToko.clear();
-            editorToko.commit();
+//            editorToko.clear();
+//            editorToko.commit();
 
-            Intent intent = new Intent(TakingOrderActivity.this, KunjunganActivity.class);
+            Intent intent = new Intent(TakingOrderActivity.this, TokoActivity.class);
             startActivity(intent);
             finish();
             super.onPostExecute(s);
@@ -1334,41 +1530,22 @@ public class TakingOrderActivity extends AppCompatActivity {
 
 
             if (checkW) {
+                ambilDOIDW.cancel(true);
                 Log.e("id", "\n\nID Delivery Order W dibawah (pref): " + prefToko.getInt("do_idW", 0));
                 Log.e("id2", "\n\nID Delivery Order2 W dibawah (status): " + StatusToko.do_id);
                 Log.e("id3", "\n\nID Delivery Order3 W dibawah (maximumID): " + maximumIDW);
 
-                String referencew = prefToko.getString("referencew", "");
-                String partnerid = prefToko.getString("partner_id", "");
-                String namatoko = prefToko.getString("partner_name", "");
-
-                DatabaseOrderHandler dbOrder = new DatabaseOrderHandler(TakingOrderActivity.this);
-                ArrayList<OrderedProduct> op = new ArrayList<OrderedProduct>();
-                DatabaseStoreOrder dbStoreOrder = new DatabaseStoreOrder(TakingOrderActivity.this);
-
-                if (Global.nama.size()>0){
-
-                    for (int i = 0; i < Global.nama.size(); i++ ){
-                        op.add(new OrderedProduct(Global.id_produk.get(i), Global.kode.get(i),
-                                Global.nama.get(i), Global.harga.get(i), Integer.parseInt(Global.stock.get(i)),
-                                Integer.parseInt(Global.sgtorder.get(i)), Integer.parseInt(Global.qty.get(i)),
-                                Global.kategori.get(i), Global.brand, partnerid, referencew,
-                                prefToko.getInt("do_idW", maximumIDW), namatoko));
-                    }
-                    try {
-                        dbOrder.addAllProduk(op, op.size());
-                        dbStoreOrder.addProduk(new StoreOrderList(prefToko.getInt("do_idW", maximumIDW),
-                                partnerid, namatoko, referencew, "Wardah"));
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        Log.e("SQLite_Error_W", e.getMessage());
-                    }
-                }
                 if (Global.kode.size() > 0) {
                     Log.e("KIRIM DATA", "SENDING WARDAH PRODUCTS DATA");
-                    new OrderLinesWardah(prefToko.getInt("do_idW", maximumIDW)+1).execute();
-//
-//                    }
+                    try {
+                        new OrderLinesWardah(prefToko.getInt("do_idW", maximumIDW) + 1).execute();
+                    } catch (Exception e){
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                        dialog.setTitle("PENGIRIMAN GAGAL!");
+                        dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                        dialog.setCancelable(true);
+                        dialog.show();
+                    }
                     check1 = true;
                 } else {
                     check1 = true;
@@ -1456,38 +1633,22 @@ public class TakingOrderActivity extends AppCompatActivity {
 
 
             if (checkM) {
+                ambilDOIDM.cancel(true);
                 Log.e("id", "\n\nID Delivery Order M dibawah (pref): " + prefToko.getInt("do_idM", 0));
                 Log.e("id2", "\n\nID Delivery Order2 M dibawah (status): " + StatusToko.do_id);
                 Log.e("id3", "\n\nID Delivery Order3 M dibawah (maximumID): " + maximumIDMO);
-                String referencem = prefToko.getString("referencem", "");
-                String partnerid = prefToko.getString("partner_id", "");
-                String namatoko = prefToko.getString("partner_name", "");
-
-                DatabaseOrderHandler dbOrder = new DatabaseOrderHandler(TakingOrderActivity.this);
-                ArrayList<OrderedProduct> op = new ArrayList<OrderedProduct>();
-                DatabaseStoreOrder dbStoreOrder = new DatabaseStoreOrder(TakingOrderActivity.this);
-
-                if (Globalmo.nama.size()>0){
-
-                    for (int i = 0; i < Globalmo.nama.size(); i++ ){
-                        op.add(new OrderedProduct(Globalmo.id_produk.get(i), Globalmo.kode.get(i),
-                                Globalmo.nama.get(i), Globalmo.harga.get(i), Integer.parseInt(Globalmo.stock.get(i)),
-                                Integer.parseInt(Globalmo.sgtorder.get(i)), Integer.parseInt(Globalmo.qty.get(i)),
-                                Globalmo.kategori.get(i), Globalmo.brand, partnerid, referencem,
-                                prefToko.getInt("do_idM", maximumIDMO), namatoko));
-                    }
-                    try {
-                        dbOrder.addAllProduk(op, op.size());
-                        dbStoreOrder.addProduk(new StoreOrderList(prefToko.getInt("do_idM", maximumIDMO),
-                                partnerid, namatoko, referencem, "Make Over"));
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        Log.e("SQLite_Error_M", e.getMessage());
-                    }
-                }
 
                 if (Globalmo.kode.size() > 0) {
                     Log.e("KIRIM DATA", "SENDING MAKE OVER PRODUCTS DATA");
+                    try {
+                        new OrderLinesMakeOver(prefToko.getInt("do_idM", maximumIDMO) + 1).execute();
+                    } catch (Exception e) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                        dialog.setTitle("PENGIRIMAN GAGAL!");
+                        dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                        dialog.setCancelable(true);
+                        dialog.show();
+                    }
                     check2 = true;
                 } else {
                     check2 = true;
@@ -1496,9 +1657,8 @@ public class TakingOrderActivity extends AppCompatActivity {
             } else {
                 ambilDOIDM = new AmbilDOIDM(url, brand);
                 ambilDOIDM.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                super.onPostExecute(s);
             }
-
-            super.onPostExecute(s);
         }
     }
 
@@ -1575,42 +1735,22 @@ public class TakingOrderActivity extends AppCompatActivity {
 
 
             if (checkE) {
+                ambilDOIDE.cancel(true);
                 Log.e("id", "\n\nID Delivery Order E dibawah (pref): " + prefToko.getInt("do_idE", 0));
                 Log.e("id2", "\n\nID Delivery Order2 E dibawah (status): " + StatusToko.do_id);
                 Log.e("id3", "\n\nID Delivery Order3 E dibawah (maximumID): " + maximumIDE);
 
-                String referencee = prefToko.getString("referencee", "");
-                String partnerid = prefToko.getString("partner_id", "");
-                String namatoko = prefToko.getString("partner_name", "");
-
-                DatabaseOrderHandler dbOrder = new DatabaseOrderHandler(TakingOrderActivity.this);
-                ArrayList<OrderedProduct> op = new ArrayList<OrderedProduct>();
-                DatabaseStoreOrder dbStoreOrder = new DatabaseStoreOrder(TakingOrderActivity.this);
-
-                if (Globalemina.nama.size()>0){
-
-                    for (int i = 0; i < Globalemina.nama.size(); i++ ){
-                        op.add(new OrderedProduct(Globalemina.id_produk.get(i), Globalemina.kode.get(i),
-                                Globalemina.nama.get(i), Globalemina.harga.get(i), Integer.parseInt(Globalemina.stock.get(i)),
-                                Integer.parseInt(Globalemina.sgtorder.get(i)), Integer.parseInt(Globalemina.qty.get(i)),
-                                Globalemina.kategori.get(i), Globalemina.brand, partnerid, referencee,
-                                prefToko.getInt("do_idE", maximumIDE), namatoko));
-                    }
-                    try {
-                        dbOrder.addAllProduk(op, op.size());
-                        dbStoreOrder.addProduk(new StoreOrderList(prefToko.getInt("do_idE", maximumIDMO),
-                                partnerid, namatoko, referencee, "Emina"));
-//                            }
-//                        }
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        Log.e("SQLite_Error_E", e.getMessage());
-                    }
-                }
-
                 if (Globalemina.kode.size() > 0) {
                     Log.e("KIRIM DATA", "SENDING EMINA PRODUCTS DATA");
-                    new OrderLinesEmina(prefToko.getInt("do_idE", maximumIDE)+1).execute();
+                    try {
+                        new OrderLinesEmina(prefToko.getInt("do_idE", maximumIDE) + 1).execute();
+                    } catch (Exception e) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                        dialog.setTitle("PENGIRIMAN GAGAL!");
+                        dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                        dialog.setCancelable(true);
+                        dialog.show();
+                    }
                     check3 = true;
                 } else {
                     check3 = true;
@@ -1697,40 +1837,22 @@ public class TakingOrderActivity extends AppCompatActivity {
 
 
             if (checkP) {
+                ambilDOIDP.cancel(true);
                 Log.e("id", "\n\nID Delivery Order P dibawah (pref): " + prefToko.getInt("do_id", 0));
                 Log.e("id2", "\n\nID Delivery Order2 P dibawah (status): " + StatusToko.do_id);
                 Log.e("id3", "\n\nID Delivery Order3 P dibawah (maximumID): " + maximumIDP);
 
-                String referencep = prefToko.getString("referencep", "");
-                String partnerid = prefToko.getString("partner_id", "");
-                String namatoko = prefToko.getString("partner_name", "");
-
-                DatabaseOrderHandler dbOrder = new DatabaseOrderHandler(TakingOrderActivity.this);
-                ArrayList<OrderedProduct> op = new ArrayList<OrderedProduct>();
-                DatabaseStoreOrder dbStoreOrder = new DatabaseStoreOrder(TakingOrderActivity.this);
-
-                if (Globalputri.nama.size()>0){
-
-                    for (int i = 0; i < Globalputri.nama.size(); i++ ){
-                        op.add(new OrderedProduct(Globalputri.id_produk.get(i), Globalputri.kode.get(i),
-                                Globalputri.nama.get(i), Globalputri.harga.get(i), Integer.parseInt(Globalputri.stock.get(i)),
-                                Integer.parseInt(Globalputri.sgtorder.get(i)), Integer.parseInt(Globalputri.qty.get(i)),
-                                Globalputri.kategori.get(i), Globalputri.brand, partnerid, referencep,
-                                prefToko.getInt("do_idP", maximumIDP), namatoko));
-                    }
-                    try {
-                        dbOrder.addAllProduk(op, op.size());
-                        dbStoreOrder.addProduk(new StoreOrderList(prefToko.getInt("do_idP", maximumIDMO),
-                                partnerid, namatoko, referencep, "Putri"));
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        Log.e("SQLite_Error", e.getMessage());
-                    }
-                }
-
                 if (Globalputri.nama.size() > 0 && Globalputri.nama != null) {
                     Log.e("KIRIM DATA", "SENDING PUTRI PRODUCTS DATA");
-                    new OrderLinesPutri(prefToko.getInt("do_idP", maximumIDP)+1).execute();
+                    try {
+                        new OrderLinesPutri(prefToko.getInt("do_idP", maximumIDP) + 1).execute();
+                    } catch (Exception e) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                        dialog.setTitle("PENGIRIMAN GAGAL!");
+                        dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                        dialog.setCancelable(true);
+                        dialog.show();
+                    }
                     check4 = true;
                 } else {
                     check4 = true;
@@ -1757,11 +1879,12 @@ public class TakingOrderActivity extends AppCompatActivity {
         private final String outtime;
         private final String loclat;
         private final String loclong;
+        private final String ref;
         int max;
         String alasan, selesai;
 
         CekVisitID(String url, String partnerref, String userid, String salesid, String partnerid,
-                   String partnername, int visitid, String visittime, String outtime, String loclong, String loclat){
+                   String partnername, int visitid, String visittime, String outtime, String loclong, String loclat, String ref){
             this.url = url;
             this.partnername = partnername;
             this.visitid = visitid;
@@ -1773,6 +1896,7 @@ public class TakingOrderActivity extends AppCompatActivity {
             this.outtime = outtime;
             this.loclong = loclong;
             this.loclat = loclat;
+            this.ref = ref;
         }
 
         @Override
@@ -1835,58 +1959,85 @@ public class TakingOrderActivity extends AppCompatActivity {
                 Log.e("TANGGAL2", Date2);
                 Log.e("TANGGAL3", Date3);
 
-                final String referencewardah = "SFM/" + partnerid + "-W/" + Date2 + "/" + Date3;
-                final String referencemo = "SFM/" + partnerid + "-MO/" + Date2 + "/" + Date3;
-                final String referenceemina = "SFM/" + partnerid + "-E/" + Date2 + "/" + Date3;
-                final String referenceputri = "SFM/" + partnerid + "-P/" + Date2 + "/" + Date3;
-                Log.e("date", referencewardah);
+//                final String referencewardah = "SFM/" + partnerid + "-W/" + Date2 + "/" + Date3;
+//                final String referencemo = "SFM/" + partnerid + "-MO/" + Date2 + "/" + Date3;
+//                final String referenceemina = "SFM/" + partnerid + "-E/" + Date2 + "/" + Date3;
+//                final String referenceputri = "SFM/" + partnerid + "-P/" + Date2 + "/" + Date3;
+//                Log.e("date", referencewardah);
+//
+//                editorToko.putString("referencew", referencewardah);
+//                editorToko.putString("referencem", referencemo);
+//                editorToko.putString("referencee", referenceemina);
+//                editorToko.putString("referencep", referenceputri);
+//                editorToko.commit();
 
-                editorToko.putString("referencew", referencewardah);
-                editorToko.putString("referencem", referencemo);
-                editorToko.putString("referencee", referenceemina);
-                editorToko.putString("referencep", referenceputri);
-                editorToko.commit();
-
+                String referencewardah = prefToko.getString("referencew", "");
+                String referencemo = prefToko.getString("referencem", "");
+                String referenceemina = prefToko.getString("referencee", "");
+                String referenceputri = prefToko.getString("referencep", "");
                 String state = "draft";
 
-                if (Global.kode.size()>0){
-                    sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
-                            Integer.parseInt(partnerid), referencewardah, state, Global.totalorder,
-                            Global.totalitem, Global.totalsku, partnername, visitid, Global.brand, Global.notes);
-                    sendOrder.execute();
-                } else{
-                    check1 = true;
+                try {
+                    if (Global.kode.size()>0){
+                        sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
+                                Integer.parseInt(partnerid), referencewardah, state, Global.totalorder,
+                                Global.totalitem, Global.totalsku, partnername, visitid, Global.brand, Global.notes);
+                        sendOrder.execute();
+                    } else{
+                        check1 = true;
+                    }
+                    if (Globalmo.kode.size()>0){
+                        sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
+                                Integer.parseInt(partnerid), referencemo, state, Globalmo.totalorder,
+                                Globalmo.totalitem, Globalmo.totalsku, partnername, visitid, Globalmo.brand, Globalmo.notes);
+                        sendOrder.execute();
+                    } else{
+                        check2 = true;
+                    }
+                    if (Globalemina.kode.size()>0){
+                        sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
+                                Integer.parseInt(partnerid), referenceemina, state, Globalemina.totalorder,
+                                Globalemina.totalitem, Globalemina.totalsku, partnername, visitid, Globalemina.brand, Globalemina.notes);
+                        sendOrder.execute();
+                    } else{
+                        check3 = true;
+                    }
+                    if (Globalputri.kode.size()>0){
+                        sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
+                                Integer.parseInt(partnerid), referenceputri, state, Globalputri.totalorder,
+                                Globalputri.totalitem, Globalputri.totalsku, partnername, visitid, Globalputri.brand, Globalputri.notes);
+                        sendOrder.execute();
+                    } else{
+                        check4 = true;
+                    }
+                } catch (Exception e){
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                    dialog.setTitle("PENGIRIMAN GAGAL!");
+                    dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                    dialog.setCancelable(true);
+                    dialog.show();
                 }
-                if (Globalmo.kode.size()>0){
-                    sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
-                            Integer.parseInt(partnerid), referencemo, state, Globalmo.totalorder,
-                            Globalmo.totalitem, Globalmo.totalsku, partnername, visitid, Globalmo.brand, Globalmo.notes);
-                    sendOrder.execute();
-                } else{
-                    check2 = true;
-                }
-                if (Globalemina.kode.size()>0){
-                    sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
-                            Integer.parseInt(partnerid), referenceemina, state, Globalemina.totalorder,
-                            Globalemina.totalitem, Globalemina.totalsku, partnername, visitid, Globalemina.brand, Globalemina.notes);
-                    sendOrder.execute();
-                } else{
-                    check3 = true;
-                }
-                if (Globalputri.kode.size()>0){
-                    sendOrder = new SendOrder(partnerref, Integer.parseInt(userid), Integer.parseInt(salesid),
-                            Integer.parseInt(partnerid), referenceputri, state, Globalputri.totalorder,
-                            Globalputri.totalitem, Globalputri.totalsku, partnername, visitid, Globalputri.brand, Globalputri.notes);
-                    sendOrder.execute();
-                } else{
-                    check4 = true;
-                }
-
 
             } else {
                 Log.e("ULANG", "Cek visit ID lagi");
-                mAuthTask = new SendRequest(partnerref,userid,salesid,partnerid,"",visittime,outtime, loclat,loclong, visitid, alasan, partnername);
-                mAuthTask.execute();
+                try {
+                    try {
+                        mAuthTask = new SendRequest(partnerref, userid, salesid, partnerid, "", visittime, outtime, loclat, loclong, visitid, alasan, partnername, ref);
+                        mAuthTask.execute();
+                    } catch (Exception e) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                        dialog.setTitle("PENGIRIMAN GAGAL!");
+                        dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                        dialog.setCancelable(true);
+                        dialog.show();
+                    }
+                } catch (Exception e){
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(TakingOrderActivity.this);
+                    dialog.setTitle("PENGIRIMAN GAGAL!");
+                    dialog.setMessage("Koneksi internet terdeteksi namun tidak memadai untuk mengirim data orderan...\n Pastikan anda terhubung dengan koneksi internet yang kencang...");
+                    dialog.setCancelable(true);
+                    dialog.show();
+                }
             }
         }
     }

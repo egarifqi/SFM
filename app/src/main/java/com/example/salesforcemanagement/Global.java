@@ -18,6 +18,7 @@ public class Global {
     public static int totalitem = 0;
     public static int totalorder = 0;
     public static String notes = "";
+    public static ArrayList<String> alasan = new ArrayList<String>();
 
     public static void clearProduct() {
         produk.clear();

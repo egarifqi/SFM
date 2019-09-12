@@ -27,6 +27,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -131,24 +132,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         getLocation();
 
-        mEmailView = findViewById(R.id.username);
-        mPasswordView = findViewById(R.id.password);
-
-        mPasswordView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_ENTER)){
-                    login();
-                }
-                return false;
-            }
-        });
-
-        pref = getApplicationContext().getSharedPreferences("MyPref", 0);
-        editor = pref.edit();
-        postUrl = pref.getString("MyPref", "");
-
-        String login_url = "https://sfa-api.pti-cosmetics.com/v_user";
+        String login_url = "http://10.3.181.177:3000/v_user";
+        Log.e("login", login_url);
         AndroidNetworking.get(login_url).setPriority(Priority.HIGH).build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
             public void onResponse(JSONArray response) {
@@ -189,6 +174,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 //                            Toast.makeText(getBaseContext(), "UNSUCCESSFUL :  ERROR IS : " + anError.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+
+        mEmailView = findViewById(R.id.username);
+        mPasswordView = findViewById(R.id.password);
+
+        mPasswordView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) && (i == KeyEvent.KEYCODE_ENTER)){
+                    login();
+                }
+                return false;
+            }
+        });
+
+        pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+        editor = pref.edit();
+        postUrl = pref.getString("MyPref", "");
+
+
         Button loginbutton = findViewById(R.id.buttonlogin);
         loginbutton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -281,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             editor.putString("dc_id", dcacc);
                             editor.putString("dc_name", dcnameacc);
                             editor.putString("sales_name", nameacc);
+                            editor.putInt("intvisit", 0);
                             editor.commit();
                             final String salesidacc = pref.getString("sales_id", "");
                             com.example.salesforcemanagement.StatusSR.namaSR = nameacc;
@@ -345,6 +350,37 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 }
 
                             }
+
+                            Calendar calander = Calendar.getInstance();
+                            SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd");
+                            String currentDate = simpledateformat.format(calander.getTime());
+
+                            AndroidNetworking.get("https://sfa-api.pti-cosmetics.com:2000/login_presence?login_date=gte."+currentDate+"&&user_id=eq."+idacc+"&&order=id.desc")
+                                    .setPriority(Priority.HIGH).build().getAsJSONArray(new JSONArrayRequestListener() {
+                                @Override
+                                public void onResponse(JSONArray response) {
+                                    JSONObject jo;
+                                    Log.e("Array", response.toString());
+                                    try {
+                                        jo = response.getJSONObject(0);
+                                        int id = jo.getInt("id");
+                                        Log.e("LOGIN ID", "ID : "+id);
+                                        editor.putInt("login_id", id);
+                                        editor.commit();
+                                    } catch (JSONException e) {
+                                        Log.e("CANT PARSE JSON", e.getMessage());
+//                                Toast.makeText(getBaseContext(), "GOOD RESPONSE BUT JAVA CAN'T PARSE JSON IT RECEIEVED. " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                //ERROR
+                                @Override
+                                public void onError(ANError anError) {
+                                    anError.printStackTrace();
+                                    Log.e("PARSING ERROR", "Error :" + anError.getMessage());
+//                            Toast.makeText(getBaseContext(), "UNSUCCESSFUL :  ERROR IS : " + anError.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
 
                             AmbilData ambilData = new AmbilData();
                             ambilData.execute();
@@ -435,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             final com.example.salesforcemanagement.DatabaseTokoHandler dbtoko = new com.example.salesforcemanagement.DatabaseTokoHandler(getBaseContext());
 
             Log.e("sales id", salesacc);
-            String url = "https://sfa-api.pti-cosmetics.com/v_partner_inroute?sales_id=eq." + salesacc;
+            String url = "http://10.3.181.177:3000/v_partner_inroute?sales_id=eq." + salesacc;
             AndroidNetworking.get(url)
                     .setPriority(Priority.HIGH)
                     .build()
@@ -535,7 +571,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             final com.example.salesforcemanagement.DatabaseProdukEBPHandler dbEBP = new com.example.salesforcemanagement.DatabaseProdukEBPHandler(getBaseContext());
 
             Log.e("sales id", salesacc);
-            String url2 = "https://sfa-api.pti-cosmetics.com/v_product_ebp?sales_id=eq."+salesacc;
+            String url2 = "http://10.3.181.177:3000/v_product_ebp?sales_id=eq."+salesacc;
             AndroidNetworking.get(url2)
                     .setPriority(Priority.HIGH)
                     .build()
@@ -594,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             final com.example.salesforcemanagement.DatabaseNPDPromoHandler dbNPDP = new com.example.salesforcemanagement.DatabaseNPDPromoHandler(getBaseContext());
 
             Log.e("sales id", salesacc);
-            String url3 = "https://sfa-api.pti-cosmetics.com/v_product_npd_promo?sales_id=eq."+salesacc;
+            String url3 = "http://10.3.181.177:3000/v_product_npd_promo?sales_id=eq."+salesacc;
             AndroidNetworking.get(url3)
                     .setPriority(Priority.HIGH)
                     .build()
@@ -653,7 +689,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             final com.example.salesforcemanagement.DatabaseMHSHandler dbMHS = new com.example.salesforcemanagement.DatabaseMHSHandler(getBaseContext());
 
             Log.e("sales id", salesacc);
-            String url4 = "https://sfa-api.pti-cosmetics.com/v_product_mhs?sales_id=eq."+salesacc;
+            String url4 = "http://10.3.181.177:3000/v_product_mhs?sales_id=eq."+salesacc;
             AndroidNetworking.get(url4)
                     .setPriority(Priority.HIGH)
                     .build()
@@ -806,4 +842,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         return ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkType();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                int result = data.getIntExtra("result", 0);
+                if (result == 1) {
+                    TextView TV1 = (TextView) findViewById(R.id.textView2);
+                    TV1.setVisibility(TextView.VISIBLE);
+                }
+            }
+
+            if (resultCode == RESULT_CANCELED) {
+                // code here for cancelled result
+            }
+        }
+    }
 }

@@ -27,4 +27,5 @@
     <color name="notvisit">#3A8BCF</color>
     <color name="abu">#F0F0F0</color>
     <color name="soft">#AAC3E2</color>
+    <color name="view_backg_color">#c7c7C7</color>
 </resources>

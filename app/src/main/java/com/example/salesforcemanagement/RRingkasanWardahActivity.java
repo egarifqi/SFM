@@ -20,7 +20,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -44,7 +47,7 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
         final String nama = pref.getString("partner_name", "");
         String catatan = pref.getString("noteswardah", "");
 
-        final ListView listView = findViewById(R.id.mListViewRingkasanWardah);
+        ListView listView = (ListView)findViewById(R.id.mListViewRingkasanWardahr);
 
         for (int k = 0; k < Global.kode.size(); k++) {
             com.example.salesforcemanagement.Spacecraft coba = new com.example.salesforcemanagement.Spacecraft();
@@ -52,8 +55,9 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
             coba.setKodeodoo(Global.kode.get(k));
             coba.setNamaproduk(Global.nama.get(k));
             coba.setPrice(Global.harga.get(k));
-            coba.setStock(Global.stock.get(k));
+//            coba.setStock(Global.stock.get(k));
             coba.setQty(Global.qty.get(k));
+            coba.setAlasan(Global.alasan.get(k));
             coba.setCategory(Global.kategori.get(k));
 
             order.add(coba);
@@ -63,8 +67,9 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
         Global.kode.clear();
         Global.nama.clear();
         Global.harga.clear();
-        Global.stock.clear();
+//        Global.stock.clear();
         Global.qty.clear();
+        Global.alasan.clear();
         Global.kategori.clear();
 
         adapter = new ListViewAdapter(order, getBaseContext());
@@ -80,7 +85,7 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(RRingkasanWardahActivity.this);
                 LayoutInflater layoutInflater = getLayoutInflater();
-                View dialogView = layoutInflater.inflate(R.layout.form_takingorder, null);
+                View dialogView = layoutInflater.inflate(R.layout.form_retur, null);
                 dialog.setView(dialogView);
                 dialog.setCancelable(true);
                 dialog.setTitle("Input Order");
@@ -88,12 +93,17 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
                 final TextView formKode;
                 final TextView formNama;
                 final TextView formHarga;
-                final EditText formStock, formQty;
-
-                formKode = dialogView.findViewById(R.id.kode_odoo_form);
-                formNama = dialogView.findViewById(R.id.nama_produk_form);
-                formHarga = dialogView.findViewById(R.id.harga_form);
-                formStock = dialogView.findViewById(R.id.stock_form);
+                final EditText formQty;
+//                final Spinner formAlasan;
+                Spinner formAlasan = (Spinner) dialogView.findViewById(R.id.reason_form1);
+                ArrayAdapter<String> adapterretur = new ArrayAdapter<String>(RRingkasanWardahActivity.this, android.R.layout.simple_spinner_item,
+                        getResources().getStringArray(R.array.list_alasanretur));
+                adapterretur.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                formAlasan.setAdapter(adapterretur);
+                formKode = dialogView.findViewById(R.id.hkode_odoo_form);
+                formNama = dialogView.findViewById(R.id.hnama_produk_form);
+                formHarga = dialogView.findViewById(R.id.hharga_form);
+//                formAlasan = dialogView.findViewById(R.id.alasan_form);
                 formQty = dialogView.findViewById(R.id.qty_form);
 
                 final com.example.salesforcemanagement.Spacecraft coba = (com.example.salesforcemanagement.Spacecraft) adapter.getItem(position);
@@ -101,16 +111,14 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
                 formKode.setText(coba.getKodeodoo());
                 formNama.setText(coba.getNamaproduk());
                 formHarga.setText(coba.getPrice());
-                formStock.setText(coba.getStock());
+//                formAlasan.setText(coba.getAlasan());
                 formQty.setText(coba.getQty());
 
                 dialog.setPositiveButton("Ganti", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String mStock = formStock.getText().toString();
                         String mQty = formQty.getText().toString();
 
-                        order.get(position).setStock(mStock);
                         order.get(position).setQty(mQty);
 
                         adapter.notifyDataSetChanged();
@@ -133,17 +141,17 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
                         Log.i("QTY", "Item: " + item);
                         Log.i("SKU", "SKU: " + sku);
 
-                        TextView totalsku = findViewById(R.id.totalsku);
+                        TextView totalsku = findViewById(R.id.totalskur);
                         totalsku.setText(String.valueOf(sku));
                         com.example.salesforcemanagement.StatusToko.skuwardah = sku;
                         Global.totalsku = sku;
 
-                        TextView totalitem = findViewById(R.id.totalitem);
+                        TextView totalitem = findViewById(R.id.totalitemr);
                         totalitem.setText(String.valueOf(item));
                         com.example.salesforcemanagement.StatusToko.qtywardah = item;
                         Global.totalitem = item;
 
-                        TextView totalorder = findViewById(R.id.totalorder);
+                        TextView totalorder = findViewById(R.id.totalorderr);
                         totalorder.setText(String.valueOf(ordering));
                         com.example.salesforcemanagement.StatusSR.wardahAch = ordering;
                         Global.totalorder = ordering;
@@ -175,17 +183,17 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
                         Log.i("QTY", "Item: " + item);
                         Log.i("SKU", "SKU: " + sku);
 
-                        TextView totalsku = findViewById(R.id.totalsku);
+                        TextView totalsku = findViewById(R.id.totalskur);
                         totalsku.setText(String.valueOf(sku));
                         com.example.salesforcemanagement.StatusToko.skuwardah = sku;
                         Global.totalsku = sku;
 
-                        TextView totalitem = findViewById(R.id.totalitem);
+                        TextView totalitem = findViewById(R.id.totalitemr);
                         totalitem.setText(String.valueOf(item));
                         com.example.salesforcemanagement.StatusToko.qtywardah = item;
                         Global.totalitem = item;
 
-                        TextView totalorder = findViewById(R.id.totalorder);
+                        TextView totalorder = findViewById(R.id.totalorderr);
                         totalorder.setText(String.valueOf(ordering));
                         com.example.salesforcemanagement.StatusSR.wardahAch = ordering;
                         Global.totalorder = ordering;
@@ -212,25 +220,32 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
         Log.i("QTY", "Item: " + item);
         Log.i("SKU", "SKU: " + sku);
 
-        TextView totalsku = findViewById(R.id.totalsku);
+        TextView totalsku = findViewById(R.id.totalskur);
         totalsku.setText(String.valueOf(sku));
         com.example.salesforcemanagement.StatusToko.skuwardah = sku;
         Global.totalsku = sku;
 
-        TextView totalitem = findViewById(R.id.totalitem);
+        TextView totalitem = findViewById(R.id.totalitemr);
         totalitem.setText(String.valueOf(item));
         com.example.salesforcemanagement.StatusToko.qtywardah = item;
         Global.totalitem = item;
 
-        TextView totalorder = findViewById(R.id.totalorder);
+        TextView totalorder = findViewById(R.id.totalorderr);
         totalorder.setText(String.valueOf(ordering));
         com.example.salesforcemanagement.StatusSR.wardahAch = ordering;
         Global.totalorder = ordering;
 
-
-        EditText notes = findViewById(R.id.noteswardah);
-        notes.setText(catatan);
-        Button simpan = findViewById(R.id.simpanorderwardah);
+        FloatingActionButton add = findViewById(R.id.fabadd);
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RRingkasanWardahActivity.this, ReturWardahActivity.class);
+                startActivity(intent);
+            }
+        });
+//        EditText notes = findViewById(R.id.noteswardah);
+//        notes.setText(catatan);
+        FloatingActionButton simpan = findViewById(R.id.fabsend);
         int finalOrdering = ordering;
         simpan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -255,20 +270,20 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
                             Global.kode.add(order.get(g).getKodeodoo());
                             Global.nama.add(order.get(g).getNamaproduk());
                             Global.harga.add(order.get(g).getPrice());
-                            Global.stock.add(order.get(g).getStock());
+                            Global.alasan.add(order.get(g).getAlasan());
                             Global.qty.add(order.get(g).getQty());
                             if (order.get(g).getCategory().equals("null") || order.get(g).getCategory() == null){
                                 Global.kategori.add("20");
                             } else {
                                 Global.kategori.add(order.get(g).getCategory());
                             }
-                            Log.e("Produk_"+g, Global.id_produk.get(g)+ " - "+Global.kategori.get(g)+" - "+Global.kode.get(g)+" - "+Global.nama.get(g)+", Stok : "+ Global.stock.get(g)+", Qty : "+Global.qty.get(g));
+                            Log.e("Produk_"+g, Global.id_produk.get(g)+ " - "+Global.kategori.get(g)+" - "+Global.kode.get(g)+" - "+Global.nama.get(g)+", Alasan : "+ Global.alasan.get(g)+", Qty : "+Global.qty.get(g));
                         }
 
                         Log.e("SIZE", ""+Global.kode.size());
-                        Global.notes = notes.getText().toString();
-                        editor.putString("noteswardah", Global.notes);
-                        editor.commit();
+//                        Global.notes = notes.getText().toString();
+//                        editor.putString("noteswardah", Global.notes);
+//                        editor.commit();
                         Intent intent = new Intent(RRingkasanWardahActivity.this, com.example.salesforcemanagement.ReturBrandActivity.class);
                         startActivity(intent);
                         dialog.dismiss();
@@ -295,14 +310,14 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
             Global.kode.add(order.get(g).getKodeodoo());
             Global.nama.add(order.get(g).getNamaproduk());
             Global.harga.add(order.get(g).getPrice());
-            Global.stock.add(order.get(g).getStock());
+            Global.alasan.add(order.get(g).getAlasan());
             Global.qty.add(order.get(g).getQty());
             if (order.get(g).getCategory().equals("null") || order.get(g).getCategory() == null){
                 Global.kategori.add("20");
             } else {
                 Global.kategori.add(order.get(g).getCategory());
             }
-            Log.e("Produk_"+g, Global.id_produk.get(g)+ " - "+Global.kategori.get(g)+" - "+Global.kode.get(g)+" - "+Global.nama.get(g)+", Stok : "+ Global.stock.get(g)+", Qty : "+Global.qty.get(g));
+            Log.e("Produk_"+g, Global.id_produk.get(g)+ " - "+Global.kategori.get(g)+" - "+Global.kode.get(g)+" - "+Global.nama.get(g)+", Alasan : "+ Global.alasan.get(g)+", Qty : "+Global.qty.get(g));
         }
         super.onBackPressed();
     }
@@ -337,12 +352,12 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
             if (convertView == null) {
                 viewHolder = new ListViewAdapter.ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-                convertView = inflater.inflate(R.layout.model_row_summary, parent, false);
-                viewHolder.txtkode = convertView.findViewById(R.id.odoo_ringkasan);
-                viewHolder.txtnama = convertView.findViewById(R.id.nama_ringkasan);
-                viewHolder.txtharga = convertView.findViewById(R.id.harga_ringkasan);
-                viewHolder.txtqty = convertView.findViewById(R.id.qty_ringkasan);
-                viewHolder.txttotal = convertView.findViewById(R.id.jumlah_ringkasan);
+                convertView = inflater.inflate(R.layout.model_row_rsummary, parent, false);
+                viewHolder.txtkode = convertView.findViewById(R.id.odoo_ringkasanrw);
+                viewHolder.txtnama = convertView.findViewById(R.id.nama_ringkasanrw);
+                viewHolder.txtqty = convertView.findViewById(R.id.qty_ringkasanrw);
+                viewHolder.txttotal = convertView.findViewById(R.id.total_ringkasanrw);
+                viewHolder.txtalasan = convertView.findViewById(R.id.alasan_ringkasanrw);
 
                 convertView.setTag(viewHolder);
             } else {
@@ -351,20 +366,20 @@ public class RRingkasanWardahActivity extends AppCompatActivity {
 
             viewHolder.txtkode.setText(listOrder.getKodeodoo());
             viewHolder.txtnama.setText(listOrder.getNamaproduk());
-            viewHolder.txtharga.setText(listOrder.getPrice());
             viewHolder.txtqty.setText(listOrder.getQty());
-            String harga = viewHolder.txtharga.getText().toString();
             String qty = viewHolder.txtqty.getText().toString();
-            int intharga = Integer.parseInt(harga);
+            String harga = listOrder.getPrice();
             int intqty = Integer.parseInt(qty);
+            int intharga = Integer.parseInt(harga);
             int sub = intharga * intqty;
             viewHolder.txttotal.setText(String.valueOf(sub));
+            viewHolder.txtalasan.setText(listOrder.getAlasan());
 
             return convertView;
         }
 
         private class ViewHolder {
-            TextView txtkode, txtnama, txtharga, txtqty, txttotal;
+            TextView txtkode, txtnama, txtqty, txttotal, txtalasan;
         }
     }
 //Signature

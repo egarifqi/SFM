@@ -2,10 +2,14 @@ package com.example.salesforcemanagement;
 
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
@@ -32,6 +36,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -46,6 +52,12 @@ public class VisitActivity extends AppCompatActivity {
     Calendar calander;
     SimpleDateFormat simpledateformat;
     String Date;
+    private Timer timer;
+
+    BroadcastReceiver myReceiver;
+    AlarmManager alarmManager;
+    PendingIntent pendingIntent;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -96,6 +108,28 @@ public class VisitActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("truiton.ACTION_FINISH");
+        myReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.v("Second Activity", "Finishing Activity");
+                /**** Returning Result *****/
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result", 1);
+                VisitActivity.this.setResult(RESULT_OK, returnIntent);
+                /*********/
+                /**** Cancel Result ****/
+                /*
+                 * Intent returnIntent = new Intent();
+                 * SecondActivity.this.setResult(RESULT_CANCELED, returnIntent);
+                 */
+                /*********/
+                finish();
+            }
+        };
+        registerReceiver(myReceiver, intentFilter);
     }
 
     @Override
@@ -302,5 +336,40 @@ public class VisitActivity extends AppCompatActivity {
         } catch (SecurityException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Intent myIntent = new Intent(getBaseContext(),
+                MyScheduledReceiver.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("val", 8);
+        myIntent.putExtras(bundle);
+        pendingIntent = PendingIntent.getBroadcast(getBaseContext(), 0,
+                myIntent, 0);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.HOUR, 4);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                pendingIntent);
+        Log.e("Second Activity", "Alarm Scheduled");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+            Log.e("Second Activity", "Scheduled Alarm Cancelled");
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(myReceiver);
     }
 }

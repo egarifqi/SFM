@@ -2,6 +2,7 @@ package com.example.salesforcemanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -9,7 +10,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,26 +23,45 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TokoActivity extends AppCompatActivity {
 
     SharedPreferences pref, prefToko;
     SharedPreferences.Editor editor, editorToko;
     boolean check = false;
+    private static final String SERVER_PATH = "https://sfa.pti-cosmetics.com/sfa/web/";
+    private Uri uri;
 
     public class Program{
         private String nama;
@@ -110,6 +133,8 @@ public class TokoActivity extends AppCompatActivity {
         private String program;
         private String brand;
         private String address;
+        private Boolean piutang;
+        private String targettoko;
         private String diskon;
         /*
         GETTERS AND SETTERS
@@ -175,6 +200,14 @@ public class TokoActivity extends AppCompatActivity {
         public String getAddress() {return address;}
 
         public void setAddress(String address){this.address = address;}
+
+        public Boolean getPiutang() {return piutang;}
+
+        public void setPiutang(Boolean piutang){this.piutang = piutang;}
+
+        public String getTargettoko() {return targettoko;}
+
+        public void setTargettoko(String targettoko){this.targettoko = targettoko;}
 
         public String getDiskon() {return diskon;}
 
@@ -329,12 +362,13 @@ public class TokoActivity extends AppCompatActivity {
         LinearLayout kondisitoko = findViewById(R.id.kondisitoko);
         Button selesai = findViewById(R.id.button_simpantoko);
         final TextView headertoko = findViewById(R.id.nameToko);
-        final TextView notelp = findViewById(R.id.noTelp);
-        TextView nohp = findViewById(R.id.noHP);
+        final TextView piutang = findViewById(R.id.piutang);
+        TextView notelp = findViewById(R.id.noHP);
         final TextView channel = findViewById(R.id.channel);
         final TextView alamat = findViewById(R.id.alamatToko);
+        final TextView targettoko = findViewById(R.id.targettoko);
         final TextView frekuensi = findViewById(R.id.frekuensi);
-        TextView diskon = findViewById(R.id.diskon);
+//        TextView diskon = findViewById(R.id.diskon);
 //        TextView brand = findViewById(R.id.brand);
 
         final ListView listprogram = findViewById(R.id.listprogram);
@@ -345,17 +379,108 @@ public class TokoActivity extends AppCompatActivity {
 
         Button tunda = findViewById(R.id.button_tundatoko);
 
+        String holiday = "https://sfa-api.pti-cosmetics.com/holiday";
+        Calendar calander = Calendar.getInstance();
+        SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = simpledateformat.format(calander.getTime());
+        Log.e("CURRENT DATE", currentDate);
+        calander.add(Calendar.DATE, 7);
+        String nextweek = simpledateformat.format(calander.getTime());
+        Log.e("NEXT", nextweek);
+
+        Log.e("NEXT WEEK", nextweek);
+        AndroidNetworking.get(holiday).setPriority(Priority.HIGH).build().getAsJSONArray(new JSONArrayRequestListener() {
+            @Override
+            public void onResponse(JSONArray response) {
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject jo = response.getJSONObject(i);
+                        String tanggalmerah = jo.getString("tanggal");
+                        String namalibur = jo.getString("keterangan");
+
+                        if (tanggalmerah.equals(nextweek)){
+                            Log.e("LIBUR", tanggalmerah);
+                            Date libur = simpledateformat.parse(tanggalmerah);
+                            Locale localeID = new Locale("in", "ID");
+                            SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd MMMM yyyy", localeID);
+                            androidx.appcompat.app.AlertDialog.Builder dialog = new androidx.appcompat.app.AlertDialog.Builder(TokoActivity.this);
+                            dialog.setTitle("PEKAN DEPAN LIBUR");
+                            dialog.setMessage("Pastikan hari ini pesanan diperbanyak\n karena pekan depan pada tanggal " + sdf.format(libur)+" ada "+namalibur);
+                            dialog.setCancelable(true);
+                            dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            dialog.show();
+                        } else {
+                            Log.e("HARI NORMAL", "Pekan depan tidak libur");
+                        }
+                    } catch (Exception e) {
+                        Log.e("HariLibur", e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            //ERROR
+            @Override
+            public void onError(ANError anError) {
+                anError.printStackTrace();
+                Log.e("PARSING ERROR", "Error :" + anError.getMessage());
+//                            Toast.makeText(getBaseContext(), "UNSUCCESSFUL :  ERROR IS : " + anError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
         selesai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (com.example.salesforcemanagement.StatusToko.namatoko != null) {
+//                String filePath = getRealPathFromURIPath(uri, TokoActivity.this);
+//                String ttd = prefToko.getString("storepath", "");
+//                File file = new File(ttd);
+//                Log.e("Signature"+"_2", "Filename " + file.getName());
+//                RequestBody mFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+////                RequestBody mFile = RequestBody.create(MediaType.parse("image/*"), file);
+//                MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), mFile);
+//                RequestBody filename = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+//                Gson gson = new GsonBuilder()
+//                        .setLenient()
+//                        .create();
+//                Retrofit retrofit = new Retrofit.Builder()
+//                        .baseUrl(SERVER_PATH)
+//                        .addConverterFactory(GsonConverterFactory.create(gson))
+//                            .build();
+//                UploadImageInterface uploadImage = retrofit.create(UploadImageInterface.class);
+//                Call<UploadObject> fileUpload = uploadImage.uploadFile(fileToUpload, filename);
+//                fileUpload.enqueue(new Callback<UploadObject>() {
+//                    @Override
+//                    public void onResponse(Call<UploadObject> call, Response<UploadObject> response) {
+//                        try {
+//                            Log.e("Respon", SERVER_PATH + " - " + ttd);
+//                            Toast.makeText(TokoActivity.this, "Response " + response.raw().message(), Toast.LENGTH_LONG).show();
+//                            Toast.makeText(TokoActivity.this, "Success " + response.body().getSuccess() +" hahahaha", Toast.LENGTH_LONG).show();
+//                            Log.e("Response", "Response " + response.raw().message()+", Succes : "+ response.body().getSuccess());
+//                        } catch (Exception e) {
+//                            Log.e("Exception", e.getMessage());
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<UploadObject> call, Throwable t) {
+//                        Log.e("Signature"+"_3", "Error " + t.getMessage());
+//                    }
+//                });
+                if ((Global.kode.size() == 0 && Globalmo.kode.size() == 0 && Globalemina.kode.size() == 0 && Globalputri.kode.size() == 0)) {
                     AlertDialog.Builder dialog = new AlertDialog.Builder(TokoActivity.this);
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.form_notec, null);
                     dialog.setView(dialogView);
                     dialog.setCancelable(true);
                     dialog.setTitle("Informasi");
+                    dialog.setMessage("Apakah Anda akan menyelesaikan kunjungan tanpa transaksi?");
 
+//                    if (ec)
                     dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -374,6 +499,8 @@ public class TokoActivity extends AppCompatActivity {
                     });
                     dialog.show();
                 } else {
+                    editorToko.clear();
+                    editorToko.commit();
                     Intent intent = new Intent(TokoActivity.this, KunjunganActivity.class);
                     startActivity(intent);
 //                    dialog.dismiss();
@@ -410,7 +537,7 @@ public class TokoActivity extends AppCompatActivity {
             }
         });
 
-        String login_url = "https://sfa-api.pti-cosmetics.com/partner_detail?partner_ref=eq." + filterprogram;
+        String login_url = "http://10.3.181.177:3000/partner_detail?partner_ref=eq." + filterprogram;
         Log.e("url", login_url);
         AndroidNetworking.get(login_url).setPriority(Priority.HIGH).build().getAsJSONArray(new JSONArrayRequestListener() {
             @Override
@@ -438,6 +565,8 @@ public class TokoActivity extends AppCompatActivity {
                         String frekuensi = jo.getString("frekuensi");
                         String alamat = jo.getString("address");
                         String brand = jo.getString("brand");
+                        Boolean piutang = jo.getBoolean("piutang");
+                        String targettoko = jo.getString("target_bulan_ini");
                         String program = jo.getString("program_name");
                         if (program.equals("-")){
                             pencapaian = jo.getInt("pencapaian_mtd");
@@ -460,6 +589,8 @@ public class TokoActivity extends AppCompatActivity {
                         s.setFrequency(frekuensi);
                         s.setAddress(alamat);
                         s.setBrand(brand);
+                        s.setPiutang(piutang);
+                        s.setTargettoko(targettoko);
                         s.setProgram(program);
                         tokos.add(s);
                         p = new Program();
@@ -486,12 +617,17 @@ public class TokoActivity extends AppCompatActivity {
                     if (!tokos.get(0).getPhone().equals("0")&&!tokos.get(0).getPhone().equals("null")){
                         notelp.setText(tokos.get(0).getPhone());
                     } else {
-                        notelp.setText("");
+                        notelp.setText("-");
                     }
                     channel.setText(tokos.get(0).getOutlettype());
                     frekuensi.setText(tokos.get(0).getFrequency());
                     alamat.setText(tokos.get(0).getAddress());
-
+                    targettoko.setText(tokos.get(0).getTargettoko());
+                    if (tokos.get(0).getPiutang()){
+                        piutang.setText("Ada");
+                    } else{
+                        piutang.setText("Tidak Ada");
+                    }
                     final ListViewAdapter lvadapter = new ListViewAdapter(TokoActivity.this, programs);
                     lvadapter.notifyDataSetChanged();
                     listprogram.setAdapter(lvadapter);
@@ -535,6 +671,13 @@ public class TokoActivity extends AppCompatActivity {
 
                     @Override
                     public void onClick(final DialogInterface dialog, int which) {
+                        StatusToko.clearTotalToko();
+                        Global.clearProduct();
+                        Globalputri.clearProduct();
+                        Globalmo.clearProduct();
+                        Globalemina.clearProduct();
+//                        editorToko.clear();
+//                        editorToko.commit();
                         Intent intent = new Intent(TokoActivity.this, TakingOrderBrandActivity.class);
                         startActivity(intent);
                         dialog.dismiss();
@@ -584,12 +727,23 @@ public class TokoActivity extends AppCompatActivity {
         kondisitoko.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TokoActivity.this, KondisiTokoActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(TokoActivity.this, KondisiTokoActivity.class);
+//                startActivity(intent);
             }
         });
 
 
+    }
+
+    private String getRealPathFromURIPath(Uri contentURI, Activity activity) {
+        Cursor cursor = activity.getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) {
+            return contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(idx);
+        }
     }
 
     public String getPostDataString(JSONObject params) throws Exception {

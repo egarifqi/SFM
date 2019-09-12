@@ -28,7 +28,9 @@ public class Spacecraft implements Parcelable {
     int weekly_sales;
     String partner_id;
     String brand;
+    String alasan;
     String fuzzyMatchStatus;
+    String sgtorder;
     /*
     INSTANCE FIELDS
     */
@@ -38,7 +40,7 @@ public class Spacecraft implements Parcelable {
 
     public Spacecraft(int id, String kodeodoo, String namaproduk, String price, String category,
                       String producttype, String barcode, int weekly_sales, String partner_id,
-                      String brand, String stock, String qty, String koli) {
+                      String brand, String stock, String qty, String koli, String sgtorder) {
 
         this.id = id;
         this.kodeodoo = kodeodoo;
@@ -53,6 +55,7 @@ public class Spacecraft implements Parcelable {
         this.partner_id = partner_id;
         this.brand = brand;
         this.koli = koli;
+        this.sgtorder = sgtorder;
     }
 
     protected Spacecraft(Parcel in) {
@@ -69,6 +72,7 @@ public class Spacecraft implements Parcelable {
         partner_id = in.readString();
         brand = in.readString();
         koli = in.readString();
+        sgtorder = in.readString();
     }
 
     @Override
@@ -86,6 +90,7 @@ public class Spacecraft implements Parcelable {
         dest.writeString(partner_id);
         dest.writeString(brand);
         dest.writeString(koli);
+        dest.writeString(sgtorder);
     }
 
     @Override
@@ -193,9 +198,23 @@ public class Spacecraft implements Parcelable {
 
     public void setKoli(String koli) { this.koli = koli; }
 
+    public String getAlasan() {
+        return alasan;
+    }
+
+    public void setAlasan(String alasan) { this.alasan = alasan; }
+
     public String getFuzzyMatchStatus() {return fuzzyMatchStatus;}
 
     public void setFuzzyMatchStatus(String fuzzyStatus) {this.fuzzyMatchStatus = fuzzyStatus;}
+
+    public String getSgtorder() {
+        return this.sgtorder;
+    }
+
+    public void setSgtorder(String sgtorder) {
+        this.sgtorder = sgtorder;
+    }
 
     public void clearAll() {
         this.id = 0;
@@ -212,6 +231,7 @@ public class Spacecraft implements Parcelable {
         this.qty = "0";
         this.koli = "0";
         this.fuzzyMatchStatus = "fuzzynotmatched";
+        this.sgtorder = "0";
     }
 
         /*

@@ -33,9 +33,9 @@ public class HistoricalSalesWardahActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tab_layouthistoricalsales);
 
+        tabLayout.addTab(tabLayout.newTab().setText("EBP"));
         tabLayout.addTab(tabLayout.newTab().setText("MHS"));
         tabLayout.addTab(tabLayout.newTab().setText("NPD & PROMO"));
-        tabLayout.addTab(tabLayout.newTab().setText("EBP"));
         tabLayout.addTab(tabLayout.newTab().setText("OTHERS"));
 //        tabLayout.addTab(tabLayout.newTab().setText("ADDITIONAL ORDER"));
 

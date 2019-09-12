@@ -20,6 +20,7 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
     private static final String KEY_PARTNER_ID = "p_id";
     private static final String KEY_KONSTANTA = "konst";
     private static final String KEY_STATUS = "status";
+    private static final String KEY_BA = "ba";
     ContentValues values = new ContentValues();
 
     public DatabaseTokoHandler(Context context) {
@@ -32,7 +33,7 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_TOKO + "(" + KEY_ID
                 + " INTEGER PRIMARY KEY," + KEY_CODE + " TEXT," + KEY_NAME + " TEXT," + KEY_SALES_ID
-                + " TEXT," + KEY_PARTNER_ID+" TEXT,"+ KEY_KONSTANTA+ " TEXT,"+ KEY_STATUS+ " TEXT"+")";
+                + " TEXT," + KEY_PARTNER_ID + " TEXT," + KEY_KONSTANTA + " TEXT," + KEY_STATUS + " TEXT," + KEY_BA + " INTEGER )";
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
 
@@ -47,7 +48,7 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
     }
 
     // code to add the new contact
-    void addToko(com.example.salesforcemanagement.TokoDalamRute tdr) {
+    void addToko(TokoDalamRute tdr) {
         SQLiteDatabase db = this.getWritableDatabase();
 
 //        ContentValues values = new ContentValues();
@@ -57,6 +58,12 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
         values.put(KEY_PARTNER_ID, tdr.getPartnerId());
         values.put(KEY_KONSTANTA, tdr.getFrekuensi());
         values.put(KEY_STATUS, tdr.getStatus());
+        if (tdr.getBa()) {
+            values.put(KEY_BA, 1);
+        } else {
+            values.put(KEY_BA, 0);
+        }
+
 
         // Inserting Row
         db.insert(TABLE_TOKO, null, values);
@@ -64,7 +71,7 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    void addToko2(com.example.salesforcemanagement.TokoDalamRute tdr) {
+    void addToko2(TokoDalamRute tdr) {
         String sql = "INSERT OR REPLACE INTO " + TABLE_TOKO + " ( "
                 + KEY_CODE + ", "
                 + KEY_NAME + ", "
@@ -95,7 +102,7 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    void addAllProduk(ArrayList<com.example.salesforcemanagement.TokoDalamRute> s, int length) {
+    void addAllProduk(ArrayList<TokoDalamRute> s, int length) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
 
@@ -118,27 +125,28 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
     }
 
     // code to get the single contact
-    com.example.salesforcemanagement.TokoDalamRute getToko(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_TOKO, new String[] { KEY_ID, KEY_CODE, KEY_NAME, KEY_SALES_ID,
-                        KEY_PARTNER_ID, KEY_KONSTANTA, KEY_STATUS }, KEY_ID + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        com.example.salesforcemanagement.TokoDalamRute tdr = new com.example.salesforcemanagement.TokoDalamRute(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2),
-                cursor.getString(3), cursor.getString(4),
-                cursor.getString(5), cursor.getString(6));
-        cursor.close();
-        // return contact
-        return tdr;
-    }
+//    com.example.sfmtesting.TokoDalamRute getToko(int id) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        Cursor cursor = db.query(TABLE_TOKO, new String[] { KEY_ID, KEY_CODE, KEY_NAME, KEY_SALES_ID,
+//                        KEY_PARTNER_ID, KEY_KONSTANTA, KEY_STATUS }, KEY_ID + "=?",
+//                new String[] { String.valueOf(id) }, null, null, null, null);
+//        if (cursor != null)
+//            cursor.moveToFirst();
+//
+//        com.example.sfmtesting.TokoDalamRute tdr = new com.example.sfmtesting.TokoDalamRute(Integer.parseInt(cursor.getString(0)),
+//                cursor.getString(1), cursor.getString(2),
+//                cursor.getString(3), cursor.getString(4),
+//                cursor.getString(5), cursor.getString(6),
+//                cursor.getInt(7));
+//        cursor.close();
+//        // return contact
+//        return tdr;
+//    }
 
     // code to get all contacts in a list view
-    public ArrayList<com.example.salesforcemanagement.TokoDalamRute> getAllToko() {
-        ArrayList<com.example.salesforcemanagement.TokoDalamRute> listToko = new ArrayList<com.example.salesforcemanagement.TokoDalamRute>();
+    public ArrayList<TokoDalamRute> getAllToko() {
+        ArrayList<TokoDalamRute> listToko = new ArrayList<TokoDalamRute>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_TOKO;
 
@@ -148,14 +156,20 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                com.example.salesforcemanagement.TokoDalamRute contact = new com.example.salesforcemanagement.TokoDalamRute();
-                contact.setId(Integer.parseInt(cursor.getString(0)));
-                contact.setKode(cursor.getString(1));
-                contact.setNama(cursor.getString(2));
-                contact.setSalesid(cursor.getString(3));
-                contact.setPartnerId(cursor.getString(4));
-                contact.setFrekuensi(cursor.getString(5));
-                contact.setStatus(cursor.getString(6));
+                TokoDalamRute contact = new TokoDalamRute();
+                contact.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(KEY_ID))));
+                contact.setKode(cursor.getString(cursor.getColumnIndex(KEY_CODE)));
+                contact.setNama(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+                contact.setSalesid(cursor.getString(cursor.getColumnIndex(KEY_SALES_ID)));
+                contact.setPartnerId(cursor.getString(cursor.getColumnIndex(KEY_PARTNER_ID)));
+                contact.setFrekuensi(cursor.getString(cursor.getColumnIndex(KEY_KONSTANTA)));
+                contact.setStatus(cursor.getString(cursor.getColumnIndex(KEY_STATUS)));
+                int bavalue = cursor.getInt(cursor.getColumnIndex(KEY_BA));
+                if (bavalue == 1) {
+                    contact.setBa(true);
+                } else if (bavalue == 0) {
+                    contact.setBa(false);
+                }
                 // Adding contact to list
                 listToko.add(contact);
             } while (cursor.moveToNext());
@@ -167,7 +181,7 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
     }
 
     // code to update the single contact
-    public int updateToko(com.example.salesforcemanagement.TokoDalamRute tdr) {
+    public int updateToko(TokoDalamRute tdr) {
         SQLiteDatabase db = this.getWritableDatabase();
 
 //        ContentValues values = new ContentValues();
@@ -180,18 +194,18 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
 
         // updating row
         return db.update(TABLE_TOKO, values, KEY_ID + " = ?",
-                new String[] { String.valueOf(tdr.getId()) });
+                new String[]{String.valueOf(tdr.getId())});
     }
 
     // Deleting single contact
-    public void deleteContact(com.example.salesforcemanagement.TokoDalamRute contact) {
+    public void deleteContact(TokoDalamRute contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_TOKO, KEY_ID + " = ?",
-                new String[] { String.valueOf(contact.getId()) });
+                new String[]{String.valueOf(contact.getId())});
         db.close();
     }
 
-    public void deleteAll(){
+    public void deleteAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TABLE_TOKO;
         db.execSQL(query);
@@ -203,10 +217,11 @@ public class DatabaseTokoHandler extends SQLiteOpenHelper {
         String countQuery = "SELECT  * FROM " + TABLE_TOKO;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
-//        cursor.close();
+        int copun = cursor.getCount();
+        cursor.close();
 
         // return count
-        return cursor.getCount();
+        return copun;
     }
 
 }

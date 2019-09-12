@@ -21,11 +21,11 @@ public class HistoricalSalesWardahPagerAdapter extends FragmentStatePagerAdapter
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0:
-                return new AdditionalWardahFragment();
             case 1:
-                return new com.example.salesforcemanagement.NPDWardahFragment();
+                return new AdditionalWardahFragment();
             case 2:
+                return new com.example.salesforcemanagement.NPDWardahFragment();
+            case 0:
                 return new com.example.salesforcemanagement.ListHistWardahFragment();
             case 3:
                 return new OthersWardahFragment();

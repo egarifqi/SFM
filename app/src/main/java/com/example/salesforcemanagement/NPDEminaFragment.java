@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -164,327 +165,388 @@ public class NPDEminaFragment extends Fragment {
 
                 TextView formKode = null;
                 final TextView formNama;
-                final TextView formHarga;
-                final TextView formPcs,formws;
+                final TextView formHarga, formPcs, formws, formStockBA, formQtyBA;
                 final EditText formStock, formQty;
+
+                LinearLayout llstocknonBA = dialogView.findViewById(R.id.layoutstocknonba);
+                LinearLayout llstockBA = dialogView.findViewById(R.id.layoutstockba);
+                LinearLayout llorderBA = dialogView.findViewById(R.id.layoutorderba);
 
                 formKode = dialogView.findViewById(R.id.kode_odoo_form);
                 formNama = dialogView.findViewById(R.id.nama_produk_form);
                 formHarga = dialogView.findViewById(R.id.harga_form);
+                formPcs = dialogView.findViewById(R.id.pcs_produk_form);
                 formws = dialogView.findViewById(R.id.ws_form);
                 formStock = dialogView.findViewById(R.id.stock_form);
                 formQty = dialogView.findViewById(R.id.qty_form);
-                formPcs = dialogView.findViewById(R.id.pcs_produk_form);
+                formStockBA = dialogView.findViewById(R.id.stock_form_ba);
+                formQtyBA = dialogView.findViewById(R.id.suggest_form);
 
-                final com.example.salesforcemanagement.Spacecraft coba = (com.example.salesforcemanagement.Spacecraft) adapter.getItem(position);
+                final Spacecraft coba = (Spacecraft) adapter.getItem(position);
+                Log.e("Produk Terpilih", coba.getKodeodoo() + " - " + coba.getNamaproduk() + " - STK: " + coba.getStock() + ", QTY: " + coba.getQty());
 
                 String konsta = pref.getString("const", "2");
+                boolean is_BA = pref.getBoolean("isBa", false);
+                Log.e("TOKO BA1", "harusnya " + is_BA);
                 final int konst = Integer.parseInt(konsta);
 
                 formKode.setText(coba.getKodeodoo());
                 formNama.setText(coba.getNamaproduk());
                 formHarga.setText(coba.getPrice());
-                formws.setText("" + coba.getWeeklySales());
                 formPcs.setText(coba.getKoli());
-                formStock.setHint(coba.getStock());
-                String stockformawal = formStock.getText().toString();
-                if (!stockformawal.isEmpty()) {
-                    int intstockformawal = Integer.parseInt(stockformawal);
-                    int qtyformawal = konst*coba.getWeeklySales() - intstockformawal;
-                    if (qtyformawal >= 0) {
-                        formQty.setHint(String.valueOf(qtyformawal));
+                formws.setText("" + coba.getWeeklySales());
+                if (is_BA) {
+                    Toast.makeText(getContext(), "harusnya toko BA", Toast.LENGTH_SHORT).show();
+                    llstocknonBA.setVisibility(View.GONE);
+                    formStockBA.setText(coba.getStock());
+                    formQtyBA.setText(coba.getQty());
+                    formQty.setHint(coba.getQty());
+                    TextView finalFormKode1 = formKode;
+                    dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            coba.setQty(formQty.getText().toString());
+
+                            TextView qty = view.findViewById(R.id.qtyhist);
+
+                            qty.setText(spacecrafts.get(position).getQty());
+                            boolean check = false;
+                            boolean add = true;
+
+                            for (int x = 0; x < Globalemina.kode.size(); x++) {
+                                if (finalFormKode1.getText().toString().equals(Globalemina.kode.get(x))) {
+                                    check = true;
+                                }
+                                if (check) {
+                                    Globalemina.id_produk.set(x, coba.getId());
+                                    Globalemina.kode.set(x, finalFormKode1.getText().toString());
+                                    Globalemina.nama.set(x, formNama.getText().toString());
+                                    Globalemina.harga.set(x, formHarga.getText().toString());
+                                    Globalemina.stock.set(x, formStockBA.getText().toString());
+                                    Globalemina.qty.set(x, formQty.getText().toString());
+                                    Globalemina.kategori.set(x, coba.getCategory());
+                                    Globalemina.sgtorder.set(x, formQtyBA.getText().toString());
+                                    check = false;
+                                    add = false;
+                                }
+
+                            }
+                            if (add) {
+                                Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
+                                Globalemina.id_produk.add(coba.getId());
+                                Globalemina.kode.add(finalFormKode1.getText().toString());
+                                Globalemina.nama.add(formNama.getText().toString());
+                                Globalemina.harga.add(formHarga.getText().toString());
+                                Globalemina.stock.add(formStockBA.getText().toString());
+                                Globalemina.qty.add(formQty.getText().toString());
+                                Globalemina.kategori.add(coba.getCategory());
+                                Globalemina.sgtorder.add(formQtyBA.getText().toString());
+                                Globalemina.produkCount++;
+                            }
+
+                            adapter.notifyDataSetChanged();
+                            dialog.dismiss();
+                        }
+                    });
+                } else {
+                    llorderBA.setVisibility(View.GONE);
+                    llstockBA.setVisibility(View.GONE);
+                    formStock.setHint(coba.getStock());
+                    String stockformawal = formStock.getText().toString();
+                    if (!stockformawal.isEmpty()) {
+                        int intstockformawal = Integer.parseInt(stockformawal);
+                        int qtyformawal = konst * coba.getWeeklySales() - intstockformawal;
+                        if (qtyformawal >= 0) {
+                            formQty.setHint(String.valueOf(qtyformawal));
+                        } else {
+                            formQty.setHint("0");
+                        }
                     } else {
                         formQty.setHint("0");
                     }
-                } else {
-                    formQty.setHint("0");
-                }
 
-                formStock.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                        String stockform = formStock.getText().toString();
-                        if (!stockform.isEmpty()) {
-                            int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform >= 0) {
-                                formQty.setHint(String.valueOf(qtyform));
+                    formStock.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            String stockform = formStock.getText().toString();
+                            if (!stockform.isEmpty()) {
+                                int intstockform = Integer.parseInt(stockform);
+                                int qtyform = konst * coba.getWeeklySales() - intstockform;
+                                if (qtyform >= 0) {
+                                    formQty.setHint(String.valueOf(qtyform));
+                                } else {
+                                    formQty.setHint("0");
+                                }
                             } else {
                                 formQty.setHint("0");
                             }
-                        } else {
-                            formQty.setHint("0");
                         }
-                    }
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        String stockform = formStock.getText().toString();
-                        if (!stockform.isEmpty()) {
-                            int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform >= 0) {
-                                formQty.setHint(String.valueOf(qtyform));
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            String stockform = formStock.getText().toString();
+                            if (!stockform.isEmpty()) {
+                                int intstockform = Integer.parseInt(stockform);
+                                int qtyform = konst * coba.getWeeklySales() - intstockform;
+                                if (qtyform >= 0) {
+                                    formQty.setHint(String.valueOf(qtyform));
+                                } else {
+                                    formQty.setHint("0");
+                                }
                             } else {
                                 formQty.setHint("0");
                             }
-                        } else {
-                            formQty.setHint("0");
+
                         }
 
-                    }
+                        @Override
+                        public void afterTextChanged(Editable s) {
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
+                        }
+                    });
 
-                    }
-                });
+                    final TextView finalFormKode = formKode;
+                    final int[] count = new int[1];
+                    dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String mStock = formStock.getText().toString();
+                            String mQty = formQty.getText().toString();
+                            count[0] = 0;
+                            if (mStock.isEmpty() && mQty.isEmpty()) {
+                                Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
+                            } else if (mStock.isEmpty() && !mQty.isEmpty()) {
+                                orderedID.add(coba.getId());
+                                orderedkode.add(finalFormKode.getText().toString());
+                                orderedname.add(formNama.getText().toString());
+                                orderedprice.add(formHarga.getText().toString());
+//                            int stockform = 0;
+                                orderedstock.add("0");
+                                orderedqty.add(formQty.getText().toString());
+                                orderedcategory.add(coba.getCategory());
 
-                final TextView finalFormKode = formKode;
-                final int[] count = new int[1];
-                dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String mStock = formStock.getText().toString();
-                        String mQty = formQty.getText().toString();
-                        count[0] = 0;
-                        if (mStock.isEmpty() && mQty.isEmpty()){
-                            Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
-                        } else if (mStock.isEmpty() && !mQty.isEmpty()) {
+                                kumpulanorder.setId(orderedID.get(count[0]));
+                                kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                                kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                                kumpulanorder.setPrice(orderedprice.get(count[0]));
+                                kumpulanorder.setStock(orderedstock.get(count[0]));
+                                kumpulanorder.setQty(orderedqty.get(count[0]));
+                                kumpulanorder.setCategory(orderedcategory.get(count[0]));
 
-                            orderedID.add(coba.getId());
-                            orderedkode.add(finalFormKode.getText().toString());
-                            orderedname.add(formNama.getText().toString());
-                            orderedprice.add(formHarga.getText().toString());
-                            orderedstock.add("0");
-                            orderedqty.add(formQty.getText().toString());
+                                order.add(count[0], kumpulanorder);
 
-                            kumpulanorder.setId(orderedID.get(count[0]));
-                            kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                            kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                            kumpulanorder.setPrice(orderedprice.get(count[0]));
-                            kumpulanorder.setStock(orderedstock.get(count[0]));
-                            kumpulanorder.setQty(orderedqty.get(count[0]));
+                                count[0]++;
 
-                            order.add(count[0], kumpulanorder);
+                                coba.setStock("0");
+                                coba.setQty(formQty.getText().toString());
 
-                            count[0]++;
+                                TextView stock = view.findViewById(R.id.stock_hist);
+                                TextView qty = view.findViewById(R.id.qtyhist);
 
-
-                            coba.setStock("0");
-                            coba.setQty(formQty.getText().toString());
-
-                            TextView stock = view.findViewById(R.id.stock_hist);
-                            TextView qty = view.findViewById(R.id.qtyhist);
-
-                            stock.setText(spacecrafts.get(position).getStock());
-                            qty.setText(spacecrafts.get(position).getQty());
-
-//                            Toast.makeText(getActivity(), "stock " + coba.getStock() + " qty " + coba.getQty(), Toast.LENGTH_LONG).show();
-
-                            boolean check = false;
-                            boolean add = true;
-
-                            for (int x = 0; x < Globalemina.kode.size(); x++) {
-                                if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
-                                    check = true;
-                                }
-                                if (check) {
-                                    Globalemina.id_produk.set(x, coba.getId());
-                                    Globalemina.kode.set(x, finalFormKode.getText().toString());
-                                    Globalemina.nama.set(x, formNama.getText().toString());
-                                    Globalemina.harga.set(x, formHarga.getText().toString());
-                                    Globalemina.stock.set(x, "0");
-                                    Globalemina.qty.set(x, formQty.getText().toString());
-                                    Globalemina.kategori.set(x, coba.getCategory());
-                                    Globalemina.sgtorder.set(x, "0");
-                                    check = false;
-                                    add = false;
-                                }
-
-                            }
-                            if (add) {
-                                Globalemina.id_produk.add(coba.getId());
-                                Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
-                                Globalemina.kode.add(finalFormKode.getText().toString());
-                                Globalemina.nama.add(formNama.getText().toString());
-                                Globalemina.harga.add(formHarga.getText().toString());
-                                Globalemina.stock.add("0");
-                                Globalemina.sgtorder.add("0");
-                                Globalemina.qty.add(formQty.getText().toString());
-                                Globalemina.kategori.add(coba.getCategory());
-                                Globalemina.produkCount++;
-                            }
-
-
-                            adapter.notifyDataSetChanged();
-                            dialog.dismiss();
-
-                        } else if (!mStock.isEmpty() && mQty.isEmpty()) {
-
-                            orderedID.add(coba.getId());
-                            orderedkode.add(finalFormKode.getText().toString());
-                            orderedname.add(formNama.getText().toString());
-                            orderedprice.add(formHarga.getText().toString());
-                            orderedstock.add(formStock.getText().toString());
-                            String stockform = formStock.getText().toString();
-                            int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform<0){qtyform = 0;}
-                            orderedqty.add(String.valueOf(qtyform));
-                            orderedcategory.add(coba.getCategory());
-
-                            kumpulanorder.setId(orderedID.get(count[0]));
-                            kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                            kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                            kumpulanorder.setPrice(orderedprice.get(count[0]));
-                            kumpulanorder.setStock(orderedstock.get(count[0]));
-                            kumpulanorder.setQty(orderedqty.get(count[0]));
-                            kumpulanorder.setCategory(orderedcategory.get(count[0]));
-
-                            order.add(count[0], kumpulanorder);
-
-                            count[0]++;
-
-
-                            coba.setStock(formStock.getText().toString());
-                            coba.setQty(String.valueOf(qtyform));
-
-                            TextView stock = view.findViewById(R.id.stock_hist);
-                            TextView qty = view.findViewById(R.id.qtyhist);
-
-                            stock.setText(spacecrafts.get(position).getStock());
-                            qty.setText(spacecrafts.get(position).getQty());
-
-//                            Toast.makeText(getActivity(), "stock " + coba.getStock() + " qty " + coba.getQty(), Toast.LENGTH_LONG).show();
-
-                            boolean check = false;
-                            boolean add = true;
-
-                            for (int x = 0; x < Globalemina.kode.size(); x++) {
-                                if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
-                                    check = true;
-                                }
-                                if (check) {
-                                    Globalemina.id_produk.set(x, coba.getId());
-                                    Globalemina.kode.set(x, finalFormKode.getText().toString());
-                                    Globalemina.nama.set(x, formNama.getText().toString());
-                                    Globalemina.harga.set(x, formHarga.getText().toString());
-                                    Globalemina.stock.set(x, formStock.getText().toString());
-                                    Globalemina.qty.set(x, String.valueOf(qtyform));
-                                    Globalemina.kategori.set(x, coba.getCategory());
-                                    Globalemina.sgtorder.set(x, String.valueOf(qtyform));
-                                    check = false;
-                                    add = false;
-                                }
-
-                            }
-                            if (add) {
-                                Globalemina.id_produk.add(coba.getId());
-                                Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
-                                Globalemina.kode.add(finalFormKode.getText().toString());
-                                Globalemina.nama.add(formNama.getText().toString());
-                                Globalemina.harga.add(formHarga.getText().toString());
-                                Globalemina.stock.add(formStock.getText().toString());
-                                Globalemina.qty.add(String.valueOf(qtyform));
-                                Globalemina.kategori.add(coba.getCategory());
-                                Globalemina.sgtorder.add(String.valueOf(qtyform));
-                                Globalemina.produkCount++;
-                            }
-
-
-                            adapter.notifyDataSetChanged();
-                            dialog.dismiss();
-
-                        } else {
-
-                            String stockform = formStock.getText().toString();
-                            int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform<0){qtyform = 0;}
-
-                            orderedID.add(coba.getId());
-                            orderedkode.add(finalFormKode.getText().toString());
-                            orderedname.add(formNama.getText().toString());
-                            orderedprice.add(formHarga.getText().toString());
-                            orderedstock.add(formStock.getText().toString());
-                            orderedqty.add(formQty.getText().toString());
-                            orderedcategory.add(coba.getCategory());
-
-                            kumpulanorder.setId(orderedID.get(count[0]));
-                            kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                            kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                            kumpulanorder.setPrice(orderedprice.get(count[0]));
-                            kumpulanorder.setStock(orderedstock.get(count[0]));
-                            kumpulanorder.setQty(orderedqty.get(count[0]));
-                            kumpulanorder.setCategory(orderedcategory.get(count[0]));
-
-                            order.add(count[0], kumpulanorder);
-
-                            count[0]++;
-
-                            coba.setStock(formStock.getText().toString());
-                            coba.setQty(formQty.getText().toString());
-
-                            TextView stock = view.findViewById(R.id.stock_hist);
-                            TextView qty = view.findViewById(R.id.qtyhist);
-
-                            stock.setText(spacecrafts.get(position).getStock());
-                            qty.setText(spacecrafts.get(position).getQty());
+                                stock.setText(spacecrafts.get(position).getStock());
+                                qty.setText(spacecrafts.get(position).getQty());
 
 //                            Toast.makeText(getActivity(), "order:" + formNama.getText().toString() + "stockmo " + coba.getStock() + " qtymo " + coba.getQty(), Toast.LENGTH_LONG).show();
 
 
-                            boolean check = false;
-                            boolean add = true;
+                                boolean check = false;
+                                boolean add = true;
 
-                            for (int x = 0; x < Globalemina.kode.size(); x++) {
-                                if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
-                                    check = true;
+                                for (int x = 0; x < Globalemina.kode.size(); x++) {
+                                    if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
+                                        check = true;
+                                    }
+                                    if (check) {
+                                        Globalemina.id_produk.set(x, coba.getId());
+                                        Globalemina.kode.set(x, finalFormKode.getText().toString());
+                                        Globalemina.nama.set(x, formNama.getText().toString());
+                                        Globalemina.harga.set(x, formHarga.getText().toString());
+                                        Globalemina.stock.set(x, "0");
+                                        Globalemina.qty.set(x, formQty.getText().toString());
+                                        Globalemina.kategori.set(x, coba.getCategory());
+                                        Globalemina.sgtorder.set(x, "0");
+                                        check = false;
+                                        add = false;
+                                    }
+
                                 }
-                                if (check) {
-                                    Globalemina.id_produk.set(x, coba.getId());
-                                    Globalemina.kode.set(x, finalFormKode.getText().toString());
-                                    Globalemina.nama.set(x, formNama.getText().toString());
-                                    Globalemina.harga.set(x, formHarga.getText().toString());
-                                    Globalemina.stock.set(x, formStock.getText().toString());
-                                    Globalemina.qty.set(x, formQty.getText().toString());
-                                    Globalemina.kategori.set(x, coba.getCategory());
-                                    Globalemina.sgtorder.set(x, String.valueOf(qtyform));
-                                    check = false;
-                                    add = false;
+                                if (add) {
+                                    Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
+                                    Globalemina.id_produk.add(coba.getId());
+                                    Globalemina.kode.add(finalFormKode.getText().toString());
+                                    Globalemina.nama.add(formNama.getText().toString());
+                                    Globalemina.harga.add(formHarga.getText().toString());
+                                    Globalemina.stock.add("0");
+                                    Globalemina.sgtorder.add("0");
+                                    Globalemina.qty.add(formQty.getText().toString());
+                                    Globalemina.kategori.add(coba.getCategory());
+                                    Globalemina.produkCount++;
                                 }
+
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            } else if (!mStock.isEmpty() && mQty.isEmpty()) {
+
+                                orderedID.add(coba.getId());
+                                orderedkode.add(finalFormKode.getText().toString());
+                                orderedname.add(formNama.getText().toString());
+                                orderedprice.add(formHarga.getText().toString());
+                                orderedstock.add(formStock.getText().toString());
+                                String stockform = formStock.getText().toString();
+                                int intstockform = Integer.parseInt(stockform);
+                                int qtyform = konst * coba.getWeeklySales() - intstockform;
+                                if (qtyform < 0) {
+                                    qtyform = 0;
+                                }
+                                orderedqty.add(String.valueOf(qtyform));
+                                orderedcategory.add(coba.getCategory());
+
+                                kumpulanorder.setId(orderedID.get(count[0]));
+                                kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                                kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                                kumpulanorder.setPrice(orderedprice.get(count[0]));
+                                kumpulanorder.setStock(orderedstock.get(count[0]));
+                                kumpulanorder.setQty(orderedqty.get(count[0]));
+                                kumpulanorder.setCategory(orderedcategory.get(count[0]));
+
+                                order.add(count[0], kumpulanorder);
+
+                                count[0]++;
+
+
+                                coba.setStock(formStock.getText().toString());
+                                coba.setQty(String.valueOf(qtyform));
+
+                                TextView stock = view.findViewById(R.id.stock_hist);
+                                TextView qty = view.findViewById(R.id.qtyhist);
+
+                                stock.setText(spacecrafts.get(position).getStock());
+                                qty.setText(spacecrafts.get(position).getQty());
+
+//                            Toast.makeText(getActivity(), "stock " + coba.getStock() + " qty " + coba.getQty(), Toast.LENGTH_LONG).show();
+
+                                boolean check = false;
+                                boolean add = true;
+
+                                for (int x = 0; x < Globalemina.kode.size(); x++) {
+                                    if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
+                                        check = true;
+                                    }
+                                    if (check) {
+                                        Globalemina.id_produk.set(x, coba.getId());
+                                        Globalemina.kode.set(x, finalFormKode.getText().toString());
+                                        Globalemina.nama.set(x, formNama.getText().toString());
+                                        Globalemina.harga.set(x, formHarga.getText().toString());
+                                        Globalemina.stock.set(x, formStock.getText().toString());
+                                        Globalemina.qty.set(x, String.valueOf(qtyform));
+                                        Globalemina.kategori.set(x, coba.getCategory());
+                                        Globalemina.sgtorder.set(x, "0");
+                                        check = false;
+                                        add = false;
+                                    }
+
+                                }
+                                if (add) {
+                                    Globalemina.id_produk.add(coba.getId());
+                                    Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
+                                    Globalemina.kode.add(finalFormKode.getText().toString());
+                                    Globalemina.nama.add(formNama.getText().toString());
+                                    Globalemina.harga.add(formHarga.getText().toString());
+                                    Globalemina.stock.add(formStock.getText().toString());
+                                    Globalemina.qty.add(String.valueOf(qtyform));
+                                    Globalemina.kategori.add(coba.getCategory());
+                                    Globalemina.sgtorder.add("0");
+                                    Globalemina.produkCount++;
+                                }
+
+
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+
+                            } else {
+
+                                orderedID.add(coba.getId());
+                                orderedkode.add(finalFormKode.getText().toString());
+                                orderedname.add(formNama.getText().toString());
+                                orderedprice.add(formHarga.getText().toString());
+                                orderedstock.add(formStock.getText().toString());
+                                orderedqty.add(formQty.getText().toString());
+                                orderedcategory.add(coba.getCategory());
+
+                                kumpulanorder.setId(orderedID.get(count[0]));
+                                kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                                kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                                kumpulanorder.setPrice(orderedprice.get(count[0]));
+                                kumpulanorder.setStock(orderedstock.get(count[0]));
+                                kumpulanorder.setQty(orderedqty.get(count[0]));
+                                kumpulanorder.setCategory(orderedcategory.get(count[0]));
+
+                                order.add(count[0], kumpulanorder);
+
+                                count[0]++;
+
+                                coba.setStock(formStock.getText().toString());
+                                coba.setQty(formQty.getText().toString());
+
+                                TextView stock = view.findViewById(R.id.stock_hist);
+                                TextView qty = view.findViewById(R.id.qtyhist);
+
+                                stock.setText(spacecrafts.get(position).getStock());
+                                qty.setText(spacecrafts.get(position).getQty());
+
+//                            Toast.makeText(getActivity(), "order:" + formNama.getText().toString() + "stockmo " + coba.getStock() + " qtymo " + coba.getQty(), Toast.LENGTH_LONG).show();
+
+
+                                boolean check = false;
+                                boolean add = true;
+
+                                for (int x = 0; x < Globalemina.kode.size(); x++) {
+                                    if (finalFormKode.getText().toString().equals(Globalemina.kode.get(x))) {
+                                        check = true;
+                                    }
+                                    if (check) {
+                                        Globalemina.id_produk.set(x, coba.getId());
+                                        Globalemina.kode.set(x, finalFormKode.getText().toString());
+                                        Globalemina.nama.set(x, formNama.getText().toString());
+                                        Globalemina.harga.set(x, formHarga.getText().toString());
+                                        Globalemina.stock.set(x, formStock.getText().toString());
+                                        Globalemina.qty.set(x, formQty.getText().toString());
+                                        Globalemina.kategori.set(x, coba.getCategory());
+                                        Globalemina.sgtorder.set(x, "0");
+                                        check = false;
+                                        add = false;
+                                    }
+
+                                }
+                                if (add) {
+                                    Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
+                                    Globalemina.id_produk.add(coba.getId());
+                                    Globalemina.kode.add(finalFormKode.getText().toString());
+                                    Globalemina.nama.add(formNama.getText().toString());
+                                    Globalemina.harga.add(formHarga.getText().toString());
+                                    Globalemina.stock.add(formStock.getText().toString());
+                                    Globalemina.qty.add(formQty.getText().toString());
+                                    Globalemina.kategori.add(coba.getCategory());
+                                    Globalemina.sgtorder.add("0");
+                                    Globalemina.produkCount++;
+                                }
+
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
 
                             }
-                            if (add) {
-                                Globalemina.produk.add(Globalemina.produkCount, kumpulanorder);
-                                Globalemina.id_produk.add(coba.getId());
-                                Globalemina.kode.add(finalFormKode.getText().toString());
-                                Globalemina.nama.add(formNama.getText().toString());
-                                Globalemina.harga.add(formHarga.getText().toString());
-                                Globalemina.stock.add(formStock.getText().toString());
-                                Globalemina.qty.add(formQty.getText().toString());
-                                Globalemina.kategori.add(coba.getCategory());
-                                Globalemina.sgtorder.add(String.valueOf(qtyform));
-                                Globalemina.produkCount++;
-                            }
-
-                            adapter.notifyDataSetChanged();
-                            dialog.dismiss();
 
                         }
+                    });
+                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
 
-
-                    }
-                });
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show();
+                    dialog.show();
+                }
             }
         });
 

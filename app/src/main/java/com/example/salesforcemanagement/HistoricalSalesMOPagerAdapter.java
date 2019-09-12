@@ -21,12 +21,12 @@ public class HistoricalSalesMOPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0:
-                return new AdditionalMOFragment();
             case 1:
+                return new AdditionalMOFragment();
+            case 2:
                 return new com.example.salesforcemanagement.NPDMOFragment();
 //            case 2: return new PromoMOFragment();
-            case 2:
+            case 0:
                 return new com.example.salesforcemanagement.ListHistMOFragment();
             case 3:
                 return new OthersMOFragment();

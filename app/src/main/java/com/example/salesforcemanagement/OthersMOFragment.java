@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -160,16 +161,18 @@ public class OthersMOFragment extends Fragment {
                 TextView formKode = null;
                 final TextView formNama;
                 final TextView formHarga;
-                final TextView formPcs, formws;
+                final TextView formPcs;
                 final EditText formStock, formQty;
 
                 formKode = dialogView.findViewById(R.id.kode_odoo_form);
                 formNama = dialogView.findViewById(R.id.nama_produk_form);
                 formHarga = dialogView.findViewById(R.id.harga_form);
                 formStock = dialogView.findViewById(R.id.stock_form);
-                formws = dialogView.findViewById(R.id.ws_form);
                 formQty = dialogView.findViewById(R.id.qty_form);
                 formPcs = dialogView.findViewById(R.id.pcs_produk_form);
+                LinearLayout llstocknonBA = dialogView.findViewById(R.id.layoutstocknonba);
+                LinearLayout llstockBA = dialogView.findViewById(R.id.layoutstockba);
+                LinearLayout llorderBA = dialogView.findViewById(R.id.layoutorderba);
 
                 final Spacecraft coba = (Spacecraft) adapter.getItem(position);
 
@@ -179,13 +182,16 @@ public class OthersMOFragment extends Fragment {
                 formKode.setText(coba.getKodeodoo());
                 formNama.setText(coba.getNamaproduk());
                 formHarga.setText(coba.getPrice());
-                formws.setText("" + coba.getWeeklySales());
                 formPcs.setText(coba.getKoli());
                 formStock.setHint(coba.getStock());
+
+                llstockBA.setVisibility(View.GONE);
+                llorderBA.setVisibility(View.GONE);
+
                 String stockformawal = formStock.getText().toString();
                 if (!stockformawal.isEmpty()) {
                     int intstockformawal = Integer.parseInt(stockformawal);
-                    int qtyformawal = konst*coba.getWeeklySales() - intstockformawal;
+                    int qtyformawal = konst * coba.getWeeklySales() - intstockformawal;
                     if (qtyformawal >= 0) {
                         formQty.setHint(String.valueOf(qtyformawal));
                     } else {
@@ -201,7 +207,7 @@ public class OthersMOFragment extends Fragment {
                         String stockform = formStock.getText().toString();
                         if (!stockform.isEmpty()) {
                             int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
+                            int qtyform = konst * coba.getWeeklySales() - intstockform;
                             if (qtyform >= 0) {
                                 formQty.setHint(String.valueOf(qtyform));
                             } else {
@@ -217,7 +223,7 @@ public class OthersMOFragment extends Fragment {
                         String stockform = formStock.getText().toString();
                         if (!stockform.isEmpty()) {
                             int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
+                            int qtyform = konst * coba.getWeeklySales() - intstockform;
                             if (qtyform >= 0) {
                                 formQty.setHint(String.valueOf(qtyform));
                             } else {
@@ -243,7 +249,7 @@ public class OthersMOFragment extends Fragment {
                         String mStock = formStock.getText().toString();
                         String mQty = formQty.getText().toString();
                         count[0] = 0;
-                        if (mStock.isEmpty() && mQty.isEmpty()){
+                        if (mStock.isEmpty() && mQty.isEmpty()) {
                             Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
                         } else if (mStock.isEmpty() && !mQty.isEmpty()) {
                             orderedID.add(coba.getId());
@@ -294,7 +300,7 @@ public class OthersMOFragment extends Fragment {
                                     Globalmo.stock.set(x, "0");
                                     Globalmo.qty.set(x, formQty.getText().toString());
                                     Globalmo.kategori.set(x, coba.getCategory());
-                                    Globalmo.sgtorder.set(x,"0");
+                                    Globalmo.sgtorder.set(x, "0");
                                     check = false;
                                     add = false;
                                 }
@@ -324,8 +330,10 @@ public class OthersMOFragment extends Fragment {
                             orderedstock.add(formStock.getText().toString());
                             String stockform = formStock.getText().toString();
                             int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform<0){qtyform = 0;}
+                            int qtyform = konst * coba.getWeeklySales() - intstockform;
+                            if (qtyform < 0) {
+                                qtyform = 0;
+                            }
                             orderedqty.add(String.valueOf(qtyform));
                             orderedcategory.add(coba.getCategory());
 
@@ -368,7 +376,7 @@ public class OthersMOFragment extends Fragment {
                                     Globalmo.stock.set(x, formStock.getText().toString());
                                     Globalmo.qty.set(x, String.valueOf(qtyform));
                                     Globalmo.kategori.set(x, coba.getCategory());
-                                    Globalmo.sgtorder.set(x,"0");
+                                    Globalmo.sgtorder.set(x, "0");
                                     check = false;
                                     add = false;
                                 }
@@ -440,7 +448,7 @@ public class OthersMOFragment extends Fragment {
                                     Globalmo.stock.set(x, formStock.getText().toString());
                                     Globalmo.qty.set(x, formQty.getText().toString());
                                     Globalmo.kategori.set(x, coba.getCategory());
-                                    Globalmo.sgtorder.set(x,"0");
+                                    Globalmo.sgtorder.set(x, "0");
                                     check = false;
                                     add = false;
                                 }

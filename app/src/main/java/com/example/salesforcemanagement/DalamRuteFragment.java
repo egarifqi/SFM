@@ -250,6 +250,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
         private String frekuensi;
         private String namafrekuensi;
         private String status;
+        private boolean ba;
         /*
         GETTERS AND SETTERS
         */
@@ -319,9 +320,21 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
             this.technologyExists = technologyExists;
         }
 
-        public String getStatus() {return status;}
+        public String getStatus() {
+            return status;
+        }
 
-        public void setStatus(String status){this.status = status;}
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public boolean getBa() {
+            return ba;
+        }
+
+        public void setBa(boolean ba) {
+            this.ba = ba;
+        }
 
         /*
         TOSTRING
@@ -548,7 +561,11 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
 //                            com.example.sfmtesting.StatusToko.namatoko.add(s.getPropellant());
                             Calendar calendar = Calendar.getInstance();
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            SimpleDateFormat tanggal = new SimpleDateFormat("ddMMyyyy");
+                            SimpleDateFormat waktu = new SimpleDateFormat("HHmmss");
                             String currentTime = simpleDateFormat.format(calendar.getTime());
+                            String tanggalhariini = tanggal.format(calendar.getTime());
+                            String waktuhariini = waktu.format(calendar.getTime());
                             Log.e("waktu", currentTime);
                             com.example.salesforcemanagement.StatusToko.waktumulai.add(currentTime);
 
@@ -564,14 +581,18 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                             String waktu_datang = prefToko.getString("waktu_mulai", "");
                             String latitude = pref.getString("latitude", "");
                             String longitude = pref.getString("longitude", "");
+                            String visit_ref = "SFM/"+partner_id+"/"+tanggalhariini+"/"+waktuhariini;
                             Boolean inroute = true;
                             Boolean visit = false;
                             final String id = partner_ref + date + sales_id + com.example.salesforcemanagement.StatusSR.id_inc;
                             com.example.salesforcemanagement.StatusSR.id_inc += 1;
 
+                            editorToko.putString("visit_ref", visit_ref);
+                            editorToko.putBoolean("inroute", true);
                             editorToko.putBoolean("visit", visit);
                             editorToko.commit();
-                            mAuthTask = new SendRequest(partner_ref, user_id, sales_id, partner_id, date, waktu_datang, latitude, longitude, id, inroute);
+                            mAuthTask = new SendRequest(partner_ref, user_id, sales_id, partner_id,
+                                    date, waktu_datang, latitude, longitude, id, inroute, visit_ref);
                             mAuthTask.execute();
 
                         }
@@ -582,23 +603,23 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                         @Override
                         public void onClick(final DialogInterface dialog, int which) {
 
-                            if (com.example.salesforcemanagement.StatusToko.namatoko != null) {
-                                for (int k = 0; k < com.example.salesforcemanagement.StatusToko.namatoko.size(); k++) {
-                                    if (spacecrafts.get(i).getPropellant().equals(com.example.salesforcemanagement.StatusToko.namatoko.get(k))) {
-                                        if (!com.example.salesforcemanagement.StatusToko.statuskunjungan.isEmpty()) {
+                            if (StatusToko.namatoko != null) {
+                                for (int k = 0; k < StatusToko.namatoko.size(); k++) {
+                                    if (spacecrafts.get(i).getPropellant().equals(StatusToko.namatoko.get(k))) {
+                                        if (!StatusToko.statuskunjungan.isEmpty()) {
 
-                                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("3")) {
+                                            if (StatusToko.statuskunjungan.get(k).equals("3")) {
                                                 //VISIT NOT EC hijau
-                                                com.example.salesforcemanagement.StatusSR.totalEC -= 1;
-                                                com.example.salesforcemanagement.StatusSR.totalCall -= 1;
-                                                com.example.salesforcemanagement.StatusSR.dalamRute -=1;
-                                                com.example.salesforcemanagement.StatusSR.ECdalamRute -=1;
+                                                StatusSR.totalEC -= 1;
+                                                StatusSR.totalCall -= 1;
+                                                StatusSR.dalamRute -= 1;
+                                                StatusSR.ECdalamRute -= 1;
                                             }
-                                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("2")) {
+                                            if (StatusToko.statuskunjungan.get(k).equals("2")) {
                                                 //VISIT EC hijau
-                                                com.example.salesforcemanagement.StatusSR.totalNotEC -= 1;
-                                                com.example.salesforcemanagement.StatusSR.totalCall -= 1;
-                                                com.example.salesforcemanagement.StatusSR.dalamRute -= 1;
+                                                StatusSR.totalNotEC -= 1;
+                                                StatusSR.totalCall -= 1;
+                                                StatusSR.dalamRute -= 1;
                                             }
                                         }
 
@@ -608,9 +629,8 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
 
                             boolean dalamRute = true;
                             boolean luarRute = false;
-                            com.example.salesforcemanagement.StatusToko.rute = true;
+                            StatusToko.rute = true;
 
-                            final ArrayList<Integer> al_id = new ArrayList<Integer>();
 
                             try {
                                 Thread.sleep(300);
@@ -625,12 +645,17 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                             editorToko.putString("partner_id", s.getPartnerId());
                             editorToko.putString("const", s.getFrekuensi());
                             editorToko.putString("alasan", "");
+                            editorToko.putBoolean("isBa", s.getBa());
                             editorToko.commit();
                             Calendar calendar = Calendar.getInstance();
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            SimpleDateFormat tanggal = new SimpleDateFormat("ddMMyyyy");
+                            SimpleDateFormat waktu = new SimpleDateFormat("HHmmss");
                             String currentTime = simpleDateFormat.format(calendar.getTime());
+                            String tanggalhariini = tanggal.format(calendar.getTime());
+                            String waktuhariini = waktu.format(calendar.getTime());
                             Log.e("waktu", currentTime);
-                            com.example.salesforcemanagement.StatusToko.waktumulai.add(currentTime);
+                            StatusToko.waktumulai.add(currentTime);
 
                             editorToko.putString("waktu_mulai", currentTime);
                             editorToko.putString("waktu_selesai", "");
@@ -645,15 +670,22 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                             String waktu_datang = prefToko.getString("waktu_mulai", "");
                             String latitude = pref.getString("latitude", "");
                             String longitude = pref.getString("longitude", "");
-                            Boolean inroute = true;
+                            String visit_ref = "SFM/" + partner_id + "/" + tanggalhariini + "/" + waktuhariini;
+                            Log.e("VISIT_NAME", visit_ref);
+                            boolean inroute = true;
                             boolean visit = true;
-                            final String id = partner_ref + date + sales_id + com.example.salesforcemanagement.StatusSR.id_inc;
-                            com.example.salesforcemanagement.StatusSR.id_inc += 1;
+                            final String id = partner_ref + date + sales_id + StatusSR.id_inc;
+                            StatusSR.id_inc += 1;
 
+                            editorToko.putString("visit_ref", visit_ref);
+                            editorToko.putBoolean("inroute", true);
                             editorToko.putBoolean("visit", visit);
                             editorToko.commit();
-                            mAuthTask = new SendRequest(partner_ref, user_id, sales_id, partner_id, date, waktu_datang, latitude, longitude, id, inroute);
+
+                            mAuthTask = new SendRequest(partner_ref, user_id, sales_id, partner_id,
+                                    date, waktu_datang, latitude, longitude, id, inroute, visit_ref);
                             mAuthTask.execute();
+
 
                         }
                     });
@@ -748,10 +780,11 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
             private final String loclong;
             private final String visitid;
             private final Boolean inroute;
+            private final String ref;
 
             SendRequest(String partnerref, String userid, String salesid, String partnerid,
                         String todaydate, String visittime, String loclat, String loclong,
-                        String visitid, Boolean inroute) {
+                        String visitid, Boolean inroute, String ref) {
                 this.partnerref = partnerref;
                 this.userid = userid;
                 this.salesid = salesid;
@@ -762,6 +795,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                 this.visitid = visitid;
                 this.visittime = visittime;
                 this.inroute = inroute;
+                this.ref = ref;
             }
 
 
@@ -783,6 +817,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                     obj.put("inroute", inroute);
                     obj.put("selesai_time", "");
                     obj.put("reason", "");
+                    obj.put("name", ref);
 //                    obj.put("check")
 //                    obj.put("date", todaydate);
                     Log.e("Bentuk JSON1", obj.toString());
@@ -835,7 +870,10 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
             @Override
             protected void onPostExecute(String s) {
                 String user_id = pref.getString("user_id", "null");
-                String url = "http://10.3.181.177:3000/visit?user_id=eq." + user_id;
+                Calendar calander = Calendar.getInstance();
+                SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd");
+                String currentDate = simpledateformat.format(calander.getTime());
+                String url = "https://sfa-api.pti-cosmetics.com:2000/visit?user_id=eq." + userid + "&&write_date=gte." + currentDate+"&&order=id.desc";
                 AndroidNetworking.get(url)
                         .setPriority(Priority.HIGH)
                         .build()
@@ -845,14 +883,16 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                                 JSONObject jo;
                                 int max = 0;
                                 try {
-                                    for (int i = 0; i < response.length(); i++) {
-                                        jo = response.getJSONObject(i);
-                                        int id = jo.getInt("id");
-//                                        al_id.add(id);
-                                        if (id > max) {
-                                            max = id;
-                                        }
-                                    }
+                                    jo = response.getJSONObject(0);
+                                    max = jo.getInt("id");
+//                                    for (int i = 0; i < response.length(); i++) {
+//                                        jo = response.getJSONObject(i);
+//                                        int id = jo.getInt("id");
+////                                        al_id.add(id);
+//                                        if (id > max) {
+//                                            max = id;
+//                                        }
+//                                    }
                                     editorToko.putInt("id", max);
 
                                     editorToko.commit();
@@ -869,7 +909,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                             @Override
                             public void onError(ANError anError) {
                                 anError.printStackTrace();
-                                Log.e("PARSING ERROR", "Error :"+anError.getMessage());
+                                Log.e("PARSING ERROR", "Error :" + anError.getMessage());
 //                            Toast.makeText(getBaseContext(), "UNSUCCESSFUL :  ERROR IS : " + anError.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
@@ -936,6 +976,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                                     String konst = jo.getString("const");
                                     String status = jo.getString("visit_state");
                                     String frekuensi = jo.getString("freukensi_name");
+                                    boolean ba = jo.getBoolean("ba");
                                     s = new SpacecraftLuar();
                                     s.setId(id);
                                     s.setName(name);
@@ -945,6 +986,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                                     s.setPartnerId(partnerid);
                                     s.setFrekuensi(konst);
                                     s.setnamaFrekuensi(frekuensi);
+                                    s.setBa(ba);
 
                                     downloadedData.add(s);
                                 }
@@ -954,7 +996,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                                 SpacecraftLuar sl;
 //                                Toast.makeText(c, "GOOD RESPONSE BUT JAVA CAN'T PARSE JSON IT RECEIEVED. " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 Log.e("CANT PARSE JSON", e.getMessage());
-                                for (com.example.salesforcemanagement.TokoDalamRute tdr : listtoko){
+                                for (TokoDalamRute tdr : listtoko) {
                                     sl = new SpacecraftLuar();
                                     sl.setId(tdr.getId());
                                     sl.setStatus(tdr.getStatus());
@@ -963,7 +1005,7 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                                     sl.setSalesid(tdr.getSalesid());
                                     sl.setPartnerId(tdr.getPartnerId());
                                     sl.setFrekuensi(tdr.getFrekuensi());
-                                    sl.setStatus(tdr.getStatus());
+                                    sl.setBa(tdr.getBa());
                                     downloadedData.add(sl);
                                 }
 
@@ -987,9 +1029,9 @@ public class DalamRuteFragment extends Fragment implements LocationListener {
                                 sl.setSalesid(tdr.getSalesid());
                                 sl.setPartnerId(tdr.getPartnerId());
                                 sl.setFrekuensi(tdr.getFrekuensi());
+                                sl.setBa(tdr.getBa());
                                 downloadedData.add(sl);
                             }
-
                         }
                     });
 //            StatusSR.callPlan = downloadedData.size();

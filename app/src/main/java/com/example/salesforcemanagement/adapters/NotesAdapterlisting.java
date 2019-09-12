@@ -1,0 +1,131 @@
+package com.example.salesforcemanagement.adapters;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.salesforcemanagement.R;
+import com.example.salesforcemanagement.callbacks.NoteEventListener;
+import com.example.salesforcemanagement.callbacks.NoteEventListenerlisting;
+import com.example.salesforcemanagement.model.Note;
+import com.example.salesforcemanagement.model.Notelisting;
+import com.example.salesforcemanagement.utils.NoteUtils;
+import com.example.salesforcemanagement.utils.NoteUtilslisting;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by ixi.Dv on 13/05/2018.
+ */
+public class NotesAdapterlisting extends RecyclerView.Adapter<NotesAdapterlisting.NoteHolder> {
+    private Context context;
+    private ArrayList<Notelisting> notes;
+    private NoteEventListenerlisting listener;
+    private boolean multiCheckMode = false;
+
+
+    public NotesAdapterlisting(Context context, ArrayList<Notelisting> notes) {
+        this.context = context;
+        this.notes = notes;
+    }
+
+
+    @NonNull
+    @Override
+    public NoteHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(context).inflate(R.layout.note_layout, parent, false);
+        return new NoteHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(NoteHolder holder, int position) {
+        final Notelisting note = getNote(position);
+        if (note != null) {
+            holder.noteText.setText(note.getNoteText());
+            holder.noteDate.setText(NoteUtilslisting.dateFromLong(note.getNoteDate()));
+            // init note click event
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onNoteClick(note);
+                }
+            });
+
+            // init note long click
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    listener.onNoteLongClick(note);
+                    return false;
+                }
+            });
+
+            // check checkBox if note selected
+            if (multiCheckMode) {
+                holder.checkBox.setVisibility(View.VISIBLE); // show checkBox if multiMode on
+                holder.checkBox.setChecked(note.isChecked());
+            } else holder.checkBox.setVisibility(View.GONE); // hide checkBox if multiMode off
+
+
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return notes.size();
+    }
+
+    private Notelisting getNote(int position) {
+        return notes.get(position);
+    }
+
+
+    /**
+     * get All checked notes
+     *
+     * @return Array
+     */
+    public List<Notelisting> getCheckedNotes() {
+        List<Notelisting> checkedNotes = new ArrayList<>();
+        for (Notelisting n : this.notes) {
+            if (n.isChecked())
+                checkedNotes.add(n);
+        }
+
+        return checkedNotes;
+    }
+
+
+    class NoteHolder extends RecyclerView.ViewHolder {
+        TextView noteText, noteDate;
+        CheckBox checkBox;
+
+        public NoteHolder(View itemView) {
+            super(itemView);
+            noteDate = itemView.findViewById(R.id.note_date);
+            noteText = itemView.findViewById(R.id.note_text);
+            checkBox = itemView.findViewById(R.id.checkBox);
+        }
+    }
+
+
+    public void setListener(NoteEventListenerlisting listener) {
+        this.listener = listener;
+    }
+
+    public void setMultiCheckMode(boolean multiCheckMode) {
+        this.multiCheckMode = multiCheckMode;
+        if (!multiCheckMode)
+            for (Notelisting note : this.notes) {
+                note.setChecked(false);
+            }
+        notifyDataSetChanged();
+    }
+}

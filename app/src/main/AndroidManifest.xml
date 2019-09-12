@@ -21,7 +21,7 @@
         android:required="false" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:appComponentFactory="@string/app_name"
         android:icon="@drawable/parama"
         android:label="SFA"
@@ -31,8 +31,13 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory">
-
-        <activity android:name=".PengajuanActivity"/>
+        <activity android:name=".EditNoteActivity"></activity>
+        <activity android:name=".EditNotelistingActivity"/>
+        <activity android:name=".MerchandisingActivity" />
+        <activity android:name=".RentCounterActivity" />
+        <activity android:name=".ListingFeeActivity" />
+        <activity android:name=".BrandingActivity" />
+        <activity android:name=".PengajuanActivity" />
         <activity android:name=".ReportWinningAtStoreActivity" />
         <activity android:name=".ReportKondisiShelvingActivity" />
         <activity android:name=".KondisiTokoActivity" />

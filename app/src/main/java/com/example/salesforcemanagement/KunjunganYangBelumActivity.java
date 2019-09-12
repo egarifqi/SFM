@@ -437,7 +437,7 @@ public class KunjunganYangBelumActivity extends AppCompatActivity {
                 int idvisit = visitid;
 
                 try {
-                    URL url = new URL("http://10.3.181.177:3000/visit");
+                    URL url = new URL("https://sfa-api.pti-cosmetics.com/visit");
                     Log.e("ID Visit 4", "" + idvisit);
                     JSONObject obj = new JSONObject();
 //                obj.put("id", id);
@@ -494,81 +494,6 @@ public class KunjunganYangBelumActivity extends AppCompatActivity {
         }
 
     }
-
-//    public class JSONDownloader {
-//        //SAVE/RETRIEVE URLS
-//        //INSTANCE FIELDS
-//        private final Context c;
-//
-//        public JSONDownloader(Context c) {
-//            this.c = c;
-//        }
-//
-//        /*
-//        Fetch JSON Data
-//        */
-//        public ArrayList<Spacecraftnotvisittall> retrieve(final ListView mListView) {
-//            final ArrayList<Spacecraftnotvisittall> downloadedData = new ArrayList<>();
-////            myProgressBar.setIndeterminate(true);
-////            myProgressBar.setVisibility(View.VISIBLE);
-//            prefToko = getSharedPreferences("MyPref",0);
-////            pref = this.getSharedPreferences("MyPref", 0);
-//            editor = pref.edit();
-//            final String sales_id = pref.getString("sales_id", "");
-//            Log.e("sales id", sales_id);
-//            String url = "http://10.3.181.198:3000/v_partner_inroute?dc_name=ilike.*DC%Jakarta&sales_id=eq." + sales_id;
-//            AndroidNetworking.get(url)
-//                    .setPriority(Priority.HIGH)
-//                    .build()
-//                    .getAsJSONArray(new JSONArrayRequestListener() {
-//                        @Override
-//                        public void onResponse(JSONArray response) {
-//                            JSONObject jo;
-//                            Spacecraftnotvisittall s;
-//                            try {
-//                                for (int i = 0; i < response.length(); i++) {
-//                                    jo = response.getJSONObject(i);
-//                                    int id = jo.getInt("id");
-//                                    String kodeodoo = jo.getString("ref");
-//                                    String namaproduk = jo.getString("partner_name");
-//                                    String salesid = jo.getString("sales_id");
-//                                    String partnerid = jo.getString("partner_id");
-//                                    String konst = jo.getString("const");
-//                                    s = new Spacecraftnotvisittall();
-//                                    s.setId(id);
-//                                    s.setKode(kodeodoo);
-//                                    s.setNama(namaproduk);
-//                                    s.setSalesid(salesid);
-//                                    s.setPartnerId(partnerid);
-//                                    s.setFrekuensi(konst);
-//
-//                                    TokoBelumDikunjungi.idtoko.add(id);
-//                                    TokoBelumDikunjungi.partneridtoko.add(partnerid);
-//                                    TokoBelumDikunjungi.salesidtoko.add(salesid);
-//                                    TokoBelumDikunjungi.namatoko.add(namaproduk);
-//                                    TokoBelumDikunjungi.kodetoko.add(kodeodoo);
-//
-//                                    downloadedData.add(s);
-//                                }
-////                                myProgressBar.setVisibility(View.GONE);
-//                            } catch (JSONException e) {
-////                                myProgressBar.setVisibility(View.GONE);
-//                                Toast.makeText(c, "GOOD RESPONSE BUT JAVA CAN'T PARSE JSON IT RECEIEVED. " + e.getMessage(), Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//
-//                        //ERROR
-//                        @Override
-//                        public void onError(ANError anError) {
-//                            anError.printStackTrace();
-////                            myProgressBar.setVisibility(View.GONE);
-//                            Toast.makeText(c, "UNSUCCESSFUL :  ERROR IS : " + anError.getMessage(), Toast.LENGTH_LONG).show();
-//                        }
-//                    });
-////            StatusSR.callPlan = downloadedData.size();
-//            return downloadedData;
-//        }
-//    }
 
     public class Spacecraftnotvisittall {
         /*

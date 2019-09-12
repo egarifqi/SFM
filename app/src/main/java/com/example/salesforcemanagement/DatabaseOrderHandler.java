@@ -125,13 +125,13 @@ public class DatabaseOrderHandler extends SQLiteOpenHelper {
     }
 
     // code to get the single contact
-    OrderedProduct getProduk(int id) {
+    OrderedProduct getProduk(String ref) {
         SQLiteDatabase db = this.getReadableDatabase();
         OrderedProduct op = new OrderedProduct();
 
         Cursor cursor = db.query(TABLE_PRODUK_ORDER, new String[] { KEY_ID, KEY_CODE, KEY_NAME, KEY_PRICE,
                         KEY_CATEGORY, KEY_QTY, KEY_PARTNER_ID, KEY_BRAND, KEY_STOCK, KEY_SGT_QTY, KEY_REF,
-                        KEY_DO_ID, KEY_STORE},KEY_ID + "=?", new String[] { String.valueOf(id) },
+                        KEY_DO_ID, KEY_STORE},KEY_REF + "=?", new String[] { ref },
                         null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -151,6 +151,7 @@ public class DatabaseOrderHandler extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(KEY_STORE)));
             cursor.close();
         }
+        db.close();
         // return contact
         return op;
     }
@@ -188,16 +189,15 @@ public class DatabaseOrderHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
-
         // return contact list
         return listProduk;
     }
 
-    public ArrayList<OrderedProduct> getAllProdukToko(int do_id) {
+    public ArrayList<OrderedProduct> getAllProdukToko(String ref) {
         ArrayList<OrderedProduct> listProduk = new ArrayList<OrderedProduct>();
 //        Spacecraft contact = new Spacecraft();
         // Select All Query
-        String selectQuery = "SELECT * FROM " + TABLE_PRODUK_ORDER + " WHERE " + KEY_DO_ID + " IS " +do_id;
+        String selectQuery = "SELECT * FROM " + TABLE_PRODUK_ORDER + " WHERE " + KEY_REF + " IS '" +ref+"'";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -225,13 +225,12 @@ public class DatabaseOrderHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
-
         // return contact list
         return listProduk;
     }
 
     // code to update the single contact
-    public int updateProduk(com.example.salesforcemanagement.Spacecraft s) {
+    public int updateProduk( Spacecraft s) {
         SQLiteDatabase db = this.getWritableDatabase();
 
 //        ContentValues values = new ContentValues();
@@ -252,18 +251,16 @@ public class DatabaseOrderHandler extends SQLiteOpenHelper {
     }
 
     // Deleting single contact
-    public void deleteProduk(com.example.salesforcemanagement.Spacecraft contact) {
+    public void deleteProduk( Spacecraft contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_PRODUK_ORDER, KEY_ID + " = ?",
                 new String[]{String.valueOf(contact.getId())});
-        db.close();
     }
 
     public void deleteAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TABLE_PRODUK_ORDER;
         db.execSQL(query);
-        db.close();
     }
 
     // Getting contacts Count
@@ -272,7 +269,6 @@ public class DatabaseOrderHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
 //        cursor.close();
-
         // return count
         return cursor.getCount();
     }

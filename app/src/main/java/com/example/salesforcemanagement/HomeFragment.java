@@ -29,10 +29,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Locale;
 
 
@@ -296,7 +306,7 @@ public class HomeFragment extends Fragment {
         final DatabaseProdukEBPHandler dbEBP = new DatabaseProdukEBPHandler(getContext());
         final DatabaseMHSHandler dbMHS = new DatabaseMHSHandler(getContext());
         final DatabaseNPDPromoHandler dbNPDP = new DatabaseNPDPromoHandler(getContext());
-        final ArrayList<com.example.salesforcemanagement.TokoDalamRute> tdr = dbtoko.getAllToko();
+//        final ArrayList<com.example.salesforcemanagement.TokoDalamRute> tdr = dbtoko.getAllToko();
 
         ProgressDialog dialog;
 
@@ -315,6 +325,10 @@ public class HomeFragment extends Fragment {
         @Override
         protected String doInBackground(String... strings) {
 
+            Calendar calander = Calendar.getInstance();
+            SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String currentDate = simpledateformat.format(calander.getTime());
+            int loginid = pref.getInt("login_id", 0);
             com.example.salesforcemanagement.StatusSR.clearAll();
             com.example.salesforcemanagement.StatusToko.clearToko();
             Global.clearProduct();
@@ -323,6 +337,50 @@ public class HomeFragment extends Fragment {
             Globalputri.clearProduct();
             com.example.salesforcemanagement.TokoBelumDikunjungi.clearBelumDikunjungi();
             Log.e("LOGOUT STATUS", "DELETING LOCAL VARIABLE");
+            final StringBuffer sb = new StringBuffer();
+
+            try {
+                URL url = new URL("https://sfa-api.pti-cosmetics.com:2000/login_presence?id=eq."+loginid);
+
+                ArrayList<JSONObject> jo = new ArrayList<JSONObject>();
+
+                JSONObject obj = new JSONObject();
+                obj.put("logout_date", currentDate);
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("PATCH");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
+
+                writer.write(getPostDataString(obj));
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED ||
+                        responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String line = "";
+                    while ((line = in.readLine()) != null) {
+                        sb.append(line);
+                        break;
+                    }
+                    in.close();
+                    Log.e("Buffer", sb.toString());
+                } else {
+                    Log.e("Response_Code3", String.valueOf(responseCode));
+                    Log.e("Response_Message3", String.valueOf(conn.getResponseMessage()));
+                    Log.e("Returned_String3", sb.toString());
+                }
+            } catch (Exception e) {
+                Log.e("Error6", "Connection Error : "+ e.getMessage());
+            }
+
             dbtoko.deleteAll();
             dbEBP.deleteAll();
             dbMHS.deleteAll();
@@ -359,6 +417,24 @@ public class HomeFragment extends Fragment {
             popup.show();
 //            super.onPostExecute(s);
         }
+    }
+
+    public String getPostDataString(JSONObject params) throws Exception {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        Iterator<String> itr = params.keys();
+        while (itr.hasNext()) {
+            String key = itr.next();
+            Object value = params.get(key);
+            if (first)
+                first = false;
+            else
+                result.append("&");
+            result.append(URLEncoder.encode(key, "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+        }
+        return result.toString();
     }
 
 }

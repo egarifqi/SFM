@@ -21,12 +21,12 @@ public class HistoricalSalesEminaPagerAdapter extends FragmentStatePagerAdapter 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0:
-                return new AdditionalEminaFragment();
             case 1:
+                return new AdditionalEminaFragment();
+            case 2:
                 return new com.example.salesforcemanagement.NPDEminaFragment();
 //            case 2: return new PromoEminaFragment();
-            case 2:
+            case 0:
                 return new com.example.salesforcemanagement.ListHistEminaFragment();
             case 3:
                 return new OthersEminaFragment();

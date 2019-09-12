@@ -108,7 +108,16 @@
             android:text="LOGIN"
             android:textSize="30dp"
             android:background="@drawable/buttonlogin"/>
-
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:textSize="25dp"
+            android:text="Session Timed Out - Please relogin"
+            android:visibility="invisible" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

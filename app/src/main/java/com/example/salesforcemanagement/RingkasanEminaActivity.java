@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.gesture.GestureOverlayView;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -94,24 +97,46 @@ public class RingkasanEminaActivity extends AppCompatActivity {
                 dialog.setCancelable(true);
                 dialog.setTitle("Input Order");
 
-                final TextView formKode;
+                TextView formKode = null;
                 final TextView formNama;
-                final TextView formHarga;
+                final TextView formHarga, formPcs, formws, formStockBA, formQtyBA;
                 final EditText formStock, formQty;
+
+                LinearLayout llstocknonBA = dialogView.findViewById(R.id.layoutstocknonba);
+                LinearLayout llstockBA = dialogView.findViewById(R.id.layoutstockba);
+                LinearLayout llorderBA = dialogView.findViewById(R.id.layoutorderba);
 
                 formKode = dialogView.findViewById(R.id.kode_odoo_form);
                 formNama = dialogView.findViewById(R.id.nama_produk_form);
                 formHarga = dialogView.findViewById(R.id.harga_form);
+                formPcs = dialogView.findViewById(R.id.pcs_produk_form);
+                formws = dialogView.findViewById(R.id.ws_form);
                 formStock = dialogView.findViewById(R.id.stock_form);
                 formQty = dialogView.findViewById(R.id.qty_form);
+                formStockBA = dialogView.findViewById(R.id.stock_form_ba);
+                formQtyBA = dialogView.findViewById(R.id.suggest_form);
 
-                final com.example.salesforcemanagement.Spacecraft coba = (com.example.salesforcemanagement.Spacecraft) adapter.getItem(position);
+                final Spacecraft coba = (Spacecraft) adapter.getItem(position);
 
                 formKode.setText(coba.getKodeodoo());
                 formNama.setText(coba.getNamaproduk());
-                formHarga.setText(coba.getPrice());
-                formStock.setText(coba.getStock());
-                formQty.setText(coba.getQty());
+                formHarga.setText(""+coba.getPrice());
+                formPcs.setText(""+coba.getKoli());
+                formws.setText(""+coba.getWeeklySales());
+                formQty.setText(""+coba.getQty());
+
+                boolean is_BA = pref.getBoolean("isBa", false);
+                Log.e("TOKO BA1", "harusnya " + is_BA);
+
+                if (is_BA) {
+                    llstocknonBA.setVisibility(View.GONE);
+                    formStockBA.setText(""+coba.getStock());
+                    formQtyBA.setText(""+coba.getSgtorder());
+                } else {
+                    llorderBA.setVisibility(View.GONE);
+                    llstockBA.setVisibility(View.GONE);
+                    formStock.setText(""+coba.getStock());
+                }
 
                 dialog.setPositiveButton("Ganti", new DialogInterface.OnClickListener() {
                     @Override
@@ -358,6 +383,29 @@ public class RingkasanEminaActivity extends AppCompatActivity {
             int intqty = Integer.parseInt(qty);
             int sub = intharga * intqty;
             viewHolder.txttotal.setText(String.valueOf(sub));
+            if (listOrder.getQty().equals("0")){
+                viewHolder.txtkode.setTextColor(Color.BLACK);
+                viewHolder.txtnama.setTextColor(Color.BLACK);
+                viewHolder.txtharga.setTextColor(Color.BLACK);
+                viewHolder.txtqty.setTextColor(Color.BLACK);
+                viewHolder.txttotal.setTextColor(Color.BLACK);
+                viewHolder.txtkode.setTypeface(null, Typeface.BOLD_ITALIC);
+                viewHolder.txtnama.setTypeface(null, Typeface.BOLD_ITALIC);
+                viewHolder.txtharga.setTypeface(null, Typeface.BOLD_ITALIC);
+                viewHolder.txtqty.setTypeface(null, Typeface.BOLD_ITALIC);
+                viewHolder.txttotal.setTypeface(null, Typeface.BOLD_ITALIC);
+            } else {
+                viewHolder.txtkode.setTextColor(Color.DKGRAY);
+                viewHolder.txtnama.setTextColor(Color.DKGRAY);
+                viewHolder.txtharga.setTextColor(Color.DKGRAY);
+                viewHolder.txtqty.setTextColor(Color.DKGRAY);
+                viewHolder.txttotal.setTextColor(Color.DKGRAY);
+                viewHolder.txtkode.setTypeface(null, Typeface.NORMAL);
+                viewHolder.txtnama.setTypeface(null, Typeface.NORMAL);
+                viewHolder.txtharga.setTypeface(null, Typeface.NORMAL);
+                viewHolder.txtqty.setTypeface(null, Typeface.NORMAL);
+                viewHolder.txttotal.setTypeface(null, Typeface.NORMAL);
+            }
 
             return convertView;
         }

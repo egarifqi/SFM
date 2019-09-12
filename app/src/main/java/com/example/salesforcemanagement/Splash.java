@@ -32,7 +32,7 @@ public class Splash extends AppCompatActivity {
             Thread timer = new Thread(){
                 public void run(){
                     try {
-                        sleep(5000);
+                        sleep(3000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -44,7 +44,7 @@ public class Splash extends AppCompatActivity {
             };
             timer.start();
         } else {
-            Intent i = new Intent(Splash.this, com.example.salesforcemanagement.VisitActivity.class);
+            Intent i = new Intent(Splash.this, VisitActivity.class);
             Thread timer = new Thread(){
                 public void run(){
                     try {

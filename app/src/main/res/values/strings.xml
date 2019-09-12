@@ -21,6 +21,8 @@
     <string name="lbl_take_camera_picture">Take a picture</string>
     <string name="lbl_choose_from_gallery">Choose from gallery</string>
     <string name="dialog_permission_title">Grant Permissions</string>
+    <string name="share_note">Share Note</string>
+    <string name="delete_notes">Delete Notes</string>
     <string name="dialog_permission_message">This app needs permission to use this feature. You can grant them in app settings.</string>
     <string name="go_to_settings">GOTO SETTINGS</string>
     <string-array name="list_alasantunda">
@@ -53,6 +55,25 @@
         <item>Not EC: Tuan Toko Tidak Ada</item>
         <item>Not EC: Toko Tutup dan Tuan Toko Tidak Konfirmasi</item>
         <!--<item></item>-->
+    </string-array>
+    <string-array name="list_alasanretur">
+        <item>Arahan Pusat</item>
+        <item>Belum Listing</item>
+        <item>Kadaluarsa</item>
+        <item>Item Baru ditolak</item>
+        <item>Kelebihan Kirim</item>
+        <item>Kemasan Lama</item>
+        <item>Orderan Tercampur Toko Lain</item>
+        <item>Over SStock</item>
+        <item>Penutupan Order Brand Make Over</item>
+        <item>Rusak Isi</item>
+        <item>Rusak Kemasan</item>
+        <item>Salaj Kode Barang dari Pabrik</item>
+        <item>Salah Pengantaran</item>
+        <item>Salah PO</item>
+        <item>Sendback Faktur Migrasi</item>
+        <item>Slow Moving</item>
+        <item>Tutup Toko</item>
     </string-array>
     <string-array name="list_alasannotnoo">
         <item>Butuh Listing Fee / Sewa</item>

@@ -33,6 +33,23 @@ public class OrderedProduct {
         this.nama_toko = nama_toko;
     }
 
+    public OrderedProduct(int id_produk, String kode_odoo, String nama_produk, String harga_produk,
+                          int stock_produk, int sgtorder_produk, int finalorder_produk, String kategori_produk,
+                          String brand_produk, String partner_id, String reference, String nama_toko){
+        this.id_produk = id_produk;
+        this.kode_odoo = kode_odoo;
+        this.nama_produk = nama_produk;
+        this.harga_produk = harga_produk;
+        this.stock_produk = stock_produk;
+        this.sgtorder_produk = sgtorder_produk;
+        this.finalorder_produk = finalorder_produk;
+        this.kategori_produk = kategori_produk;
+        this.brand_produk = brand_produk;
+        this.partner_id = partner_id;
+        this.reference = reference;
+        this.nama_toko = nama_toko;
+    }
+
     public OrderedProduct() {}
 
     public int getId_produk(){return id_produk;}

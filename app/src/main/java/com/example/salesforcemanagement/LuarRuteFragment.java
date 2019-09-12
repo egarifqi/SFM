@@ -242,6 +242,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
         private int technologyExists;
         private String frekuensi;
         private String status;
+        private boolean ba;
         /*
         GETTERS AND SETTERS
         */
@@ -303,9 +304,13 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
             this.technologyExists = technologyExists;
         }
 
-        public String getStatus() {return status;}
+        public String getStatus() {
+            return status;
+        }
 
-        public void setStatus(String status){this.status = status;}
+        public void setStatus(String status) {
+            this.status = status;
+        }
 
         /*
         TOSTRING
@@ -321,6 +326,14 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
 
         public void setPartnerId(String partnerid) {
             this.partnerid = partnerid;
+        }
+
+        public boolean getBa() {
+            return ba;
+        }
+
+        public void setBa(boolean ba) {
+            this.ba = ba;
         }
     }
 
@@ -416,11 +429,11 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
             }
 
 
-            if (com.example.salesforcemanagement.StatusToko.namatoko != null) {
-                for (int k = 0; k < com.example.salesforcemanagement.StatusToko.namatoko.size(); k++) {
-                    if (spacecrafts.get(i).getPropellant().equals(com.example.salesforcemanagement.StatusToko.namatoko.get(k))) {
-                        if (!com.example.salesforcemanagement.StatusToko.statuskunjungan.isEmpty()) {
-                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("0")) {
+            if (StatusToko.namatoko != null) {
+                for (int k = 0; k < StatusToko.namatoko.size(); k++) {
+                    if (spacecrafts.get(i).getPropellant().equals(StatusToko.namatoko.get(k))) {
+                        if (!StatusToko.statuskunjungan.isEmpty()) {
+                            if (StatusToko.statuskunjungan.get(k).equals("0")) {
                                 //NOT VISIT - merah
                                 viewHolder.cardView.setBackgroundColor(Color.rgb(219, 93, 93));
                                 viewHolder.txtStatus.setText("TIDAK VISIT");
@@ -429,7 +442,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                                 viewHolder.txtPropellant.setTypeface(null, Typeface.BOLD);
                             }
 
-                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("1")) {
+                            if (StatusToko.statuskunjungan.get(k).equals("1")) {
                                 viewHolder.cardView.setBackgroundColor(Color.rgb(226, 222, 90));
                                 viewHolder.txtStatus.setText("TUNDA");
                                 viewHolder.txtStatus.setTypeface(null, Typeface.BOLD);
@@ -438,7 +451,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
 
                             }
                             //VISIT NOT EC - biru
-                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("2")) {
+                            if (StatusToko.statuskunjungan.get(k).equals("2")) {
                                 viewHolder.cardView.setBackgroundColor(Color.rgb(58, 139, 207));
                                 viewHolder.txtStatus.setText("VISIT NOT EC");
                                 viewHolder.txtStatus.setTypeface(null, Typeface.BOLD);
@@ -447,7 +460,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
 
                             }
 
-                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("3")) {
+                            if (StatusToko.statuskunjungan.get(k).equals("3")) {
                                 //VISIT EC hijau
                                 viewHolder.cardView.setBackgroundColor(Color.rgb(61, 168, 109));
                                 viewHolder.txtStatus.setText("VISIT EC");
@@ -483,29 +496,29 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            if (com.example.salesforcemanagement.StatusToko.namatoko != null) {
-                                for (int k = 0; k < com.example.salesforcemanagement.StatusToko.namatoko.size(); k++) {
-                                    if (spacecrafts.get(i).getPropellant().equals(com.example.salesforcemanagement.StatusToko.namatoko.get(k))) {
-                                        if (!com.example.salesforcemanagement.StatusToko.statuskunjungan.isEmpty()) {
+                            if (StatusToko.namatoko != null) {
+                                for (int k = 0; k < StatusToko.namatoko.size(); k++) {
+                                    if (spacecrafts.get(i).getPropellant().equals(StatusToko.namatoko.get(k))) {
+                                        if (!StatusToko.statuskunjungan.isEmpty()) {
 
-                                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("3")) {
+                                            if (StatusToko.statuskunjungan.get(k).equals("3")) {
                                                 //VISIT NOT EC hijau
-                                                com.example.salesforcemanagement.StatusSR.totalEC -= 1;
-                                                com.example.salesforcemanagement.StatusSR.ECluarRute -= 1;
-                                                com.example.salesforcemanagement.StatusSR.totalCall -= 1;
-                                                com.example.salesforcemanagement.StatusSR.luarRute -= 1;
+                                                StatusSR.totalEC -= 1;
+                                                StatusSR.ECluarRute -= 1;
+                                                StatusSR.totalCall -= 1;
+                                                StatusSR.luarRute -= 1;
                                             }
-                                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("2")) {
+                                            if (StatusToko.statuskunjungan.get(k).equals("2")) {
                                                 //VISIT EC hijau
-                                                com.example.salesforcemanagement.StatusSR.totalCall -= 1;
-                                                com.example.salesforcemanagement.StatusSR.luarRute -= 1;
+                                                StatusSR.totalCall -= 1;
+                                                StatusSR.luarRute -= 1;
                                             }
                                         }
 
                                     }
                                 }
                             }
-                            Intent intent = new Intent(getActivity(), com.example.salesforcemanagement.ReasonNotVisitActivity.class);
+                            Intent intent = new Intent(getActivity(), ReasonNotVisitActivity.class);
 
                             final ArrayList<Integer> al_id = new ArrayList<Integer>();
 
@@ -527,7 +540,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             String currentTime = simpleDateFormat.format(calendar.getTime());
                             Log.e("waktu", currentTime);
-                            com.example.salesforcemanagement.StatusToko.waktumulai.add(currentTime);
+                            StatusToko.waktumulai.add(currentTime);
 
                             editorToko.putString("waktu_mulai", currentTime);
 
@@ -542,8 +555,8 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                             String latitude = pref.getString("latitude", "");
                             String longitude = pref.getString("longitude", "");
                             Boolean inroute = false;
-                            final String id = partner_ref + date + sales_id + com.example.salesforcemanagement.StatusSR.id_inc;
-                            com.example.salesforcemanagement.StatusSR.id_inc += 1;
+                            final String id = partner_ref + date + sales_id + StatusSR.id_inc;
+                            StatusSR.id_inc += 1;
 
                             editorToko.putBoolean("visit", false);
                             editorToko.commit();
@@ -605,22 +618,22 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                         @Override
                         public void onClick(final DialogInterface dialog, int which) {
 
-                            if (com.example.salesforcemanagement.StatusToko.namatoko != null) {
-                                for (int k = 0; k < com.example.salesforcemanagement.StatusToko.namatoko.size(); k++) {
-                                    if (spacecrafts.get(i).getPropellant().equals(com.example.salesforcemanagement.StatusToko.namatoko.get(k))) {
-                                        if (!com.example.salesforcemanagement.StatusToko.statuskunjungan.isEmpty()) {
+                            if (StatusToko.namatoko != null) {
+                                for (int k = 0; k < StatusToko.namatoko.size(); k++) {
+                                    if (spacecrafts.get(i).getPropellant().equals(StatusToko.namatoko.get(k))) {
+                                        if (!StatusToko.statuskunjungan.isEmpty()) {
 
-                                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("3")) {
+                                            if (StatusToko.statuskunjungan.get(k).equals("3")) {
                                                 //VISIT NOT EC hijau
-                                                com.example.salesforcemanagement.StatusSR.totalEC -= 1;
-                                                com.example.salesforcemanagement.StatusSR.totalCall -= 1;
-                                                com.example.salesforcemanagement.StatusSR.luarRute -=1;
-                                                com.example.salesforcemanagement.StatusSR.ECluarRute -=1;
+                                                StatusSR.totalEC -= 1;
+                                                StatusSR.totalCall -= 1;
+                                                StatusSR.luarRute -= 1;
+                                                StatusSR.ECluarRute -= 1;
                                             }
-                                            if (com.example.salesforcemanagement.StatusToko.statuskunjungan.get(k).equals("2")) {
+                                            if (StatusToko.statuskunjungan.get(k).equals("2")) {
                                                 //VISIT EC hijau
-                                                com.example.salesforcemanagement.StatusSR.totalCall -= 1;
-                                                com.example.salesforcemanagement.StatusSR.luarRute -= 1;
+                                                StatusSR.totalCall -= 1;
+                                                StatusSR.luarRute -= 1;
                                             }
                                         }
 
@@ -630,7 +643,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
 
                             boolean dalamRute = false;
                             boolean luarRute = true;
-                            com.example.salesforcemanagement.StatusToko.rute = false;
+                            StatusToko.rute = false;
 
 
                             final ArrayList<Integer> al_id = new ArrayList<Integer>();
@@ -647,6 +660,9 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                             editorToko.putString("partner_name", s.getPropellant());
                             editorToko.putString("partner_id", s.getPartnerId());
                             editorToko.putString("const", s.getFrekuensi());
+                            editorToko.putBoolean("isBa", s.getBa());
+                            Log.e("TOKO BA", "harusnya " + s.getBa());
+                            editorToko.commit();
 
 //                            com.example.sfmtesting.StatusToko.kodetoko.add(s.getName());
 //                            com.example.sfmtesting.StatusToko.namatoko.add(s.getPropellant());
@@ -654,7 +670,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             String currentTime = simpleDateFormat.format(calendar.getTime());
                             Log.e("waktu", currentTime);
-                            com.example.salesforcemanagement.StatusToko.waktumulai.add(currentTime);
+                            StatusToko.waktumulai.add(currentTime);
 
                             editorToko.putString("waktu_mulai", currentTime);
 
@@ -669,8 +685,8 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                             String latitude = pref.getString("latitude", "");
                             String longitude = pref.getString("longitude", "");
                             String dc_id = pref.getString("dc_id", "5");
-                            final String id = partner_ref + date + sales_id + com.example.salesforcemanagement.StatusSR.id_inc;
-                            com.example.salesforcemanagement.StatusSR.id_inc += 1;
+                            final String id = partner_ref + date + sales_id + StatusSR.id_inc;
+                            StatusSR.id_inc += 1;
 
                             editorToko.putBoolean("visit", true);
                             editorToko.commit();
@@ -730,21 +746,6 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
 //                            dialog.dismiss();
                         }
                     });
-
-                    dialog.setNeutralButton("CEK BARANG DO", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            editorToko.putString("ref", s.getName());
-                            editorToko.putString("partner_name", s.getPropellant());
-                            editorToko.putString("partner_id", s.getPartnerId());
-//                            editorToko.putString("freukensi_name", s.getnamaFrekuensi());
-                            editorToko.putString("const", s.getFrekuensi());
-                            editorToko.commit();
-                            Intent intent = new Intent(getActivity(), BarangDOActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-
                     dialog.show();
                 }
             });
@@ -843,7 +844,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                 String json = "";
 
                 try {
-                    URL url = new URL("http://10.3.181.177:3000/visit");
+                    URL url = new URL("https://sfa-api.pti-cosmetics.com/visit");
                     JSONObject obj = new JSONObject();
                     obj.put("partner_ref", partnerref);
                     obj.put("user_id", userid);
@@ -906,7 +907,7 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
                     e.printStackTrace();
                 }
 
-                String url = "http://10.3.181.177:3000/visit?user_id=eq." + user_id;
+                String url = "https://sfa-api.pti-cosmetics.com/visit?user_id=eq." + user_id;
                 AndroidNetworking.get(url)
                         .setPriority(Priority.HIGH)
                         .build()
@@ -946,11 +947,11 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
 
                 boolean visit = prefToko.getBoolean("visit", true);
                 if (visit){
-                    Intent intent = new Intent(getActivity(), com.example.salesforcemanagement.TokoActivity.class);
+                    Intent intent = new Intent(getActivity(), TokoActivity.class);
                     startActivity(intent);
 //                    dialog.dismiss();
                 } else{
-                    Intent intent = new Intent(getActivity(), com.example.salesforcemanagement.ReasonNotVisitActivity.class);
+                    Intent intent = new Intent(getActivity(), ReasonNotVisitActivity.class);
 
                     startActivity(intent);
 //                    dialog.dismiss();
@@ -1012,8 +1013,8 @@ public class LuarRuteFragment extends Fragment implements LocationListener {
             editor = pref.edit();
             final String dc_id = pref.getString("dc_id", "");
             final String sales_id = pref.getString("sales_id", "");
-            Log.e("link", "http://10.3.181.177:3000/v_partner_outroute");
-            String url = "http://10.3.181.177:3000/v_partner_outroute";
+            Log.e("link", "https://sfa-api.pti-cosmetics.com/v_partner_outroute");
+            String url = "https://sfa-api.pti-cosmetics.com/v_partner_outroute";
             AndroidNetworking.get(url)
                     .setPriority(Priority.HIGH)
                     .build()

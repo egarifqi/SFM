@@ -9,6 +9,32 @@ public class TokoDalamRute {
     private String partnerid;
     private String frekuensi;
     private String status;
+    private boolean ba;
+
+    public TokoDalamRute(int id, String kode, String nama, String salesid, String partnerid, String frekuensi, String status, boolean ba) {
+        this.id = id;
+        this.kode = kode;
+        this.nama = nama;
+        this.salesid = salesid;
+        this.partnerid = partnerid;
+        this.frekuensi = frekuensi;
+        this.status = status;
+        this.ba = ba;
+    }
+
+    public TokoDalamRute(String kode, String nama, String salesid, String partnerid, String frekuensi, String status, boolean ba) {
+        this.kode = kode;
+        this.nama = nama;
+        this.salesid = salesid;
+        this.partnerid = partnerid;
+        this.frekuensi = frekuensi;
+        this.status = status;
+        this.ba = ba;
+    }
+
+    public TokoDalamRute() {
+
+    }
 
     public int getId() {
         return id;
@@ -66,33 +92,20 @@ public class TokoDalamRute {
         this.status = status;
     }
 
+    public boolean getBa() {
+        return ba;
+    }
+
+    public void setBa(boolean ba) {
+        this.ba = ba;
+    }
+
     /*
     TOSTRING
     */
     @Override
     public String toString() {
         return (kode + " - " + nama);
-    }
-
-    public TokoDalamRute(int id, String kode, String nama, String salesid, String partnerid, String frekuensi, String status){
-        this.id =id;
-        this.kode = kode;
-        this.nama = nama;
-        this.salesid = salesid;
-        this.partnerid = partnerid;
-        this.frekuensi = frekuensi;
-        this.status = status;
-    }
-    public TokoDalamRute(String kode, String nama, String salesid, String partnerid, String frekuensi, String status){
-        this.kode = kode;
-        this.nama = nama;
-        this.salesid = salesid;
-        this.partnerid = partnerid;
-        this.frekuensi = frekuensi;
-        this.status = status;
-    }
-    public TokoDalamRute(){
-
     }
 }
 

@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -164,21 +165,29 @@ public class AdditionalMOFragment extends Fragment {
 
                 TextView formKode = null;
                 final TextView formNama;
-                final TextView formHarga;
-                final TextView formPcs, formws;
+                final TextView formHarga, formPcs, formws, formStockBA, formQtyBA;
                 final EditText formStock, formQty;
+
+                LinearLayout llstocknonBA = dialogView.findViewById(R.id.layoutstocknonba);
+                LinearLayout llstockBA = dialogView.findViewById(R.id.layoutstockba);
+                LinearLayout llorderBA = dialogView.findViewById(R.id.layoutorderba);
 
                 formKode = dialogView.findViewById(R.id.kode_odoo_form);
                 formNama = dialogView.findViewById(R.id.nama_produk_form);
                 formHarga = dialogView.findViewById(R.id.harga_form);
+                formPcs = dialogView.findViewById(R.id.pcs_produk_form);
                 formws = dialogView.findViewById(R.id.ws_form);
                 formStock = dialogView.findViewById(R.id.stock_form);
                 formQty = dialogView.findViewById(R.id.qty_form);
-                formPcs = dialogView.findViewById(R.id.pcs_produk_form);
+                formStockBA = dialogView.findViewById(R.id.stock_form_ba);
+                formQtyBA = dialogView.findViewById(R.id.suggest_form);
 
-                final com.example.salesforcemanagement.Spacecraft coba = (com.example.salesforcemanagement.Spacecraft) adapter.getItem(position);
+                final Spacecraft coba = (Spacecraft) adapter.getItem(position);
+                Log.e("Produk Terpilih", coba.getKodeodoo() + " - " + coba.getNamaproduk() + " - STK: " + coba.getStock() + ", QTY: " + coba.getQty());
 
                 String konsta = pref.getString("const", "2");
+                boolean is_BA = pref.getBoolean("isBa", false);
+                Log.e("TOKO BA1", "harusnya " + is_BA);
                 final int konst = Integer.parseInt(konsta);
 
                 formKode.setText(coba.getKodeodoo());
@@ -186,299 +195,370 @@ public class AdditionalMOFragment extends Fragment {
                 formHarga.setText(coba.getPrice());
                 formws.setText("" + coba.getWeeklySales());
                 formPcs.setText(coba.getKoli());
-                formStock.setHint(coba.getStock());
-                String stockformawal = formStock.getText().toString();
-                if (!stockformawal.isEmpty()) {
-                    int intstockformawal = Integer.parseInt(stockformawal);
-                    int qtyformawal = konst*coba.getWeeklySales() - intstockformawal;
-                    if (qtyformawal >= 0) {
-                        formQty.setHint(String.valueOf(qtyformawal));
+                if (is_BA) {
+                    Toast.makeText(getContext(), "harusnya toko BA", Toast.LENGTH_SHORT).show();
+                    llstocknonBA.setVisibility(View.GONE);
+                    formStockBA.setText(coba.getStock());
+                    formQtyBA.setText(coba.getQty());
+                    formQty.setHint(coba.getQty());
+                    TextView finalFormKode1 = formKode;
+
+                    dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            coba.setQty(formQty.getText().toString());
+
+                            TextView qty = view.findViewById(R.id.qtyhist);
+
+                            qty.setText(spacecrafts.get(position).getQty());
+                            boolean check = false;
+                            boolean add = true;
+
+                            for (int x = 0; x < Globalmo.kode.size(); x++) {
+                                if (finalFormKode1.getText().toString().equals(Globalmo.kode.get(x))) {
+                                    check = true;
+                                }
+                                if (check) {
+                                    Globalmo.id_produk.set(x, coba.getId());
+                                    Globalmo.kode.set(x, finalFormKode1.getText().toString());
+                                    Globalmo.nama.set(x, formNama.getText().toString());
+                                    Globalmo.harga.set(x, formHarga.getText().toString());
+                                    Globalmo.stock.set(x, formStockBA.getText().toString());
+                                    Globalmo.qty.set(x, formQty.getText().toString());
+                                    Globalmo.sgtorder.set(x, formQtyBA.getText().toString());
+                                    Globalmo.kategori.set(x, coba.getCategory());
+                                    check = false;
+                                    add = false;
+                                }
+
+                            }
+                            if (add) {
+                                Globalmo.id_produk.add(coba.getId());
+                                Globalmo.produk.add(Globalmo.produkCount, kumpulanorder);
+                                Globalmo.kode.add(finalFormKode1.getText().toString());
+                                Globalmo.nama.add(formNama.getText().toString());
+                                Globalmo.harga.add(formHarga.getText().toString());
+                                Globalmo.stock.add(formStockBA.getText().toString());
+                                Globalmo.qty.add(formQty.getText().toString());
+                                Globalmo.kategori.add(coba.getCategory());
+                                Globalmo.sgtorder.add(formQtyBA.getText().toString());
+                                Globalmo.produkCount++;
+                            }
+
+                            adapter.notifyDataSetChanged();
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.show();
+
+                } else {
+                    Toast.makeText(getContext(), "harusnya " + is_BA, Toast.LENGTH_SHORT).show();
+                    llorderBA.setVisibility(View.GONE);
+                    llstockBA.setVisibility(View.GONE);
+                    formStock.setHint(coba.getStock());
+                    String stockformawal = formStock.getText().toString();
+                    if (!stockformawal.isEmpty()) {
+                        int intstockformawal = Integer.parseInt(stockformawal);
+                        int qtyformawal = konst * coba.getWeeklySales() - intstockformawal;
+                        if (qtyformawal >= 0) {
+                            formQty.setHint(String.valueOf(qtyformawal));
+                        } else {
+                            formQty.setHint("0");
+                        }
                     } else {
                         formQty.setHint("0");
                     }
-                } else {
-                    formQty.setHint("0");
-                }
 
-                formStock.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                        String stockform = formStock.getText().toString();
-                        if (!stockform.isEmpty()) {
-                            int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform >= 0) {
-                                formQty.setHint(String.valueOf(qtyform));
+                    formStock.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            String stockform = formStock.getText().toString();
+                            if (!stockform.isEmpty()) {
+                                int intstockform = Integer.parseInt(stockform);
+                                int qtyform = konst * coba.getWeeklySales() - intstockform;
+                                if (qtyform >= 0) {
+                                    formQty.setHint(String.valueOf(qtyform));
+                                } else {
+                                    formQty.setHint("0");
+                                }
                             } else {
                                 formQty.setHint("0");
                             }
-                        } else {
-                            formQty.setHint("0");
                         }
-                    }
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        String stockform = formStock.getText().toString();
-                        if (!stockform.isEmpty()) {
-                            int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform >= 0) {
-                                formQty.setHint(String.valueOf(qtyform));
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            String stockform = formStock.getText().toString();
+                            if (!stockform.isEmpty()) {
+                                int intstockform = Integer.parseInt(stockform);
+                                int qtyform = konst * coba.getWeeklySales() - intstockform;
+                                if (qtyform >= 0) {
+                                    formQty.setHint(String.valueOf(qtyform));
+                                } else {
+                                    formQty.setHint("0");
+                                }
                             } else {
                                 formQty.setHint("0");
                             }
-                        } else {
-                            formQty.setHint("0");
+
                         }
 
-                    }
+                        @Override
+                        public void afterTextChanged(Editable s) {
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
+                        }
+                    });
 
-                    }
-                });
-
-                final TextView finalFormKode = formKode;
-                final int[] count = new int[1];
-                dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String mStock = formStock.getText().toString();
-                        String mQty = formQty.getText().toString();
-                        count[0] = 0;
-                        if (mStock.isEmpty() && mQty.isEmpty()){
-                            Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
-                        } else if (mStock.isEmpty() && !mQty.isEmpty()) {
-                            orderedID.add(coba.getId());
-                            orderedkode.add(finalFormKode.getText().toString());
-                            orderedname.add(formNama.getText().toString());
-                            orderedprice.add(formHarga.getText().toString());
+                    final TextView finalFormKode = formKode;
+                    final int[] count = new int[1];
+                    dialog.setPositiveButton("Order", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String mStock = formStock.getText().toString();
+                            String mQty = formQty.getText().toString();
+                            count[0] = 0;
+                            if (mStock.isEmpty() && mQty.isEmpty()) {
+                                Toast.makeText(getContext(), "Mohon jangan kosongkan stock dan quantity order", Toast.LENGTH_SHORT).show();
+                            } else if (mStock.isEmpty() && !mQty.isEmpty()) {
+                                orderedID.add(coba.getId());
+                                orderedkode.add(finalFormKode.getText().toString());
+                                orderedname.add(formNama.getText().toString());
+                                orderedprice.add(formHarga.getText().toString());
 //                            int stockform = 0;
-                            orderedstock.add("0");
-                            orderedqty.add(formQty.getText().toString());
-                            orderedcategory.add(coba.getCategory());
+                                orderedstock.add("0");
+                                orderedqty.add(formQty.getText().toString());
+                                orderedcategory.add(coba.getCategory());
 
-                            kumpulanorder.setId(orderedID.get(count[0]));
-                            kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                            kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                            kumpulanorder.setPrice(orderedprice.get(count[0]));
-                            kumpulanorder.setStock(orderedstock.get(count[0]));
-                            kumpulanorder.setQty(orderedqty.get(count[0]));
-                            kumpulanorder.setCategory(orderedcategory.get(count[0]));
+                                kumpulanorder.setId(orderedID.get(count[0]));
+                                kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                                kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                                kumpulanorder.setPrice(orderedprice.get(count[0]));
+                                kumpulanorder.setStock(orderedstock.get(count[0]));
+                                kumpulanorder.setQty(orderedqty.get(count[0]));
+                                kumpulanorder.setCategory(orderedcategory.get(count[0]));
 
-                            order.add(count[0], kumpulanorder);
+                                order.add(count[0], kumpulanorder);
 
-                            count[0]++;
+                                count[0]++;
 
-                            coba.setStock("0");
-                            coba.setQty(formQty.getText().toString());
+                                coba.setStock("0");
+                                coba.setQty(formQty.getText().toString());
 
-                            TextView stock = view.findViewById(R.id.stock_hist);
-                            TextView qty = view.findViewById(R.id.qtyhist);
+                                TextView stock = view.findViewById(R.id.stock_hist);
+                                TextView qty = view.findViewById(R.id.qtyhist);
 
-                            stock.setText(spacecrafts.get(position).getStock());
-                            qty.setText(spacecrafts.get(position).getQty());
+                                stock.setText(spacecrafts.get(position).getStock());
+                                qty.setText(spacecrafts.get(position).getQty());
 
 //                            Toast.makeText(getActivity(), "order:" + formNama.getText().toString() + "stockmo " + coba.getStock() + " qtymo " + coba.getQty(), Toast.LENGTH_LONG).show();
 
 
-                            boolean check = false;
-                            boolean add = true;
+                                boolean check = false;
+                                boolean add = true;
 
-                            for (int x = 0; x < com.example.salesforcemanagement.Globalmo.kode.size(); x++) {
-                                if (finalFormKode.getText().toString().equals(com.example.salesforcemanagement.Globalmo.kode.get(x))) {
-                                    check = true;
+                                for (int x = 0; x < Globalmo.kode.size(); x++) {
+                                    if (finalFormKode.getText().toString().equals(Globalmo.kode.get(x))) {
+                                        check = true;
+                                    }
+                                    if (check) {
+                                        Globalmo.id_produk.set(x, coba.getId());
+                                        Globalmo.kode.set(x, finalFormKode.getText().toString());
+                                        Globalmo.nama.set(x, formNama.getText().toString());
+                                        Globalmo.harga.set(x, formHarga.getText().toString());
+                                        Globalmo.stock.set(x, "0");
+                                        Globalmo.qty.set(x, formQty.getText().toString());
+                                        Globalmo.kategori.set(x, coba.getCategory());
+                                        Globalmo.sgtorder.set(x, "0");
+                                        check = false;
+                                        add = false;
+                                    }
+
                                 }
-                                if (check) {
-                                    com.example.salesforcemanagement.Globalmo.id_produk.set(x, coba.getId());
-                                    com.example.salesforcemanagement.Globalmo.kode.set(x, finalFormKode.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.nama.set(x, formNama.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.harga.set(x, formHarga.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.stock.set(x, "0");
-                                    com.example.salesforcemanagement.Globalmo.sgtorder.set(x, "0");
-                                    com.example.salesforcemanagement.Globalmo.qty.set(x, formQty.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.kategori.set(x, coba.getCategory());
-                                    check = false;
-                                    add = false;
+                                if (add) {
+                                    Globalmo.produk.add(Globalmo.produkCount, kumpulanorder);
+                                    Globalmo.id_produk.add(coba.getId());
+                                    Globalmo.kode.add(finalFormKode.getText().toString());
+                                    Globalmo.nama.add(formNama.getText().toString());
+                                    Globalmo.harga.add(formHarga.getText().toString());
+                                    Globalmo.stock.add("0");
+                                    Globalmo.sgtorder.add("0");
+                                    Globalmo.qty.add(formQty.getText().toString());
+                                    Globalmo.kategori.add(coba.getCategory());
+                                    Globalmo.produkCount++;
                                 }
 
-                            }
-                            if (add) {
-                                com.example.salesforcemanagement.Globalmo.produk.add(com.example.salesforcemanagement.Globalmo.produkCount, kumpulanorder);
-                                com.example.salesforcemanagement.Globalmo.id_produk.add(coba.getId());
-                                com.example.salesforcemanagement.Globalmo.kode.add(finalFormKode.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.nama.add(formNama.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.harga.add(formHarga.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.stock.add("0");
-                                com.example.salesforcemanagement.Globalmo.qty.add(formQty.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.kategori.add(coba.getCategory());
-                                com.example.salesforcemanagement.Globalmo.sgtorder.add("0");
-                                com.example.salesforcemanagement.Globalmo.produkCount++;
-                            }
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            } else if (!mStock.isEmpty() && mQty.isEmpty()) {
 
-                            adapter.notifyDataSetChanged();
-                            dialog.dismiss();
-                        } else if (!mStock.isEmpty() && mQty.isEmpty()) {
+                                orderedID.add(coba.getId());
+                                orderedkode.add(finalFormKode.getText().toString());
+                                orderedname.add(formNama.getText().toString());
+                                orderedprice.add(formHarga.getText().toString());
+                                orderedstock.add(formStock.getText().toString());
+                                String stockform = formStock.getText().toString();
+                                int intstockform = Integer.parseInt(stockform);
+                                int qtyform = konst * coba.getWeeklySales() - intstockform;
+                                if (qtyform < 0) {
+                                    qtyform = 0;
+                                }
+                                orderedqty.add(String.valueOf(qtyform));
+                                orderedcategory.add(coba.getCategory());
 
-                            orderedID.add(coba.getId());
-                            orderedkode.add(finalFormKode.getText().toString());
-                            orderedname.add(formNama.getText().toString());
-                            orderedprice.add(formHarga.getText().toString());
-                            orderedstock.add(formStock.getText().toString());
-                            String stockform = formStock.getText().toString();
-                            int intstockform = Integer.parseInt(stockform);
-                            int qtyform = konst*coba.getWeeklySales() - intstockform;
-                            if (qtyform<0){qtyform = 0;}
-                            orderedqty.add(String.valueOf(qtyform));
-                            orderedcategory.add(coba.getCategory());
+                                kumpulanorder.setId(orderedID.get(count[0]));
+                                kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                                kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                                kumpulanorder.setPrice(orderedprice.get(count[0]));
+                                kumpulanorder.setStock(orderedstock.get(count[0]));
+                                kumpulanorder.setQty(orderedqty.get(count[0]));
+                                kumpulanorder.setCategory(orderedcategory.get(count[0]));
 
-                            kumpulanorder.setId(orderedID.get(count[0]));
-                            kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                            kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                            kumpulanorder.setPrice(orderedprice.get(count[0]));
-                            kumpulanorder.setStock(orderedstock.get(count[0]));
-                            kumpulanorder.setQty(orderedqty.get(count[0]));
-                            kumpulanorder.setCategory(orderedcategory.get(count[0]));
+                                order.add(count[0], kumpulanorder);
 
-                            order.add(count[0], kumpulanorder);
-
-                            count[0]++;
+                                count[0]++;
 
 
-                            coba.setStock(formStock.getText().toString());
-                            coba.setQty(String.valueOf(qtyform));
+                                coba.setStock(formStock.getText().toString());
+                                coba.setQty(String.valueOf(qtyform));
 
-                            TextView stock = view.findViewById(R.id.stock_hist);
-                            TextView qty = view.findViewById(R.id.qtyhist);
+                                TextView stock = view.findViewById(R.id.stock_hist);
+                                TextView qty = view.findViewById(R.id.qtyhist);
 
-                            stock.setText(spacecrafts.get(position).getStock());
-                            qty.setText(spacecrafts.get(position).getQty());
+                                stock.setText(spacecrafts.get(position).getStock());
+                                qty.setText(spacecrafts.get(position).getQty());
 
 //                            Toast.makeText(getActivity(), "stock " + coba.getStock() + " qty " + coba.getQty(), Toast.LENGTH_LONG).show();
 
-                            boolean check = false;
-                            boolean add = true;
+                                boolean check = false;
+                                boolean add = true;
 
-                            for (int x = 0; x < com.example.salesforcemanagement.Globalmo.kode.size(); x++) {
-                                if (finalFormKode.getText().toString().equals(com.example.salesforcemanagement.Globalmo.kode.get(x))) {
-                                    check = true;
+                                for (int x = 0; x < Globalmo.kode.size(); x++) {
+                                    if (finalFormKode.getText().toString().equals(Globalmo.kode.get(x))) {
+                                        check = true;
+                                    }
+                                    if (check) {
+                                        Globalmo.id_produk.set(x, coba.getId());
+                                        Globalmo.kode.set(x, finalFormKode.getText().toString());
+                                        Globalmo.nama.set(x, formNama.getText().toString());
+                                        Globalmo.harga.set(x, formHarga.getText().toString());
+                                        Globalmo.stock.set(x, formStock.getText().toString());
+                                        Globalmo.qty.set(x, String.valueOf(qtyform));
+                                        Globalmo.kategori.set(x, coba.getCategory());
+                                        Globalmo.sgtorder.set(x, "0");
+                                        check = false;
+                                        add = false;
+                                    }
+
                                 }
-                                if (check) {
-                                    com.example.salesforcemanagement.Globalmo.id_produk.set(x, coba.getId());
-                                    com.example.salesforcemanagement.Globalmo.kode.set(x, finalFormKode.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.nama.set(x, formNama.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.harga.set(x, formHarga.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.stock.set(x, formStock.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.qty.set(x, String.valueOf(qtyform));
-                                    com.example.salesforcemanagement.Globalmo.kategori.set(x, coba.getCategory());
-                                    com.example.salesforcemanagement.Globalmo.sgtorder.set(x, "0");
-                                    check = false;
-                                    add = false;
+                                if (add) {
+                                    Globalmo.id_produk.add(coba.getId());
+                                    Globalmo.produk.add(Globalmo.produkCount, kumpulanorder);
+                                    Globalmo.kode.add(finalFormKode.getText().toString());
+                                    Globalmo.nama.add(formNama.getText().toString());
+                                    Globalmo.harga.add(formHarga.getText().toString());
+                                    Globalmo.stock.add(formStock.getText().toString());
+                                    Globalmo.qty.add(String.valueOf(qtyform));
+                                    Globalmo.kategori.add(coba.getCategory());
+                                    Globalmo.sgtorder.add("0");
+                                    Globalmo.produkCount++;
                                 }
 
-                            }
-                            if (add) {
-                                com.example.salesforcemanagement.Globalmo.id_produk.add(coba.getId());
-                                com.example.salesforcemanagement.Globalmo.produk.add(com.example.salesforcemanagement.Globalmo.produkCount, kumpulanorder);
-                                com.example.salesforcemanagement.Globalmo.kode.add(finalFormKode.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.nama.add(formNama.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.harga.add(formHarga.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.stock.add(formStock.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.qty.add(String.valueOf(qtyform));
-                                com.example.salesforcemanagement.Globalmo.kategori.add(coba.getCategory());
-                                com.example.salesforcemanagement.Globalmo.sgtorder.add("0");
-                                com.example.salesforcemanagement.Globalmo.produkCount++;
-                            }
 
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
 
-                            adapter.notifyDataSetChanged();
-                            dialog.dismiss();
+                            } else {
 
-                        } else {
+                                orderedID.add(coba.getId());
+                                orderedkode.add(finalFormKode.getText().toString());
+                                orderedname.add(formNama.getText().toString());
+                                orderedprice.add(formHarga.getText().toString());
+                                orderedstock.add(formStock.getText().toString());
+                                orderedqty.add(formQty.getText().toString());
+                                orderedcategory.add(coba.getCategory());
 
-                            orderedID.add(coba.getId());
-                            orderedkode.add(finalFormKode.getText().toString());
-                            orderedname.add(formNama.getText().toString());
-                            orderedprice.add(formHarga.getText().toString());
-                            orderedstock.add(formStock.getText().toString());
-                            orderedqty.add(formQty.getText().toString());
-                            orderedcategory.add(coba.getCategory());
+                                kumpulanorder.setId(orderedID.get(count[0]));
+                                kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
+                                kumpulanorder.setNamaproduk(orderedname.get(count[0]));
+                                kumpulanorder.setPrice(orderedprice.get(count[0]));
+                                kumpulanorder.setStock(orderedstock.get(count[0]));
+                                kumpulanorder.setQty(orderedqty.get(count[0]));
+                                kumpulanorder.setCategory(orderedcategory.get(count[0]));
 
-                            kumpulanorder.setId(orderedID.get(count[0]));
-                            kumpulanorder.setKodeodoo(orderedkode.get(count[0]));
-                            kumpulanorder.setNamaproduk(orderedname.get(count[0]));
-                            kumpulanorder.setPrice(orderedprice.get(count[0]));
-                            kumpulanorder.setStock(orderedstock.get(count[0]));
-                            kumpulanorder.setQty(orderedqty.get(count[0]));
-                            kumpulanorder.setCategory(orderedcategory.get(count[0]));
+                                order.add(count[0], kumpulanorder);
 
-                            order.add(count[0], kumpulanorder);
+                                count[0]++;
 
-                            count[0]++;
+                                coba.setStock(formStock.getText().toString());
+                                coba.setQty(formQty.getText().toString());
 
-                            coba.setStock(formStock.getText().toString());
-                            coba.setQty(formQty.getText().toString());
+                                TextView stock = view.findViewById(R.id.stock_hist);
+                                TextView qty = view.findViewById(R.id.qtyhist);
 
-                            TextView stock = view.findViewById(R.id.stock_hist);
-                            TextView qty = view.findViewById(R.id.qtyhist);
-
-                            stock.setText(spacecrafts.get(position).getStock());
-                            qty.setText(spacecrafts.get(position).getQty());
+                                stock.setText(spacecrafts.get(position).getStock());
+                                qty.setText(spacecrafts.get(position).getQty());
 
 //                            Toast.makeText(getActivity(), "order:" + formNama.getText().toString() + "stockmo " + coba.getStock() + " qtymo " + coba.getQty(), Toast.LENGTH_LONG).show();
 
 
-                            boolean check = false;
-                            boolean add = true;
+                                boolean check = false;
+                                boolean add = true;
 
-                            for (int x = 0; x < com.example.salesforcemanagement.Globalmo.kode.size(); x++) {
-                                if (finalFormKode.getText().toString().equals(com.example.salesforcemanagement.Globalmo.kode.get(x))) {
-                                    check = true;
+                                for (int x = 0; x < Globalmo.kode.size(); x++) {
+                                    if (finalFormKode.getText().toString().equals(Globalmo.kode.get(x))) {
+                                        check = true;
+                                    }
+                                    if (check) {
+                                        Globalmo.id_produk.set(x, coba.getId());
+                                        Globalmo.kode.set(x, finalFormKode.getText().toString());
+                                        Globalmo.nama.set(x, formNama.getText().toString());
+                                        Globalmo.harga.set(x, formHarga.getText().toString());
+                                        Globalmo.stock.set(x, formStock.getText().toString());
+                                        Globalmo.qty.set(x, formQty.getText().toString());
+                                        Globalmo.kategori.set(x, coba.getCategory());
+                                        Globalmo.sgtorder.set(x, "0");
+                                        check = false;
+                                        add = false;
+                                    }
+
                                 }
-                                if (check) {
-                                    com.example.salesforcemanagement.Globalmo.id_produk.set(x, coba.getId());
-                                    com.example.salesforcemanagement.Globalmo.kode.set(x, finalFormKode.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.nama.set(x, formNama.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.harga.set(x, formHarga.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.stock.set(x, formStock.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.qty.set(x, formQty.getText().toString());
-                                    com.example.salesforcemanagement.Globalmo.kategori.set(x, coba.getCategory());
-                                    com.example.salesforcemanagement.Globalmo.sgtorder.set(x, "0");
-                                    check = false;
-                                    add = false;
+                                if (add) {
+                                    Globalmo.produk.add(Globalmo.produkCount, kumpulanorder);
+                                    Globalmo.id_produk.add(coba.getId());
+                                    Globalmo.kode.add(finalFormKode.getText().toString());
+                                    Globalmo.nama.add(formNama.getText().toString());
+                                    Globalmo.harga.add(formHarga.getText().toString());
+                                    Globalmo.stock.add(formStock.getText().toString());
+                                    Globalmo.qty.add(formQty.getText().toString());
+                                    Globalmo.kategori.add(coba.getCategory());
+                                    Globalmo.sgtorder.add("0");
+                                    Globalmo.produkCount++;
                                 }
+
+                                adapter.notifyDataSetChanged();
+                                dialog.dismiss();
 
                             }
-                            if (add) {
-                                com.example.salesforcemanagement.Globalmo.produk.add(com.example.salesforcemanagement.Globalmo.produkCount, kumpulanorder);
-                                com.example.salesforcemanagement.Globalmo.id_produk.add(coba.getId());
-                                com.example.salesforcemanagement.Globalmo.kode.add(finalFormKode.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.nama.add(formNama.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.harga.add(formHarga.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.stock.add(formStock.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.qty.add(formQty.getText().toString());
-                                com.example.salesforcemanagement.Globalmo.kategori.add(coba.getCategory());
-                                com.example.salesforcemanagement.Globalmo.sgtorder.add("0");
-                                com.example.salesforcemanagement.Globalmo.produkCount++;
-                            }
-
-                            adapter.notifyDataSetChanged();
-                            dialog.dismiss();
 
                         }
+                    });
+                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
 
-                    }
-                });
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                dialog.show();
+                    dialog.show();
+                }
             }
         });
 

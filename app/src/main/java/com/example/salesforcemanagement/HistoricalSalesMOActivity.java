@@ -30,9 +30,9 @@ public class HistoricalSalesMOActivity extends AppCompatActivity {
         toolbar.setSubtitle(nama);
         TabLayout tabLayout = findViewById(R.id.tab_layouthistoricalsalesmo);
 
+        tabLayout.addTab(tabLayout.newTab().setText("EBP"));
         tabLayout.addTab(tabLayout.newTab().setText("MHS"));
         tabLayout.addTab(tabLayout.newTab().setText("NPD & PROMO"));
-        tabLayout.addTab(tabLayout.newTab().setText("EBP"));
         tabLayout.addTab(tabLayout.newTab().setText("OTHERS"));
 //        tabLayout.addTab(tabLayout.newTab().setText("ADDITIONAL ORDER"));
 
@@ -42,6 +42,7 @@ public class HistoricalSalesMOActivity extends AppCompatActivity {
         final com.example.salesforcemanagement.HistoricalSalesMOPagerAdapter adapter = new com.example.salesforcemanagement.HistoricalSalesMOPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(5);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
